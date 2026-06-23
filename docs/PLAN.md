@@ -22,8 +22,8 @@ Anthropic SDK (`claude-haiku-4-5`, server-only) · Vitest. Data: `data/vehicles.
 | Commit | Slice | Delivers | Status |
 |--------|-------|----------|--------|
 | `chore: scaffold …` | **Scaffold** | Next + Tailwind v4 tokens, theming, tooling, build green | ✅ done |
-| `feat: browse inventory` | **Browse inventory** | Search page: header + card grid + filter/sort over static data | ⏳ next |
-| `feat: vehicle detail page` | **Vehicle detail (VDP)** | `/vehicle/[id]`: carousel, specs, condition, damage, dealer; `not-found` | ⬜ |
+| `feat: browse inventory` | **Browse inventory** | Search page: header + card grid + filter/sort over static data | ✅ done |
+| `feat: vehicle detail page` | **Vehicle detail (VDP)** | `/vehicle/[id]`: carousel, specs, condition, damage, dealer; `not-found` | ⏳ next |
 | `feat: bidding` | **Bidding** | Sticky bid footer, localStorage (versioned), inline validation, reserve met/not-met. **Minimum bar complete.** | ⬜ |
 | `feat: ai natural-language search` | **AI NL search** | `/api/search` + Claude + `lib/prompts.ts`; debounce/cache/keyword-fallback/toast + empty state | ⬜ |
 | `feat: ai condition summary` | **AI condition summary** | `/api/condition-summary` on VDP; skeleton + cache + toast fallback | ⬜ |
