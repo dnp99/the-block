@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { FilterBar } from "@/components/search/FilterBar";
-import { VehicleGrid } from "@/components/search/VehicleGrid";
+import { VehicleList } from "@/components/search/VehicleList";
 import type { SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
@@ -85,7 +85,7 @@ export function SearchView({ vehicles }: { vehicles: Vehicle[] }) {
         onReset={reset}
       />
 
-      <VehicleGrid vehicles={results} />
+      <VehicleList vehicles={results} />
     </section>
   );
 }

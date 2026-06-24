@@ -15,16 +15,16 @@ export const metadata: Metadata = {
 };
 
 /*
-  Theme bootstrap: set the `.dark` class before first paint to avoid a
-  light-mode flash. Reads the persisted choice, falling back to the OS setting.
+  Theme bootstrap: light is the default look. We only switch to dark when the
+  user has explicitly chosen it (persisted), set before first paint to avoid a
+  flash. (We intentionally do NOT follow the OS setting — the brand look is light.)
 */
 const themeScript = `
 (function () {
   try {
-    var stored = localStorage.getItem("tb-theme");
-    var dark = stored ? stored === "dark"
-      : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (dark) document.documentElement.classList.add("dark");
+    if (localStorage.getItem("tb-theme") === "dark") {
+      document.documentElement.classList.add("dark");
+    }
   } catch (e) {}
 })();
 `;

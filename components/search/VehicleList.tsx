@@ -1,7 +1,7 @@
-import { VehicleCard } from "@/components/search/VehicleCard";
+import { VehicleRow } from "@/components/search/VehicleRow";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 
-export function VehicleGrid({ vehicles }: { vehicles: Vehicle[] }) {
+export function VehicleList({ vehicles }: { vehicles: Vehicle[] }) {
   if (vehicles.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface px-4 py-16 text-center">
@@ -14,9 +14,9 @@ export function VehicleGrid({ vehicles }: { vehicles: Vehicle[] }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 xl:grid-cols-4">
+    <div className="flex flex-col gap-3">
       {vehicles.map((v) => (
-        <VehicleCard key={v.id} vehicle={v} />
+        <VehicleRow key={v.id} vehicle={v} />
       ))}
     </div>
   );

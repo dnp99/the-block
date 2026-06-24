@@ -28,8 +28,10 @@ docs/design-system.md  → this file — full spec, names + rationale
 CLAUDE.md              → enforced subset, always in agent context
 ```
 
-Dark mode is a `.dark` class on `<html>`; tokens remap underneath, so the same markup
-themes correctly with no per-component color variants.
+**Light is the default look** (white surfaces, light-gray canvas, blue accents — matching the
+OPENLANE marketplace). Dark mode is a `.dark` class on `<html>`, opt-in via the toggle (we do
+not follow the OS setting); tokens remap underneath, so the same markup themes correctly with
+no per-component color variants.
 
 ## 3. Color tokens
 
@@ -134,7 +136,8 @@ Use these consistently in component and file names.
 ## 10. Layout
 
 - Max content width: `max-w-7xl`, centered, with `px-4 sm:px-6`.
-- Inventory grid: `grid-cols-2 sm:grid-cols-3 xl:grid-cols-4`.
+- Inventory: vertical **list rows** (`VehicleRow`) — thumbnail · details + badges · right-aligned
+  bid. (A card grid was the original direction; switched to rows to match the OPENLANE look.)
 - Page canvas: `bg-canvas`; the content wrapper is transparent.
 
 ## 11. Accessibility
