@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "The Block — Vehicle Auctions",
+  title: "Openlane — Vehicle Auctions",
   description:
     "Browse inventory, inspect vehicle details, and place bids. A buyer-side auction prototype.",
 };

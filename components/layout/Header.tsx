@@ -3,21 +3,21 @@ import Link from "next/link";
 /** App header — sticky, borderless-blur. ThemeToggle slot filled in the polish slice. */
 export function Header() {
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-canvas/80 backdrop-blur-sm">
+    <header className="border-line bg-canvas/80 sticky top-0 z-30 border-b backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg font-semibold tracking-tight text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+          className="text-ink focus-visible:ring-primary-500 flex items-center gap-2 rounded-lg font-semibold tracking-tight focus-visible:ring-2 focus-visible:outline-none"
         >
           <span
             aria-hidden
-            className="grid h-7 w-7 place-items-center rounded-lg bg-primary-600 text-sm font-bold text-white"
+            className="bg-primary-600 grid h-7 w-7 place-items-center rounded-lg text-sm font-bold text-white"
           >
-            B
+            O
           </span>
-          The Block
+          Openlane
         </Link>
-        <span className="text-xs font-medium text-ink-subtle">Buyer auctions</span>
+        <span className="text-ink-subtle text-xs font-medium">Buyer auctions</span>
       </div>
     </header>
   );
