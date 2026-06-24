@@ -103,7 +103,7 @@ export function VehicleRow({
             <p className="text-base font-semibold text-ink">
               {formatCurrency(effectivePrice(v))}
             </p>
-            <p className="text-[11px] text-ink-subtle">
+            <p className="hidden text-[11px] text-ink-subtle sm:block">
               {hasBids ? `${v.bid_count} bids` : "No bids yet"}
             </p>
             {state.phase !== "ended" && (
