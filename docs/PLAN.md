@@ -27,7 +27,7 @@ Anthropic SDK (`claude-haiku-4-5`, server-only) · Vitest. Data: `data/vehicles.
 | `feat: bidding` | **Bidding** | Sticky bid footer, localStorage (versioned), inline validation, reserve met/not-met. **Minimum bar complete.** | ✅ done |
 | `feat: ai natural-language search` | **AI NL search** | `/api/search` + Claude + `lib/prompts.ts`; debounce/cache/keyword-fallback/toast + empty state | ✅ done |
 | `feat: ai condition summary` | **AI condition summary** | `/api/condition-summary` on VDP; skeleton + cache + toast fallback | ✅ done |
-| `feat: live auction state` | **Live auction state** | Normalize `auction_start` → upcoming/live/ended pill + countdown | ⬜ |
+| `feat: live auction state` | **Live auction state** | Normalize `auction_start` → upcoming/live/ended pill + countdown (shipped with tabs) | ✅ done |
 | `feat: polish & accessibility` | **Polish & a11y** | `error.tsx`, ThemeToggle, focus/keyboard/safe-area, mobile, empty/loading states | ⬜ |
 | `test: …` / `docs: …` | **Tests + docs** | Vitest (filters/bids/search-parser), README (submission + AI-usage). `docs/design-system.md` ✅ done early | ⬜ |
 | `chore: release` | **Submission** | Final pass, deploy, share link | ⬜ |
