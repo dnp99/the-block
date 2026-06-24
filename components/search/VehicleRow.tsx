@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { QuickBid } from "@/components/search/QuickBid";
+import { QuickBuyNow } from "@/components/search/QuickBuyNow";
 import { Pill } from "@/components/ui/Pill";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { VinCopy } from "@/components/vehicle/VinCopy";
@@ -104,12 +105,12 @@ export function VehicleRow({
             <p className="text-[11px] text-ink-subtle">
               {hasBids ? `${v.bid_count} bids` : "No bids yet"}
             </p>
-            {v.buy_now_price !== null && (
-              <p className="text-[11px] font-medium text-primary-600">
-                Buy now {formatCurrency(v.buy_now_price)}
-              </p>
+            {state.phase !== "ended" && (
+              <>
+                <QuickBid vehicle={v} />
+                <QuickBuyNow vehicle={v} />
+              </>
             )}
-            {state.phase !== "ended" && <QuickBid vehicle={v} />}
           </div>
         </div>
 

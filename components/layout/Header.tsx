@@ -19,9 +19,7 @@ export function Header() {
           Openlane
         </Link>
         <div className="flex items-center gap-3">
-          <span className="hidden text-xs font-medium text-ink-subtle sm:inline">
-            Buyer auctions
-          </span>
+          <span className="text-ink-subtle hidden text-xs font-medium sm:inline"></span>
           <ThemeToggle />
         </div>
       </div>
