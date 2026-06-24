@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { BidForm } from "@/components/vehicle/BidForm";
 import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
-import { reserveStatusFor } from "@/components/vehicle/vehiclePills";
 import { auctionCountdownLabel, auctionState } from "@/lib/auction";
-import { effectiveBid, useBidOverrides } from "@/lib/bids";
+import { bidDisplay } from "@/lib/bidDisplay";
+import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatCurrency } from "@/lib/format";
@@ -20,11 +20,10 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
 
   const overrides = useBidOverrides();
   const override = overrides[v.id];
-  const { amount, count, isHighBidder } = effectiveBid(v, override);
-  const hasBids = (override?.amount ?? v.current_bid) !== null;
-  const reserveMet = reserveStatusFor(amount, v.reserve_price).met;
   const state = auctionState(v.id, anchorMs, now);
   const ended = state.phase === "ended";
+  const upcoming = state.phase === "upcoming";
+  const d = bidDisplay(v, state.phase, override);
   const urgent = state.phase === "live" && state.endMs - now <= 120_000;
 
   return (
@@ -32,8 +31,8 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
       <div className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-1.5">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
           <span className="text-sm text-ink-muted">
-            Current bid{" "}
-            <span className="font-semibold text-ink">{formatCurrency(amount)}</span>
+            {d.label}{" "}
+            <span className="font-semibold text-ink">{formatCurrency(d.amount)}</span>
           </span>
           <span
             className={cn(
@@ -52,19 +51,21 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-ink-muted">
           <BidHistoryButton
             vehicle={v}
-            count={hasBids ? count : 0}
+            count={d.showCount ? d.count : 0}
             override={override}
             nowMs={now}
           />
-          {isHighBidder && (
+          {d.isHighBidder && state.phase === "live" && (
             <span className="font-medium text-success">
-              · You’re the high bidder{reserveMet && " · Reserve met"}
+              · You’re the high bidder{d.reserveMet && " · Reserve met"}
             </span>
           )}
         </div>
 
         {ended ? (
           <p className="text-sm text-ink-muted">This auction has ended.</p>
+        ) : upcoming ? (
+          <p className="text-sm text-ink-muted">Bidding opens when the auction goes live.</p>
         ) : (
           <BidForm vehicle={v} />
         )}

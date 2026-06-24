@@ -11,7 +11,8 @@ import {
   auctionState,
   type AuctionPhase,
 } from "@/lib/auction";
-import { effectiveBid, useBidOverrides } from "@/lib/bids";
+import { bidDisplay } from "@/lib/bidDisplay";
+import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatCurrency } from "@/lib/format";
@@ -37,13 +38,13 @@ export function AuctionPanel({
 
   const overrides = useBidOverrides();
   const override = overrides[v.id];
-  const { amount, count, isHighBidder } = effectiveBid(v, override);
 
   const state = auctionState(v.id, anchorMs, now);
   const phase = PHASE[state.phase];
   const ended = state.phase === "ended";
-  const reserve = reserveStatusFor(amount, v.reserve_price);
-  const hasBids = (override?.amount ?? v.current_bid) !== null;
+  const upcoming = state.phase === "upcoming";
+  const d = bidDisplay(v, state.phase, override);
+  const reserve = reserveStatusFor(d.amount, v.reserve_price);
   const urgent = state.phase === "live" && state.endMs - now <= 120_000;
 
   return (
@@ -68,12 +69,12 @@ export function AuctionPanel({
       </div>
 
       <div>
-        <p className="text-xs text-ink-subtle">{hasBids ? "Current bid" : "Starting bid"}</p>
-        <p className="text-3xl font-bold tracking-tight text-ink">{formatCurrency(amount)}</p>
+        <p className="text-xs text-ink-subtle">{d.label}</p>
+        <p className="text-3xl font-bold tracking-tight text-ink">{formatCurrency(d.amount)}</p>
         <div className="mt-1 flex items-center gap-2">
           <BidHistoryButton
             vehicle={v}
-            count={hasBids ? count : 0}
+            count={d.showCount ? d.count : 0}
             override={override}
             nowMs={now}
           />
@@ -81,7 +82,7 @@ export function AuctionPanel({
         </div>
       </div>
 
-      {isHighBidder && !ended && (
+      {d.isHighBidder && !ended && (
         <p className="flex items-center gap-1.5 rounded-xl bg-success-soft px-3 py-2 text-sm font-medium text-success dark:bg-success/15">
           <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6 9 17l-5-5" />
@@ -93,6 +94,10 @@ export function AuctionPanel({
       {ended ? (
         <p className="rounded-xl bg-neutral-100 px-3 py-2 text-sm text-ink-muted dark:bg-neutral-800">
           This auction has ended.
+        </p>
+      ) : upcoming ? (
+        <p className="rounded-xl bg-neutral-100 px-3 py-2 text-sm text-ink-muted dark:bg-neutral-800">
+          Bidding opens when the auction goes live.
         </p>
       ) : (
         <BidForm vehicle={v} />

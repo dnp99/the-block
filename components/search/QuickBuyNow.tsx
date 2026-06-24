@@ -6,6 +6,7 @@ import { placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatCurrency } from "@/lib/format";
+import { toastMessages } from "@/lib/toasts";
 
 /*
   One-tap buy now from the browse list. Like QuickBid, but places a winning bid
@@ -33,9 +34,9 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, price, vehicle.bid_count);
-      toast(`Bought now — ${formatCurrency(price)}`, "success");
+      toast(toastMessages.boughtNow(vehicle, price), "success");
     } catch {
-      toast("Couldn’t complete buy now, please try again", "error");
+      toast(toastMessages.buyNowFailed, "error");
     }
     setConfirming(false);
   }
@@ -46,7 +47,7 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
       onClick={handle}
       aria-label={`Buy now for ${formatCurrency(price)}`}
       className={cn(
-        "relative z-[2] ml-auto mt-1.5 block w-fit cursor-pointer whitespace-nowrap rounded-lg border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+        "relative z-[2] w-fit cursor-pointer whitespace-nowrap rounded-lg border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
         confirming
           ? "border-primary-600 bg-primary-600 text-white hover:bg-primary-700"
           : "border-line text-ink hover:bg-neutral-100 dark:hover:bg-neutral-800",

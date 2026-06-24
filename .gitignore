@@ -43,3 +43,6 @@ next-env.d.ts
 
 # misc backups
 *.bak
+
+# personal working notes (not part of submission)
+TODO-ui.md

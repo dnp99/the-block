@@ -1,25 +1,24 @@
+"use client";
+
 import Link from "next/link";
 import { QuickBid } from "@/components/search/QuickBid";
 import { QuickBuyNow } from "@/components/search/QuickBuyNow";
 import { Pill } from "@/components/ui/Pill";
+import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { VinCopy } from "@/components/vehicle/VinCopy";
 import {
   conditionPill,
   damagePill,
-  reservePill,
+  reserveStatusFor,
   titlePill,
 } from "@/components/vehicle/vehiclePills";
 import { auctionCountdownLabel, type AuctionPhase, type AuctionState } from "@/lib/auction";
+import { bidDisplay } from "@/lib/bidDisplay";
+import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import {
-  effectivePrice,
-  formatCurrency,
-  formatKm,
-  vehicleLocation,
-  vehicleTitle,
-} from "@/lib/format";
+import { formatCurrency, formatKm, vehicleLocation, vehicleTitle } from "@/lib/format";
 
 const PHASE_BADGE: Record<AuctionPhase, { label: string; dot: string }> = {
   live: { label: "Live", dot: "bg-success" },
@@ -37,17 +36,24 @@ export function VehicleRow({
   state: AuctionState;
   nowMs: number;
 }) {
+  const override = useBidOverrides()[v.id];
+  const d = bidDisplay(v, state.phase, override);
   const condition = conditionPill(v.condition_grade);
   const title = titlePill(v.title_status);
   const damage = damagePill(v);
-  const reserve = reservePill(v);
-  const hasBids = v.current_bid !== null;
+  const reserve = reserveStatusFor(d.amount, v.reserve_price);
   const badge = PHASE_BADGE[state.phase];
   const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
+  const countdown = auctionCountdownLabel(state, nowMs);
+  const countdownColor = urgent
+    ? "font-semibold text-error"
+    : state.phase === "live"
+      ? "font-medium text-success"
+      : "text-ink-subtle";
 
   return (
     <div className="group flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:gap-4 sm:p-4">
-      {/* Left column: thumbnail + auction countdown */}
+      {/* Left column: thumbnail + (mobile only) auction countdown */}
       <div className="flex w-24 shrink-0 flex-col gap-1.5 self-start sm:w-40">
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
           <VehicleImage
@@ -61,16 +67,9 @@ export function VehicleRow({
           </span>
         </div>
         <span
-          className={cn(
-            "px-0.5 text-xs leading-snug tabular-nums",
-            urgent
-              ? "font-semibold text-error"
-              : state.phase === "live"
-                ? "font-medium text-success"
-                : "text-ink-subtle",
-          )}
+          className={cn("px-0.5 text-xs leading-snug tabular-nums sm:hidden", countdownColor)}
         >
-          {auctionCountdownLabel(state, nowMs)}
+          {countdown}
         </span>
       </div>
 
@@ -97,20 +96,26 @@ export function VehicleRow({
             </div>
           </div>
           <div className="shrink-0 text-right">
-            <p className="text-[11px] text-ink-subtle">
-              {hasBids ? "Current bid" : "Starting bid"}
+            {/* Desktop: countdown sits with the bid info (mobile shows it under the thumbnail) */}
+            <p className={cn("hidden text-[11px] leading-tight tabular-nums sm:block", countdownColor)}>
+              {countdown}
             </p>
-            <p className="text-base font-semibold text-ink">
-              {formatCurrency(effectivePrice(v))}
-            </p>
-            <p className="hidden text-[11px] text-ink-subtle sm:block">
-              {hasBids ? `${v.bid_count} bids` : "No bids yet"}
-            </p>
-            {state.phase !== "ended" && (
-              <>
+            <p className="text-[11px] text-ink-subtle">{d.label}</p>
+            <p className="text-base font-semibold text-ink">{formatCurrency(d.amount)}</p>
+            {d.showCount ? (
+              <div className="mt-0.5 hidden justify-end text-xs sm:flex">
+                <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
+              </div>
+            ) : (
+              state.phase !== "ended" && (
+                <p className="hidden text-[11px] text-ink-subtle sm:block">No bids yet</p>
+              )
+            )}
+            {d.showActions && (
+              <div className="mt-1.5 flex flex-col items-end gap-1.5 sm:flex-row sm:justify-end">
                 <QuickBid vehicle={v} />
                 <QuickBuyNow vehicle={v} />
-              </>
+              </div>
             )}
           </div>
         </div>

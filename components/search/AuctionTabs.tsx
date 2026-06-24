@@ -32,7 +32,7 @@ export function AuctionTabs({
             aria-selected={active}
             onClick={() => onChange(t.key)}
             className={cn(
-              "relative flex items-center gap-2 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:px-4",
+              "relative flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:px-4",
               active ? "text-primary-700" : "text-ink-muted hover:text-ink",
             )}
           >

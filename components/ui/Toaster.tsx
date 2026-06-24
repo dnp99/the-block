@@ -40,7 +40,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col-reverse items-center gap-2 px-4 pb-[env(safe-area-inset-bottom)] sm:bottom-auto sm:top-16 sm:flex-col sm:pb-0"
+        className="pointer-events-none fixed inset-x-0 top-16 z-[60] flex flex-col items-center gap-2 px-4"
       >
         {toasts.map((t) => (
           <div
