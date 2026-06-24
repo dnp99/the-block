@@ -63,7 +63,7 @@ export function Toolbar({
             type="search"
             value={query}
             onChange={(e) => onQuery(e.target.value)}
-            placeholder="Try “AWD SUV under $20k, clean title”…"
+            placeholder="Try “AWD SUV under $20k”…"
             aria-label="Search inventory"
             className="w-full rounded-xl border border-line bg-surface px-3 py-2 pl-8 pr-9 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 [&::-webkit-search-cancel-button]:hidden"
           />
