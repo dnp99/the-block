@@ -8,6 +8,7 @@ import { ResultsSkeleton } from "@/components/search/ResultsSkeleton";
 import { Toolbar } from "@/components/search/Toolbar";
 import { VehicleList } from "@/components/search/VehicleList";
 import { Button } from "@/components/ui/Button";
+import { InfoHint } from "@/components/ui/InfoHint";
 import { useToast } from "@/components/ui/Toaster";
 import { postJson } from "@/lib/api-client";
 import { auctionState, type AuctionState } from "@/lib/auction";
@@ -326,7 +327,14 @@ export function SearchView({
             onToggleFilters={() => setShowFilters((s) => !s)}
             loading={aiLoading}
           />
-          <FilterChips chips={chips} onClearAll={reset} />
+          {chips.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <FilterChips chips={chips} onClearAll={reset} />
+              {chips.some((c) => c.key.startsWith("ai-")) && (
+                <InfoHint label="AI interprets your search and can make mistakes. Remove or adjust any ✨ chip that's off." />
+              )}
+            </div>
+          )}
           {aiLoading ? (
             <ResultsSkeleton />
           ) : (
