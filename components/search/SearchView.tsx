@@ -13,7 +13,6 @@ import { useToast } from "@/components/ui/Toaster";
 import { postJson } from "@/lib/api-client";
 import { auctionState, type AuctionState } from "@/lib/auction";
 import { useBidOverrides } from "@/lib/bids";
-import { cn } from "@/lib/cn";
 import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
@@ -271,6 +270,33 @@ export function SearchView({
     JSON.stringify(aiFilters),
   ].join("|");
 
+  const filterPanel = (
+    <FilterPanel
+      make={make}
+      onMake={setMake}
+      bodyStyle={bodyStyle}
+      onBodyStyle={setBodyStyle}
+      province={province}
+      onProvince={setProvince}
+      conditionMin={conditionMin}
+      onConditionMin={setConditionMin}
+      makeOptions={facets.makes}
+      bodyStyleOptions={facets.bodyStyles}
+      provinceOptions={facets.provinces}
+      yearBounds={bounds.year}
+      yearRange={yearRange}
+      onYearRange={setYearRange}
+      odoBounds={bounds.odo}
+      odoRange={odoRange}
+      onOdoRange={setOdoRange}
+      priceBounds={bounds.price}
+      priceRange={priceRange}
+      onPriceRange={setPriceRange}
+      hasActiveFilters={chips.length > 0}
+      onClearAll={reset}
+    />
+  );
+
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6">
       <div>
@@ -283,36 +309,9 @@ export function SearchView({
       <AuctionTabs value={tab} onChange={setTab} counts={counts} />
 
       <div className="lg:grid lg:grid-cols-[16rem_1fr] lg:gap-6">
-        <aside
-          className={cn(
-            "mb-4 lg:mb-0 lg:block lg:self-start lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto",
-            showFilters ? "block" : "hidden",
-          )}
-        >
-          <FilterPanel
-            make={make}
-            onMake={setMake}
-            bodyStyle={bodyStyle}
-            onBodyStyle={setBodyStyle}
-            province={province}
-            onProvince={setProvince}
-            conditionMin={conditionMin}
-            onConditionMin={setConditionMin}
-            makeOptions={facets.makes}
-            bodyStyleOptions={facets.bodyStyles}
-            provinceOptions={facets.provinces}
-            yearBounds={bounds.year}
-            yearRange={yearRange}
-            onYearRange={setYearRange}
-            odoBounds={bounds.odo}
-            odoRange={odoRange}
-            onOdoRange={setOdoRange}
-            priceBounds={bounds.price}
-            priceRange={priceRange}
-            onPriceRange={setPriceRange}
-            hasActiveFilters={chips.length > 0}
-            onClearAll={reset}
-          />
+        {/* Desktop: sticky left rail */}
+        <aside className="hidden lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
+          {filterPanel}
         </aside>
 
         <div className="flex flex-col gap-4">
@@ -327,6 +326,8 @@ export function SearchView({
             onToggleFilters={() => setShowFilters((s) => !s)}
             loading={aiLoading}
           />
+          {/* Mobile/tablet: panel opens inline, right below the Filters button */}
+          {showFilters && <div className="lg:hidden">{filterPanel}</div>}
           {chips.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               <FilterChips chips={chips} onClearAll={reset} />
