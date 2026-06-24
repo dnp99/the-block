@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { AuctionTabs, type AuctionTab } from "@/components/search/AuctionTabs";
 import { FilterBar } from "@/components/search/FilterBar";
+import { FilterChips, type Chip } from "@/components/search/FilterChips";
 import { VehicleList } from "@/components/search/VehicleList";
+import { Button } from "@/components/ui/Button";
 import { auctionState, type AuctionState } from "@/lib/auction";
 import type { SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
@@ -14,8 +16,47 @@ export interface PhasedVehicle {
   state: AuctionState;
 }
 
+const PAGE = 24;
+
 function uniqueSorted<T>(values: T[]): T[] {
   return [...new Set(values)].sort((a, b) => String(a).localeCompare(String(b)));
+}
+
+const money = (s: string) => `$${Number(s).toLocaleString("en-CA")}`;
+
+/**
+ * Owns pagination state. Remounted (resetting to PAGE) via a `key` when filters
+ * change — avoids a reset-in-effect while preserving the count across clock ticks.
+ */
+function PaginatedResults({
+  items,
+  nowMs,
+}: {
+  items: PhasedVehicle[];
+  nowMs: number;
+}) {
+  const [visibleCount, setVisibleCount] = useState(PAGE);
+  const visible = items.slice(0, visibleCount);
+
+  return (
+    <>
+      <VehicleList items={visible} nowMs={nowMs} />
+      {visibleCount < items.length && (
+        <div className="flex flex-col items-center gap-2 pt-1">
+          <p className="text-xs text-ink-subtle">
+            Showing {visible.length} of {items.length}
+          </p>
+          <Button
+            variant="secondary"
+            onClick={() => setVisibleCount((c) => c + PAGE)}
+            className="w-auto"
+          >
+            Load more
+          </Button>
+        </div>
+      )}
+    </>
+  );
 }
 
 export function SearchView({
@@ -25,8 +66,6 @@ export function SearchView({
   vehicles: Vehicle[];
   anchorMs: number;
 }) {
-  // `anchorMs` (from the server) fixes the auction schedule; `now` ticks so
-  // phases and countdowns advance live. Both start equal → no hydration drift.
   const [now, setNow] = useState(anchorMs);
   const [tab, setTab] = useState<AuctionTab>("all");
   const [query, setQuery] = useState("");
@@ -34,7 +73,9 @@ export function SearchView({
   const [bodyStyle, setBodyStyle] = useState("");
   const [province, setProvince] = useState("");
   const [conditionMin, setConditionMin] = useState("");
-  const [sort, setSort] = useState<SortKey>("bids");
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [sort, setSort] = useState<SortKey>("ending");
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -56,7 +97,6 @@ export function SearchView({
     return m;
   }, [vehicles, anchorMs, now]);
 
-  // Search/sort first (independent of the tab), so tab counts reflect filters.
   const searchSorted = useMemo(() => {
     const keywords = query.trim() ? query.trim().split(/\s+/) : undefined;
     const filters: SearchFilters = {
@@ -65,9 +105,11 @@ export function SearchView({
       body_style: (bodyStyle || undefined) as BodyStyle | undefined,
       province: province || undefined,
       condition_min: conditionMin ? Number(conditionMin) : undefined,
+      price_min: priceMin ? Number(priceMin) : undefined,
+      price_max: priceMax ? Number(priceMax) : undefined,
     };
     return sortVehicles(applyFilters(vehicles, filters), sort);
-  }, [vehicles, query, make, bodyStyle, province, conditionMin, sort]);
+  }, [vehicles, query, make, bodyStyle, province, conditionMin, priceMin, priceMax, sort]);
 
   const counts = useMemo(() => {
     const c: Record<AuctionTab, number> = { all: 0, live: 0, upcoming: 0, ended: 0 };
@@ -86,17 +128,46 @@ export function SearchView({
     [searchSorted, stateById, tab],
   );
 
-  const hasActiveFilters = Boolean(
-    query || make || bodyStyle || province || conditionMin,
-  );
-
   const reset = () => {
     setQuery("");
     setMake("");
     setBodyStyle("");
     setProvince("");
     setConditionMin("");
+    setPriceMin("");
+    setPriceMax("");
   };
+
+  const chips: Chip[] = [];
+  if (query) chips.push({ key: "q", label: `“${query}”`, onRemove: () => setQuery("") });
+  if (make) chips.push({ key: "make", label: make, onRemove: () => setMake("") });
+  if (bodyStyle)
+    chips.push({ key: "body", label: bodyStyle, onRemove: () => setBodyStyle("") });
+  if (province)
+    chips.push({ key: "prov", label: province, onRemove: () => setProvince("") });
+  if (conditionMin)
+    chips.push({
+      key: "cond",
+      label: `Condition ${conditionMin}+`,
+      onRemove: () => setConditionMin(""),
+    });
+  if (priceMin)
+    chips.push({ key: "pmin", label: `Min ${money(priceMin)}`, onRemove: () => setPriceMin("") });
+  if (priceMax)
+    chips.push({ key: "pmax", label: `Max ${money(priceMax)}`, onRemove: () => setPriceMax("") });
+
+  // Changing any filter/tab/sort remounts PaginatedResults → pagination resets.
+  const filterKey = [
+    tab,
+    sort,
+    query,
+    make,
+    bodyStyle,
+    province,
+    conditionMin,
+    priceMin,
+    priceMax,
+  ].join("|");
 
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6">
@@ -109,31 +180,35 @@ export function SearchView({
         </p>
       </div>
 
-      <AuctionTabs value={tab} onChange={setTab} counts={counts} />
+      <div className="sticky top-14 z-20 -mx-4 flex flex-col gap-3 border-b border-line bg-canvas/95 px-4 pb-3 pt-2 backdrop-blur sm:-mx-6 sm:px-6">
+        <AuctionTabs value={tab} onChange={setTab} counts={counts} />
+        <FilterBar
+          query={query}
+          onQuery={setQuery}
+          make={make}
+          onMake={setMake}
+          bodyStyle={bodyStyle}
+          onBodyStyle={setBodyStyle}
+          province={province}
+          onProvince={setProvince}
+          conditionMin={conditionMin}
+          onConditionMin={setConditionMin}
+          priceMin={priceMin}
+          onPriceMin={setPriceMin}
+          priceMax={priceMax}
+          onPriceMax={setPriceMax}
+          sort={sort}
+          onSort={setSort}
+          makeOptions={facets.makes}
+          bodyStyleOptions={facets.bodyStyles}
+          provinceOptions={facets.provinces}
+          resultCount={results.length}
+          totalCount={vehicles.length}
+        />
+        <FilterChips chips={chips} onClearAll={reset} />
+      </div>
 
-      <FilterBar
-        query={query}
-        onQuery={setQuery}
-        make={make}
-        onMake={setMake}
-        bodyStyle={bodyStyle}
-        onBodyStyle={setBodyStyle}
-        province={province}
-        onProvince={setProvince}
-        conditionMin={conditionMin}
-        onConditionMin={setConditionMin}
-        sort={sort}
-        onSort={setSort}
-        makeOptions={facets.makes}
-        bodyStyleOptions={facets.bodyStyles}
-        provinceOptions={facets.provinces}
-        resultCount={results.length}
-        totalCount={vehicles.length}
-        hasActiveFilters={hasActiveFilters}
-        onReset={reset}
-      />
-
-      <VehicleList items={results} nowMs={now} />
+      <PaginatedResults key={filterKey} items={results} nowMs={now} />
     </section>
   );
 }

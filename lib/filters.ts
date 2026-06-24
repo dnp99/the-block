@@ -7,8 +7,8 @@ import type { SearchFilters } from "@/lib/contracts/search";
 import { effectivePrice } from "@/lib/format";
 
 export const SORT_OPTIONS = [
-  { key: "bids", label: "Most bids" },
   { key: "ending", label: "Ending soonest" },
+  { key: "bids", label: "Most bids" },
   { key: "price-asc", label: "Price: low to high" },
   { key: "price-desc", label: "Price: high to low" },
   { key: "odometer", label: "Lowest km" },
@@ -46,6 +46,7 @@ export function applyFilters(vehicles: Vehicle[], f: SearchFilters): Vehicle[] {
     if (f.fuel_type && v.fuel_type !== f.fuel_type) return false;
     if (f.title_status && v.title_status !== f.title_status) return false;
     if (f.odometer_max != null && v.odometer_km > f.odometer_max) return false;
+    if (f.price_min != null && effectivePrice(v) < f.price_min) return false;
     if (f.price_max != null && effectivePrice(v) > f.price_max) return false;
     if (f.year_min != null && v.year < f.year_min) return false;
     if (f.condition_min != null && v.condition_grade < f.condition_min) return false;

@@ -21,6 +21,7 @@ export interface SearchFilters {
   fuel_type?: FuelType;
   title_status?: TitleStatus;
   odometer_max?: number;
+  price_min?: number;
   price_max?: number;
   year_min?: number;
   condition_min?: number;

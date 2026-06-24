@@ -2,7 +2,12 @@ import Link from "next/link";
 import { Pill } from "@/components/ui/Pill";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { VinCopy } from "@/components/vehicle/VinCopy";
-import { conditionPill, titlePill } from "@/components/vehicle/vehiclePills";
+import {
+  conditionPill,
+  damagePill,
+  reservePill,
+  titlePill,
+} from "@/components/vehicle/vehiclePills";
 import { auctionCountdownLabel, type AuctionPhase, type AuctionState } from "@/lib/auction";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
@@ -32,8 +37,11 @@ export function VehicleRow({
 }) {
   const condition = conditionPill(v.condition_grade);
   const title = titlePill(v.title_status);
+  const damage = damagePill(v);
+  const reserve = reservePill(v);
   const hasBids = v.current_bid !== null;
   const badge = PHASE_BADGE[state.phase];
+  const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
 
   return (
     // Stretched-link pattern: the row is a div; an absolute Link overlay makes the
@@ -84,6 +92,11 @@ export function VehicleRow({
                 ? `${v.bid_count} ${v.bid_count === 1 ? "bid" : "bids"}`
                 : "No bids yet"}
             </p>
+            {v.buy_now_price !== null && (
+              <p className="mt-0.5 text-xs font-medium text-primary-600">
+                Buy now {formatCurrency(v.buy_now_price)}
+              </p>
+            )}
           </div>
         </div>
 
@@ -99,13 +112,20 @@ export function VehicleRow({
           {v.title_status !== "clean" && (
             <Pill tone={title.tone}>{title.label}</Pill>
           )}
+          <Pill tone={damage.tone}>{damage.label}</Pill>
+          <Pill tone={reserve.tone}>{reserve.label}</Pill>
           <span
             className={cn(
               "text-xs tabular-nums",
-              state.phase === "live" ? "font-medium text-success" : "text-ink-subtle",
+              urgent
+                ? "font-semibold text-error"
+                : state.phase === "live"
+                  ? "font-medium text-success"
+                  : "text-ink-subtle",
             )}
           >
             {auctionCountdownLabel(state, nowMs)}
+            {urgent && " · Ending soon"}
           </span>
         </div>
 
@@ -119,9 +139,16 @@ export function VehicleRow({
               {formatCurrency(effectivePrice(v))}
             </span>
           </div>
-          <span className="text-xs text-ink-subtle">
-            {hasBids ? `${v.bid_count} bids` : "No bids yet"}
-          </span>
+          <div className="text-right">
+            <span className="text-xs text-ink-subtle">
+              {hasBids ? `${v.bid_count} bids` : "No bids yet"}
+            </span>
+            {v.buy_now_price !== null && (
+              <p className="text-xs font-medium text-primary-600">
+                Buy now {formatCurrency(v.buy_now_price)}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

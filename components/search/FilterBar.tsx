@@ -3,7 +3,7 @@
 import { cn } from "@/lib/cn";
 import { SORT_OPTIONS, type SortKey } from "@/lib/filters";
 
-const selectClass =
+const controlClass =
   "rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30";
 
 function Select({
@@ -26,7 +26,7 @@ function Select({
         aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(selectClass, "capitalize")}
+        className={cn(controlClass, "capitalize")}
       >
         <option value="">{allLabel}</option>
         {options.map((o) => (
@@ -50,6 +50,10 @@ export interface FilterBarProps {
   onProvince: (v: string) => void;
   conditionMin: string;
   onConditionMin: (v: string) => void;
+  priceMin: string;
+  onPriceMin: (v: string) => void;
+  priceMax: string;
+  onPriceMax: (v: string) => void;
   sort: SortKey;
   onSort: (v: SortKey) => void;
   makeOptions: string[];
@@ -57,21 +61,41 @@ export interface FilterBarProps {
   provinceOptions: string[];
   resultCount: number;
   totalCount: number;
-  hasActiveFilters: boolean;
-  onReset: () => void;
 }
 
 export function FilterBar(props: FilterBarProps) {
   return (
     <div className="flex flex-col gap-3">
-      <input
-        type="search"
-        value={props.query}
-        onChange={(e) => props.onQuery(e.target.value)}
-        placeholder="Search make, model, dealership…"
-        aria-label="Search inventory"
-        className="w-full rounded-2xl border border-line bg-surface px-4 py-2.5 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30"
-      />
+      <div className="relative">
+        <input
+          type="search"
+          value={props.query}
+          onChange={(e) => props.onQuery(e.target.value)}
+          placeholder="Search make, model, dealership…"
+          aria-label="Search inventory"
+          className="w-full rounded-2xl border border-line bg-surface px-4 py-2.5 pr-10 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 [&::-webkit-search-cancel-button]:hidden"
+        />
+        {props.query && (
+          <button
+            type="button"
+            onClick={() => props.onQuery("")}
+            aria-label="Clear search"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-0.5 text-ink-subtle transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+          >
+            <svg
+              aria-hidden
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
 
       <div className="flex flex-wrap items-center gap-2">
         <Select
@@ -101,7 +125,7 @@ export function FilterBar(props: FilterBarProps) {
             aria-label="Minimum condition"
             value={props.conditionMin}
             onChange={(e) => props.onConditionMin(e.target.value)}
-            className={selectClass}
+            className={controlClass}
           >
             <option value="">Any condition</option>
             <option value="4">Condition 4+</option>
@@ -109,13 +133,41 @@ export function FilterBar(props: FilterBarProps) {
             <option value="2">Condition 2+</option>
           </select>
         </label>
+
+        <div className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-2.5 py-1.5">
+          <span className="text-xs text-ink-subtle">$</span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={props.priceMin}
+            onChange={(e) => props.onPriceMin(e.target.value)}
+            placeholder="Min"
+            aria-label="Minimum price"
+            className="w-16 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+          />
+          <span aria-hidden className="text-ink-subtle">
+            –
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={props.priceMax}
+            onChange={(e) => props.onPriceMax(e.target.value)}
+            placeholder="Max"
+            aria-label="Maximum price"
+            className="w-16 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+
         <label className="flex flex-col gap-1">
           <span className="sr-only">Sort by</span>
           <select
             aria-label="Sort by"
             value={props.sort}
             onChange={(e) => props.onSort(e.target.value as SortKey)}
-            className={selectClass}
+            className={controlClass}
           >
             {SORT_OPTIONS.map((s) => (
               <option key={s.key} value={s.key}>
@@ -124,16 +176,6 @@ export function FilterBar(props: FilterBarProps) {
             ))}
           </select>
         </label>
-
-        {props.hasActiveFilters && (
-          <button
-            type="button"
-            onClick={props.onReset}
-            className="rounded-xl px-3 py-2 text-sm font-medium text-primary-600 transition hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:bg-primary-900/30"
-          >
-            Reset
-          </button>
-        )}
 
         <p className="ml-auto text-sm text-ink-muted">
           <span className="font-semibold text-ink">{props.resultCount}</span> of{" "}

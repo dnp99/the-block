@@ -4,7 +4,7 @@
 */
 import type { PillTone } from "@/components/ui/Pill";
 import type { TitleStatus, Vehicle } from "@/lib/contracts/vehicle";
-import { formatGrade } from "@/lib/format";
+import { effectivePrice, formatGrade } from "@/lib/format";
 
 export function conditionPill(grade: Vehicle["condition_grade"]): {
   tone: PillTone;
@@ -22,4 +22,20 @@ const TITLE_TONE: Record<TitleStatus, PillTone> = {
 
 export function titlePill(status: TitleStatus): { tone: PillTone; label: string } {
   return { tone: TITLE_TONE[status], label: `${status} title` };
+}
+
+/** Whether the current/starting price has cleared the (hidden) reserve. */
+export function reservePill(v: Vehicle): { met: boolean; tone: PillTone; label: string } {
+  const met = effectivePrice(v) >= v.reserve_price;
+  return met
+    ? { met, tone: "green", label: "Reserve met" }
+    : { met, tone: "amber", label: "Reserve not met" };
+}
+
+/** Damage disclosures summary — green when clean, amber with a count otherwise. */
+export function damagePill(v: Vehicle): { tone: PillTone; label: string } {
+  const n = v.damage_notes.length;
+  return n === 0
+    ? { tone: "green", label: "No damage" }
+    : { tone: "amber", label: `${n} disclosure${n > 1 ? "s" : ""}` };
 }

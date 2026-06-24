@@ -58,6 +58,11 @@ describe("applyFilters", () => {
     expect(r.map((v) => v.id)).toEqual(["a"]);
   });
 
+  it("applies a price range (price_min..price_max) on effective price", () => {
+    expect(applyFilters(fleet, { price_min: 18000 }).map((v) => v.id).sort()).toEqual(["a", "b"]);
+    expect(applyFilters(fleet, { price_min: 16000, price_max: 25000 }).map((v) => v.id)).toEqual(["a"]);
+  });
+
   it("matches all keywords (AND across fields)", () => {
     expect(applyFilters(fleet, { keywords: ["ford", "truck"] }).map((v) => v.id)).toEqual(["c"]);
     expect(applyFilters(fleet, { keywords: ["tesla", "truck"] })).toHaveLength(0);
