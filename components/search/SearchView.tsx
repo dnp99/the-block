@@ -16,6 +16,7 @@ export function SearchView({ vehicles }: { vehicles: Vehicle[] }) {
   const [make, setMake] = useState("");
   const [bodyStyle, setBodyStyle] = useState("");
   const [province, setProvince] = useState("");
+  const [conditionMin, setConditionMin] = useState("");
   const [sort, setSort] = useState<SortKey>("bids");
 
   const facets = useMemo(
@@ -34,17 +35,21 @@ export function SearchView({ vehicles }: { vehicles: Vehicle[] }) {
       make: make || undefined,
       body_style: (bodyStyle || undefined) as BodyStyle | undefined,
       province: province || undefined,
+      condition_min: conditionMin ? Number(conditionMin) : undefined,
     };
     return sortVehicles(applyFilters(vehicles, filters), sort);
-  }, [vehicles, query, make, bodyStyle, province, sort]);
+  }, [vehicles, query, make, bodyStyle, province, conditionMin, sort]);
 
-  const hasActiveFilters = Boolean(query || make || bodyStyle || province);
+  const hasActiveFilters = Boolean(
+    query || make || bodyStyle || province || conditionMin,
+  );
 
   const reset = () => {
     setQuery("");
     setMake("");
     setBodyStyle("");
     setProvince("");
+    setConditionMin("");
   };
 
   return (
@@ -67,6 +72,8 @@ export function SearchView({ vehicles }: { vehicles: Vehicle[] }) {
         onBodyStyle={setBodyStyle}
         province={province}
         onProvince={setProvince}
+        conditionMin={conditionMin}
+        onConditionMin={setConditionMin}
         sort={sort}
         onSort={setSort}
         makeOptions={facets.makes}

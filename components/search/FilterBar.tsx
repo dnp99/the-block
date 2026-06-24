@@ -48,6 +48,8 @@ export interface FilterBarProps {
   onBodyStyle: (v: string) => void;
   province: string;
   onProvince: (v: string) => void;
+  conditionMin: string;
+  onConditionMin: (v: string) => void;
   sort: SortKey;
   onSort: (v: SortKey) => void;
   makeOptions: string[];
@@ -93,6 +95,20 @@ export function FilterBar(props: FilterBarProps) {
           options={props.provinceOptions}
           allLabel="All provinces"
         />
+        <label className="flex flex-col gap-1">
+          <span className="sr-only">Minimum condition</span>
+          <select
+            aria-label="Minimum condition"
+            value={props.conditionMin}
+            onChange={(e) => props.onConditionMin(e.target.value)}
+            className={selectClass}
+          >
+            <option value="">Any condition</option>
+            <option value="4">Condition 4+</option>
+            <option value="3">Condition 3+</option>
+            <option value="2">Condition 2+</option>
+          </select>
+        </label>
         <label className="flex flex-col gap-1">
           <span className="sr-only">Sort by</span>
           <select
