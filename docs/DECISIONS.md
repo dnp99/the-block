@@ -68,4 +68,29 @@ a window around now:
 **Alternatives rejected.** Use the raw timestamps (everything shows as ended); random assignment
 (non-deterministic — breaks SSR/hydration and is unstable across renders).
 
+## Design & UX decisions (high level)
+
+Captured concisely; see `git log` for the change-by-change detail.
+
+- **Branding:** App presented as **Openlane** (the marketplace) in the header and page metadata.
+- **Theme:** **Light is the default** look (matches the OPENLANE marketplace); dark mode is opt-in
+  via the toggle, not driven by the OS setting.
+- **Inventory layout:** **List rows**, not a card grid — fits more per row (VIN, specs, badges) and
+  mirrors OPENLANE.
+- **Filters:** **Left filter rail** with dual-thumb **range sliders** (Year, Odometer, Price) plus
+  selects; supersedes the earlier top filter bar. Used Radix Slider for accessible keyboard/ARIA
+  behavior (deliberate build-vs-buy).
+- **Auction status:** Kept as **top tabs** (All / Live / Upcoming / Ended), not a left menu — status
+  is a slice of one view, so tabs read better and keep rows full-width.
+- **Browse UX:** Active **filter chips** (per-filter remove), **trust badges** on rows (reserve
+  met/not-met with the reserve price hidden, disclosures / "No damage", Buy-now price), default sort
+  **"Ending soonest"**, live countdown that turns red **"Ending soon"** under 2 min, **Load-more**
+  pagination, sticky filters, and a clearable search.
+- **VIN copy:** Click-to-copy VIN using a **stretched-link** row pattern, so copying doesn't trigger
+  navigation.
+- **Placeholder images:** `placehold.co` serves SVG (Next's optimizer rejects it), so images render
+  **unoptimized** with a branded fallback tile — no broken images.
+- **Runtime:** Home route is `force-dynamic` (request-time auction anchor); the Next dev-tools
+  indicator is hidden.
+
 <!-- Append new decisions below this line -->
