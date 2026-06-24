@@ -12,19 +12,47 @@ export function VehicleGallery({
   alt: string;
 }) {
   const [active, setActive] = useState(0);
-  const safeActive = Math.min(active, Math.max(0, images.length - 1));
+  const count = images.length;
+  const safeActive = Math.min(active, Math.max(0, count - 1));
+  const go = (delta: number) => setActive((i) => (i + delta + count) % count);
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line bg-neutral-100 dark:bg-neutral-800 sm:aspect-video">
+      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line bg-neutral-100 dark:bg-neutral-800 sm:aspect-video">
         <VehicleImage
           src={images[safeActive]}
           alt={`${alt} — photo ${safeActive + 1}`}
           sizes="(max-width: 1024px) 100vw, 60vw"
         />
-        {images.length > 0 && (
+
+        {count > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => go(-1)}
+              aria-label="Previous photo"
+              className="absolute left-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-ink shadow-sm backdrop-blur transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
+              <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => go(1)}
+              aria-label="Next photo"
+              className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-surface/90 text-ink shadow-sm backdrop-blur transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
+              <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </button>
+          </>
+        )}
+
+        {count > 0 && (
           <span className="absolute bottom-2 right-2 rounded-full bg-neutral-900/70 px-2 py-0.5 text-xs font-medium text-white">
-            {safeActive + 1} / {images.length}
+            {safeActive + 1} / {count}
           </span>
         )}
       </div>
