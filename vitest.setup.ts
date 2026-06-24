@@ -1,5 +1,14 @@
 import "@testing-library/jest-dom/vitest";
 
+// jsdom lacks ResizeObserver, which Radix Slider (RangeSlider) needs.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  globalThis.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 // jsdom doesn't implement <dialog>.showModal/close — minimal polyfill so the
 // Modal (and bid-history) components can be tested.
 if (typeof HTMLDialogElement !== "undefined") {
