@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AuctionTabs, type AuctionTab } from "@/components/search/AuctionTabs";
 import { FilterChips, type Chip } from "@/components/search/FilterChips";
 import { FilterPanel } from "@/components/search/FilterPanel";
+import { ResultsSkeleton } from "@/components/search/ResultsSkeleton";
 import { Toolbar } from "@/components/search/Toolbar";
 import { VehicleList } from "@/components/search/VehicleList";
 import { Button } from "@/components/ui/Button";
@@ -163,12 +164,13 @@ export function SearchView({
   // keyword matching while the AI call is in flight. Derived (not stored) to keep
   // state changes out of the effect body.
   const trimmedQuery = query.trim();
-  const aiFilters = useMemo<SearchFilters>(() => {
-    if (trimmedQuery.length < 3) return {};
-    if (aiResult?.query === trimmedQuery) return aiResult.filters;
-    return { keywords: trimmedQuery.split(/\s+/) };
-  }, [trimmedQuery, aiResult]);
   const aiLoading = trimmedQuery.length >= 3 && aiResult?.query !== trimmedQuery;
+  const aiFilters = useMemo<SearchFilters>(() => {
+    // While the AI parses (loading), don't pre-filter — we show skeletons instead
+    // of a misleading empty state. Only apply once the result for this query lands.
+    if (aiResult?.query === trimmedQuery) return aiResult.filters;
+    return {};
+  }, [trimmedQuery, aiResult]);
 
   const stateById = useMemo(() => {
     const m = new Map<string, AuctionState>();
@@ -325,7 +327,11 @@ export function SearchView({
             loading={aiLoading}
           />
           <FilterChips chips={chips} onClearAll={reset} />
-          <PaginatedResults key={filterKey} items={results} nowMs={now} />
+          {aiLoading ? (
+            <ResultsSkeleton />
+          ) : (
+            <PaginatedResults key={filterKey} items={results} nowMs={now} />
+          )}
         </div>
       </div>
     </section>
