@@ -1,6 +1,4 @@
 import { Skeleton } from "@/components/shared/Skeleton";
-
-/** Loading placeholder for the results list (shown while AI search is in flight). */
 export function ResultsSkeleton({ rows = 6 }: { rows?: number }) {
   return (
     <div className="flex flex-col gap-3">

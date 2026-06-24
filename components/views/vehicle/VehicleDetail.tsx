@@ -17,10 +17,10 @@ import { vehicleLocation, vehicleTitle } from "@/lib/format";
 
 export function VehicleDetail({
   vehicle: v,
-  anchorMs,
+  auctionNowMs,
 }: {
   vehicle: Vehicle;
-  anchorMs: number;
+  auctionNowMs: number;
 }) {
   const condition = conditionPill(v.condition_grade);
   const title = titlePill(v.title_status);
@@ -66,7 +66,7 @@ export function VehicleDetail({
         </div>
 
         <aside className="hidden lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-20 lg:block">
-          <AuctionPanel vehicle={v} anchorMs={anchorMs} />
+          <AuctionPanel vehicle={v} auctionNowMs={auctionNowMs} />
         </aside>
 
         <div className="flex flex-col gap-5 lg:col-start-1 lg:row-start-2">
@@ -76,7 +76,7 @@ export function VehicleDetail({
         </div>
       </div>
 
-      <BidBar vehicle={v} anchorMs={anchorMs} />
+      <BidBar vehicle={v} auctionNowMs={auctionNowMs} />
     </div>
   );
 }

@@ -1,9 +1,3 @@
-/*
-  SearchFilters — the structured shape used by both the manual filter bar and
-  (later) the AI natural-language search endpoint. Keeping one shape means the
-  same applyFilters() logic serves both. The runtime parser for untrusted AI
-  output (parseSearchFilters) is added in the AI-search slice.
-*/
 import {
   BODY_STYLES,
   DRIVETRAINS,
@@ -16,7 +10,6 @@ import {
 } from "./vehicle";
 
 export interface SearchFilters {
-  /** Free-text tokens matched (AND) against make/model/trim/dealership/body. */
   keywords?: string[];
   make?: string;
   body_style?: BodyStyle;
@@ -32,8 +25,6 @@ export interface SearchFilters {
   year_max?: number;
   condition_min?: number;
 }
-
-/** True when no usable filter is set (drives the "show all" path). */
 export function isEmptyFilters(f: SearchFilters): boolean {
   return Object.values(f).every(
     (v) => v === undefined || (Array.isArray(v) && v.length === 0),
@@ -47,12 +38,6 @@ function posNumber(v: unknown): number | undefined {
   const n = typeof v === "string" ? Number(v) : v;
   return typeof n === "number" && Number.isFinite(n) && n > 0 ? n : undefined;
 }
-
-/**
- * Validate untrusted JSON (a Claude tool/structured response) into SearchFilters.
- * Unknown or malformed fields are dropped, never thrown — a bad AI response
- * degrades to a looser filter rather than crashing the UI.
- */
 export function parseSearchFilters(input: unknown): SearchFilters {
   if (typeof input !== "object" || input === null) return {};
   const o = input as Record<string, unknown>;

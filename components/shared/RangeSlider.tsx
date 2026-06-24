@@ -1,11 +1,6 @@
 "use client";
 
 import * as Slider from "@radix-ui/react-slider";
-
-/*
-  Accessible dual-thumb range slider (keyboard + ARIA via Radix). Controlled:
-  pass the data bounds [min, max] and the current [lo, hi] value.
-*/
 export function RangeSlider({
   label,
   min,

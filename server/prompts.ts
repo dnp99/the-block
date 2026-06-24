@@ -1,8 +1,3 @@
-/*
-  Claude prompts + tool definitions. Centralized and commented so the AI's
-  contract is reviewable. The search endpoint forces a tool call so Claude
-  returns structured filters (not prose), which we then validate.
-*/
 import type { Anthropic } from "@anthropic-ai/sdk";
 import {
   BODY_STYLES,
@@ -62,9 +57,6 @@ export const SEARCH_TOOL: Anthropic.Tool = {
     },
   },
 };
-
-/* ── Condition summary ──────────────────────────────────────────────────── */
-
 export const CONDITION_SUMMARY_SYSTEM = `You help a used-vehicle auction buyer quickly judge a vehicle's condition. Given the inspection grade (1-5), the inspector's report, listed damage, and the title status, write a balanced 2-3 sentence plain-English summary to help them decide whether to bid.
 
 Rules:

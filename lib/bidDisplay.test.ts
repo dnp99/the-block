@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { bidDisplay } from "@/lib/bidDisplay";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 
-// Minimal fixture — bidDisplay only reads the bid-related fields.
 const v = (over: Partial<Vehicle> = {}): Vehicle =>
   ({
     starting_bid: 10000,

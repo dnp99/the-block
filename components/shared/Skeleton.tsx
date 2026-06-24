@@ -1,6 +1,4 @@
 import { cn } from "@/lib/cn";
-
-/** The standard loading indicator — never spinners. Pulses via globals.css keyframe. */
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div

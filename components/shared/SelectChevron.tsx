@@ -1,8 +1,3 @@
-/*
-  Custom dropdown chevron for native <select>s (which use `appearance-none` to
-  drop the inconsistent OS arrow). The select's wrapper must be `relative`, and
-  the select needs right padding (`pr-9`) to clear this icon.
-*/
 export function SelectChevron() {
   return (
     <svg

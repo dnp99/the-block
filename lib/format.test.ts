@@ -9,8 +9,6 @@ import {
   vehicleTitle,
 } from "@/lib/format";
 
-// fr-CA uses non-breaking / narrow-no-break spaces (U+00A0 / U+202F) as group
-// and pre-symbol separators; normalize them so assertions are ICU-version-stable.
 const norm = (s: string) => s.replace(/\s/g, " ");
 
 describe("formatCurrency", () => {

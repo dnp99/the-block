@@ -1,7 +1,5 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
-
-/** Color carries meaning: blue=info/selection, green=good, amber=warning, red=problem. */
 export type PillTone = "neutral" | "blue" | "green" | "amber" | "red";
 
 const tones: Record<PillTone, string> = {
@@ -15,7 +13,6 @@ const tones: Record<PillTone, string> = {
   red: "bg-error-soft text-error dark:bg-error/20 dark:text-error-soft",
 };
 
-// Bordered chips on a white surface (OPENLANE-style inventory rows).
 const outlineTones: Record<PillTone, string> = {
   neutral: "border-line text-ink-muted",
   blue: "border-primary-300 text-primary-700 dark:border-primary-800 dark:text-primary-300",

@@ -6,12 +6,6 @@ import { vehicleTitle } from "@/lib/format";
 import { useFormat } from "@/hooks/useFormat";
 
 type TitleInput = Pick<Vehicle, "year" | "make" | "model">;
-
-/*
-  Localized toast / inline-error copy. Replaces the old static lib/toasts.ts so
-  the browse list and the VDP say the same thing in the active language, with the
-  amount formatted for the locale and the vehicle named.
-*/
 export function useToastMessages() {
   const t = useTranslations("toasts");
   const fmt = useFormat();

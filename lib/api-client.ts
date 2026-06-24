@@ -1,7 +1,3 @@
-/*
-  Tiny typed fetch wrapper for our own /api routes. Extracts a clean error
-  message (so callers can surface it in a toast) and never leaks raw responses.
-*/
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
@@ -16,7 +12,6 @@ async function extractError(res: Response): Promise<string> {
     const data = await res.json();
     if (data && typeof data.error === "string") return data.error;
   } catch {
-    // fall through
   }
   return `Request failed (${res.status})`;
 }

@@ -2,11 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { countdownParts, type AuctionState } from "@/lib/auction";
-
-/*
-  i18n countdown label, e.g. "Ends in 12m 4s" / "Se termine dans 12 min 4 s".
-  Time math stays pure in countdownParts; this hook only does the wording.
-*/
 export function useCountdownLabel() {
   const t = useTranslations("auction");
   return (state: AuctionState, nowMs: number): string => {
@@ -20,11 +15,6 @@ export function useCountdownLabel() {
     return p.phase === "live" ? t("endsIn", { value }) : t("startsIn", { value });
   };
 }
-
-/*
-  Compact countdown for the thumbnail badge, single largest unit:
-  live → "2h left", upcoming → "Starts in 2h", ended → "Auction over".
-*/
 export function useCountdownBadge() {
   const t = useTranslations("auction");
   return (state: AuctionState, nowMs: number): string => {

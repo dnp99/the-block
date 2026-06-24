@@ -14,7 +14,7 @@ afterEach(() => {
 
 describe("LanguageToggle", () => {
   it("switching to French persists the cookie and refreshes", async () => {
-    renderWithIntl(<LanguageToggle />); // active locale = en
+    renderWithIntl(<LanguageToggle />);
     fireEvent.click(screen.getByRole("button", { name: "FR" }));
     expect(document.cookie).toContain("tb-locale=fr");
     await waitFor(() => expect(refresh).toHaveBeenCalled());

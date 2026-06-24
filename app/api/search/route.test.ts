@@ -1,4 +1,4 @@
-// @vitest-environment node
+
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/server/rateLimit", () => ({ rateLimit: vi.fn(() => true) }));

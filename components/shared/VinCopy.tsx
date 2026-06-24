@@ -2,12 +2,6 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-
-/*
-  Click-to-copy VIN. Used inside row/card links, so it stops propagation and
-  prevents default — clicking the VIN copies it without triggering navigation.
-  Sits above the stretched-link overlay via z-index from the caller.
-*/
 export function VinCopy({ vin, className }: { vin: string; className?: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -19,7 +13,6 @@ export function VinCopy({ vin, className }: { vin: string; className?: string })
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
-      // Clipboard unavailable (insecure context) — no-op.
     }
   }
 

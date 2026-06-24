@@ -20,7 +20,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     if (typeof body?.id === "string") id = body.id;
   } catch {
-    // ignore — handled below
   }
 
   const vehicle = getVehicleById(id);

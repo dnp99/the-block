@@ -1,9 +1,3 @@
-/*
-  Bid persistence shape. Bids are client-only (localStorage) — there is no
-  server. A BidOverride records the buyer's latest local bid for a vehicle,
-  layered over the dataset's original current_bid / bid_count.
-*/
-
 export interface BidOverride {
   amount: number;
   count: number;
@@ -22,8 +16,6 @@ function isBidOverride(x: unknown): x is BidOverride {
     typeof o.at === "number"
   );
 }
-
-/** Parse untrusted localStorage JSON into a BidStore, dropping bad entries. */
 export function parseBidStore(raw: string): BidStore {
   let data: unknown;
   try {

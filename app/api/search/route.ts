@@ -17,7 +17,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     if (typeof body?.query === "string") query = body.query;
   } catch {
-    // ignore — handled by the length check below
   }
 
   if (query.trim().length < 3) return NextResponse.json({ filters: {} });

@@ -11,7 +11,7 @@ describe("BidForm", () => {
   it("places a valid bid (defaults to the minimum) and persists it", () => {
     const v = makeVehicle({ id: "x1", current_bid: 16500, bid_count: 5 });
     renderWithIntl(<BidForm vehicle={v} />);
-    // The input defaults to the minimum next bid (current + $100 increment).
+
     fireEvent.click(screen.getByRole("button", { name: "Place bid" }));
     expect(readBids()["x1"]?.amount).toBe(16600);
   });

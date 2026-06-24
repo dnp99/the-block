@@ -1,8 +1,3 @@
-/*
-  Client-side bid persistence. Bids live in localStorage (versioned key,
-  type-guarded on read). A small external store + useSyncExternalStore hook makes
-  reads reactive across the page (and SSR-safe — server snapshot is empty).
-*/
 import { useMemo, useSyncExternalStore } from "react";
 import {
   parseBidStore,
@@ -33,8 +28,6 @@ function writeBids(store: BidStore): void {
   localStorage.setItem(KEY, JSON.stringify(store));
   window.dispatchEvent(new Event(EVENT));
 }
-
-/** Record a bid for a vehicle, incrementing the bid count over its base. */
 export function placeBid(id: string, amount: number, baseCount: number): BidOverride {
   const store = readBids();
   const count = (store[id]?.count ?? baseCount) + 1;
@@ -42,8 +35,6 @@ export function placeBid(id: string, amount: number, baseCount: number): BidOver
   writeBids({ ...store, [id]: override });
   return override;
 }
-
-/** Minimum acceptable next bid: opening = starting bid; otherwise current + increment. */
 export function minimumBid(
   v: Pick<Vehicle, "current_bid" | "starting_bid">,
   override?: BidOverride,
@@ -51,8 +42,6 @@ export function minimumBid(
   const current = override?.amount ?? v.current_bid;
   return current == null ? v.starting_bid : current + BID_INCREMENT;
 }
-
-/** Effective bid state for display, merging any local override over the dataset. */
 export function effectiveBid(v: Vehicle, override?: BidOverride) {
   return {
     amount: override?.amount ?? effectivePrice(v),
@@ -69,8 +58,6 @@ function subscribe(callback: () => void): () => void {
     window.removeEventListener("storage", callback);
   };
 }
-
-/** Reactive map of all bid overrides (re-renders when a bid is placed). */
 export function useBidOverrides(): BidStore {
   const raw = useSyncExternalStore(subscribe, readRaw, () => "{}");
   return useMemo(() => parseBidStore(raw), [raw]);

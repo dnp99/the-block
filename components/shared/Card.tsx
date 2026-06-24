@@ -1,7 +1,5 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
-
-/** Static white surface. Cards are always bg-surface — never gray. */
 export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div

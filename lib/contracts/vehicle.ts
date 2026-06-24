@@ -1,9 +1,3 @@
-/*
-  Vehicle — the shape of one record in data/vehicles.json, plus the closed
-  enum domains observed in the dataset. Used by both client components and
-  API route handlers (the single source of truth for the vehicle shape).
-*/
-
 export const BODY_STYLES = ["SUV", "hatchback", "truck", "sedan", "coupe"] as const;
 export const DRIVETRAINS = ["FWD", "AWD", "4WD", "RWD"] as const;
 export const TRANSMISSIONS = ["automatic", "manual", "CVT", "single-speed"] as const;
@@ -54,7 +48,6 @@ export interface Vehicle {
   images: string[];
   selling_dealership: string;
   lot: string;
-  /** null when the vehicle has no bids yet (bid_count 0). */
   current_bid: number | null;
   bid_count: number;
 }
@@ -62,12 +55,6 @@ export interface Vehicle {
 function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === "string");
 }
-
-/**
- * Runtime guard for a vehicle record. Strict on identity + the fields the UI
- * depends on; lenient where the dataset is free-text. Lets us fail loud if the
- * data file ever drifts from the type.
- */
 export function isVehicle(v: unknown): v is Vehicle {
   if (typeof v !== "object" || v === null) return false;
   const o = v as Record<string, unknown>;

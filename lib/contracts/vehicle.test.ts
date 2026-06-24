@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isVehicle } from "@/lib/contracts/vehicle";
 
-// Minimal record with every field isVehicle inspects.
 const valid: Record<string, unknown> = {
   id: "v1",
   vin: "1HGCM82633A004352",

@@ -1,7 +1,3 @@
-/*
-  Lightweight in-memory per-IP rate limiter for the API routes. Single-instance
-  only (fine for a prototype) — a production deploy would use a shared store.
-*/
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 export function rateLimit(key: string, limit = 20, windowMs = 60_000): boolean {

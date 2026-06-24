@@ -7,7 +7,6 @@ import { useToast } from "@/components/shared/Toaster";
 import { postJson } from "@/lib/api-client";
 import { useToastMessages } from "@/hooks/useToastMessages";
 
-// Module-level cache: avoids re-calling Claude when navigating back to a vehicle.
 const cache = new Map<string, string>();
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -72,7 +71,6 @@ export function ConditionSummary({ id }: { id: string }) {
     );
   }
 
-  // Failed (or empty) — render nothing; the raw condition details still show.
   if (!summary) return null;
 
   return (

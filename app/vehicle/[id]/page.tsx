@@ -4,8 +4,8 @@ import { VehicleDetail } from "@/components/views/vehicle/VehicleDetail";
 import { getVehicleById } from "@/lib/data/vehicles";
 import { vehicleTitle } from "@/lib/format";
 
-// Auction phase/countdown is normalized to "now" → render per request.
 export const dynamic = "force-dynamic";
+const getAuctionNowMs = () => Date.now();
 
 export async function generateMetadata({
   params,
@@ -27,8 +27,6 @@ export default async function VehiclePage({
   const vehicle = getVehicleById(id);
   if (!vehicle) notFound();
 
-  // Request-time anchor (route is force-dynamic).
-  // eslint-disable-next-line react-hooks/purity
-  const anchorMs = Date.now();
-  return <VehicleDetail vehicle={vehicle} anchorMs={anchorMs} />;
+  const auctionNowMs = getAuctionNowMs();
+  return <VehicleDetail vehicle={vehicle} auctionNowMs={auctionNowMs} />;
 }

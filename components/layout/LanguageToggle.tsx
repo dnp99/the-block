@@ -6,12 +6,6 @@ import { useTransition } from "react";
 import { cn } from "@/lib/cn";
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n";
 import { persistLocale } from "@/lib/localeCookie";
-
-/*
-  EN/FR segmented toggle. The locale is resolved server-side from the `tb-locale`
-  cookie (see i18n/request.ts), so switching = write the cookie + refresh the
-  server tree. A transition keeps the UI responsive during the refresh.
-*/
 export function LanguageToggle() {
   const active = useLocale() as Locale;
   const t = useTranslations("languageToggle");
@@ -40,7 +34,7 @@ export function LanguageToggle() {
             aria-pressed={isActive}
             disabled={isPending}
             className={cn(
-              "cursor-pointer rounded-lg px-2 py-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed",
+              "cursor-pointer rounded-xl px-2 py-1 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed",
               isActive ? "bg-primary-600 text-white" : "text-ink-muted hover:text-ink",
             )}
           >

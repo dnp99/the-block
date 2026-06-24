@@ -3,8 +3,6 @@ import { describe, expect, it, vi } from "vitest";
 import { makeVehicle } from "@/test/fixtures";
 import { renderWithIntl } from "@/test/intl";
 
-// ConditionSection embeds ConditionSummary (which fetches) — keep it pending so
-// there's no async state churn during the render.
 vi.mock("@/lib/api-client", () => ({ postJson: vi.fn(() => new Promise(() => {})) }));
 
 import { ConditionSection } from "@/components/views/vehicle/ConditionSection";

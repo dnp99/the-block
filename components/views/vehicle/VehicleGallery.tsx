@@ -82,7 +82,7 @@ export function VehicleGallery({
               aria-label={`View photo ${i + 1}`}
               aria-current={i === safeActive}
               className={cn(
-                "relative aspect-[4/3] overflow-hidden rounded-lg border-2 bg-neutral-100 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-neutral-800",
+                "relative aspect-[4/3] overflow-hidden rounded-xl border-2 bg-neutral-100 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-neutral-800",
                 i === safeActive
                   ? "border-primary-600"
                   : "border-transparent hover:border-line-strong",

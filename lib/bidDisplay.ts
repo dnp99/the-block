@@ -1,35 +1,17 @@
-/*
-  Phase-aware bid presentation. The dataset's `current_bid` / `bid_count` are only
-  meaningful while an auction is LIVE: an UPCOMING lot can't have bids yet (its
-  start time was normalized — see ADR 0002 — so dataset bids would be "bids before
-  the auction opened"), and an ENDED lot should read as an outcome (sold / no sale),
-  not a live "current bid". Centralized here so the browse row and the VDP panel
-  present identical, phase-correct states.
-*/
 import type { AuctionPhase } from "@/lib/auction";
 import type { BidOverride } from "@/lib/contracts/bid";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { effectivePrice } from "@/lib/format";
-
-/** Stable key for the label, for i18n (the `label` string is the English default). */
 export type BidLabelKey = "starting" | "current" | "sold" | "final" | "noBids";
 
 export interface BidDisplay {
-  /** Label above the amount, e.g. "Current bid" · "Starting bid" · "Sold for". */
   label: string;
-  /** i18n key matching `label` (translate via the `bidding` namespace). */
   labelKey: BidLabelKey;
-  /** Dollar figure to show. */
   amount: number;
-  /** Number of bids (0 when none or not applicable). */
   count: number;
-  /** Show the (clickable) bid count / history. */
   showCount: boolean;
-  /** Show bid / buy-now actions — live only. */
   showActions: boolean;
-  /** The viewer holds the current high bid. */
   isHighBidder: boolean;
-  /** The shown amount has cleared the reserve. */
   reserveMet: boolean;
 }
 
@@ -38,7 +20,6 @@ export function bidDisplay(
   phase: AuctionPhase,
   override?: BidOverride,
 ): BidDisplay {
-  // Pre-auction: bidding hasn't opened — show only the opening price.
   if (phase === "upcoming") {
     return {
       label: "Starting bid",
@@ -82,7 +63,6 @@ export function bidDisplay(
     };
   }
 
-  // live
   return {
     label: hasBids ? "Current bid" : "Starting bid",
     labelKey: hasBids ? "current" : "starting",

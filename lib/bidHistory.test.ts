@@ -17,7 +17,7 @@ describe("buildBidHistory", () => {
   it("returns bid_count entries with strictly decreasing amounts (no override)", () => {
     const h = buildBidHistory(base, undefined, 0);
     expect(h).toHaveLength(6);
-    expect(h[0].amount).toBe(18000); // newest = current bid
+    expect(h[0].amount).toBe(18000);
     for (let i = 1; i < h.length; i++) expect(h[i].amount).toBeLessThan(h[i - 1].amount);
     expect(h.every((e) => !e.isYou)).toBe(true);
     expect(h[0].bidder).toMatch(/^Bidder ••\d{4}$/);

@@ -1,12 +1,6 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-
-/*
-  Light/dark toggle. The `.dark` class on <html> (set pre-paint by the bootstrap
-  in layout.tsx) is the source of truth — we read it via useSyncExternalStore
-  (hydration-safe, no effect) and flip it on click, persisting the choice.
-*/
 const THEME_EVENT = "tb-theme-change";
 
 const subscribe = (cb: () => void) => {
@@ -24,7 +18,6 @@ export function ThemeToggle() {
     try {
       localStorage.setItem("tb-theme", next ? "dark" : "light");
     } catch {
-      // ignore
     }
     window.dispatchEvent(new Event(THEME_EVENT));
   }

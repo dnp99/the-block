@@ -2,13 +2,6 @@
 
 import Image from "next/image";
 import { useState } from "react";
-
-/*
-  Vehicle photo with a graceful fallback. The dataset's placeholder URLs are
-  SVGs from placehold.co, which Next's image optimizer rejects by default — so
-  we render them `unoptimized` (browser loads them directly). If an image still
-  fails (offline, blocked), we swap to a branded tile instead of broken alt text.
-*/
 export function VehicleImage({
   src,
   alt,
