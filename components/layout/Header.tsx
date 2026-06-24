@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
-/** App header — sticky, borderless-blur. ThemeToggle slot filled in the polish slice. */
+/** App header — sticky, borderless-blur. */
 export function Header() {
   return (
     <header className="border-line bg-canvas/80 sticky top-0 z-30 border-b backdrop-blur-sm">
@@ -17,7 +18,12 @@ export function Header() {
           </span>
           Openlane
         </Link>
-        <span className="text-ink-subtle text-xs font-medium">Buyer auctions</span>
+        <div className="flex items-center gap-3">
+          <span className="hidden text-xs font-medium text-ink-subtle sm:inline">
+            Buyer auctions
+          </span>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

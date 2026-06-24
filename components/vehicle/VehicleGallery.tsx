@@ -18,7 +18,22 @@ export function VehicleGallery({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line bg-neutral-100 dark:bg-neutral-800 sm:aspect-video">
+      <div
+        role="group"
+        aria-roledescription="carousel"
+        aria-label={`${alt} photos`}
+        tabIndex={count > 1 ? 0 : -1}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            go(-1);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            go(1);
+          }
+        }}
+        className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-neutral-800 sm:aspect-video"
+      >
         <VehicleImage
           src={images[safeActive]}
           alt={`${alt} — photo ${safeActive + 1}`}
