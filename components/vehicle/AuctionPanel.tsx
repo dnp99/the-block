@@ -94,15 +94,6 @@ export function AuctionPanel({
         <BidForm vehicle={v} />
       )}
 
-      {v.buy_now_price !== null && !ended && (
-        <div className="rounded-xl border border-primary-200 bg-primary-50/60 p-3 dark:border-primary-900/50 dark:bg-primary-900/20">
-          <p className="text-xs text-ink-subtle">Buy it now</p>
-          <p className="text-lg font-semibold text-primary-700 dark:text-primary-300">
-            {formatCurrency(v.buy_now_price)}
-          </p>
-        </div>
-      )}
-
       <dl className="grid grid-cols-2 gap-2 border-t border-line pt-3 text-sm">
         <dt className="text-ink-subtle">Starting bid</dt>
         <dd className="text-right font-medium text-ink">{formatCurrency(v.starting_bid)}</dd>

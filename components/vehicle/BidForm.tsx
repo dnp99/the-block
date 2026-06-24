@@ -14,9 +14,26 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
 
   const [value, setValue] = useState(String(min));
   const [error, setError] = useState<string | null>(null);
+  const [confirmBuyNow, setConfirmBuyNow] = useState(false);
 
   const current = Number(value);
   const atMin = !Number.isFinite(current) || current <= min;
+
+  const currentBid = override?.amount ?? vehicle.current_bid ?? vehicle.starting_bid;
+  const buyNow = vehicle.buy_now_price;
+  const canBuyNow = buyNow !== null && buyNow > currentBid;
+
+  function buyNowNow() {
+    if (buyNow === null) return;
+    try {
+      placeBid(vehicle.id, buyNow, vehicle.bid_count);
+      setError(null);
+      setConfirmBuyNow(false);
+      setValue(String(buyNow + BID_INCREMENT));
+    } catch {
+      setError("Couldn’t complete buy now, please try again.");
+    }
+  }
 
   function step(delta: number) {
     const base = Number.isFinite(current) ? current : min;
@@ -97,6 +114,26 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       ) : (
         <p className="text-xs text-ink-subtle">Minimum bid {formatCurrency(min)}</p>
       )}
+
+      {canBuyNow &&
+        (confirmBuyNow ? (
+          <div className="mt-1 flex items-center gap-2">
+            <Button onClick={buyNowNow} className="flex-1">
+              Confirm — buy at {formatCurrency(buyNow)}
+            </Button>
+            <Button variant="secondary" onClick={() => setConfirmBuyNow(false)}>
+              Cancel
+            </Button>
+          </div>
+        ) : (
+          <Button
+            variant="secondary"
+            onClick={() => setConfirmBuyNow(true)}
+            className="mt-1 w-full"
+          >
+            Buy it now · {formatCurrency(buyNow)}
+          </Button>
+        ))}
     </div>
   );
 }
