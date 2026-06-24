@@ -97,8 +97,6 @@ export function AuctionPanel({
       <dl className="grid grid-cols-2 gap-2 border-t border-line pt-3 text-sm">
         <dt className="text-ink-subtle">Starting bid</dt>
         <dd className="text-right font-medium text-ink">{formatCurrency(v.starting_bid)}</dd>
-        <dt className="text-ink-subtle">Reserve</dt>
-        <dd className="text-right font-medium text-ink">Not disclosed</dd>
       </dl>
     </Card>
   );
