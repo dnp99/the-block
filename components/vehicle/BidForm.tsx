@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toaster";
 import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatCurrency } from "@/lib/format";
 
 export function BidForm({ vehicle }: { vehicle: Vehicle }) {
+  const { toast } = useToast();
   const overrides = useBidOverrides();
   const override = overrides[vehicle.id];
   const min = minimumBid(vehicle, override);
@@ -30,6 +32,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       setError(null);
       setConfirmBuyNow(false);
       setValue(String(buyNow + BID_INCREMENT));
+      toast(`Bought now — ${formatCurrency(buyNow)}`, "success");
     } catch {
       setError("Couldn’t complete buy now, please try again.");
     }
@@ -50,6 +53,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       placeBid(vehicle.id, amount, vehicle.bid_count);
       setError(null);
       setValue(String(amount + BID_INCREMENT));
+      toast(`Bid placed — ${formatCurrency(amount)}`, "success");
     } catch {
       setError("Couldn’t place your bid, please try again.");
     }
