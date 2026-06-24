@@ -53,44 +53,54 @@ export function VehicleRow({
   // French puts a space before the colon.
   const labelSep = fmt.locale.startsWith("fr") ? " : " : ": ";
 
-  // The bottom meta + bid row is rendered twice: full-width below on mobile, and
-  // inside the content column (right of the tall thumbnail) on desktop.
-  const footer = () => (
+  // Bid summary (price + bid count) — sits ABOVE the separator with the vehicle
+  // details. Stacked on desktop; on one line on mobile.
+  const bidSummary = () => (
+    <div className="flex flex-wrap items-baseline justify-end gap-x-2 sm:flex-col sm:items-end sm:gap-x-0">
+      <p className="leading-tight">
+        <span className="text-[11px] text-ink-subtle">
+          {tBid(d.labelKey)}
+          {labelSep}
+        </span>
+        <span className="text-base font-bold text-ink sm:text-lg">{fmt.currency(d.amount)}</span>
+      </p>
+      {d.showCount ? (
+        <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
+      ) : (
+        state.phase !== "ended" && (
+          <span className="text-[11px] text-ink-subtle">{tBid("noBidsYet")}</span>
+        )
+      )}
+    </div>
+  );
+
+  // Below the separator: location/dealership (left) + actions (right, active only).
+  const bottomRow = () => (
     <div className="flex items-end justify-between gap-3">
       <div className="min-w-0 text-xs text-ink-subtle">
         <p className="truncate">{vehicleLocation(v)}</p>
         <p className="truncate">{v.selling_dealership}</p>
       </div>
-      <div className="shrink-0 text-right">
-        <p className="leading-tight">
-          <span className="text-[11px] text-ink-subtle">
-            {tBid(d.labelKey)}
-            {labelSep}
-          </span>
-          <span className="text-base font-bold text-ink sm:text-lg">{fmt.currency(d.amount)}</span>
-        </p>
-        {d.showCount ? (
-          <div className="flex justify-end">
-            <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
-          </div>
-        ) : (
-          state.phase !== "ended" && (
-            <p className="text-[11px] text-ink-subtle">{tBid("noBidsYet")}</p>
-          )
-        )}
-        {d.showActions && (
-          <div className="mt-2 flex items-center justify-end gap-2">
-            <Link
-              href={`/vehicle/${v.id}`}
-              className="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
-            >
-              {tBid("placeABid")}
-            </Link>
-            <QuickBid vehicle={v} />
-          </div>
-        )}
-      </div>
+      {d.showActions && (
+        <div className="flex shrink-0 items-center justify-end gap-2">
+          <Link
+            href={`/vehicle/${v.id}`}
+            className="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
+          >
+            {tBid("placeABid")}
+          </Link>
+          <QuickBid vehicle={v} />
+        </div>
+      )}
     </div>
+  );
+
+  // Bid + separator + bottom row, grouped so they pin to the bottom on desktop.
+  const bidCluster = () => (
+    <>
+      {bidSummary()}
+      <div className="border-t border-line pt-2.5">{bottomRow()}</div>
+    </>
   );
 
   return (
@@ -165,13 +175,13 @@ export function VehicleRow({
             </Pill>
           </div>
 
-          {/* Desktop footer — pinned to the bottom of the content column */}
-          <div className="mt-auto hidden border-t border-line pt-2.5 sm:block">{footer()}</div>
+          {/* Desktop bid + actions — pinned to the bottom of the content column */}
+          <div className="mt-auto hidden flex-col gap-2 pt-1 sm:flex">{bidCluster()}</div>
         </div>
       </div>
 
-      {/* Mobile footer — full width below the thumbnail */}
-      <div className="mt-3 border-t border-line pt-2.5 sm:hidden">{footer()}</div>
+      {/* Mobile bid + actions — full width below the thumbnail */}
+      <div className="mt-3 flex flex-col gap-2 sm:hidden">{bidCluster()}</div>
     </article>
   );
 }
