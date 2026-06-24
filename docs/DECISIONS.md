@@ -51,17 +51,24 @@ explicitly allows normalizing them relative to "now" for countdowns / live state
 
 **Decision.** Derive each vehicle's auction schedule **deterministically** and normalize it into
 a window around now:
-- A stable hash of the vehicle `id` assigns a synthetic start time, **anchored to a per-request
-  reference** (`anchorMs = Date.now()`, passed from the server). The start is fixed at the anchor,
-  so as real time advances a vehicle moves upcoming → live → ended and countdowns tick.
-- Distribution at the anchor moment: ~40% live, ~40% upcoming, ~20% ended.
+- A stable hash of the vehicle `id` assigns a synthetic start time relative to a **client-side
+  "now" anchor** (`useAuctionClock`). The anchor seeds from a server timestamp (`auctionNowMs`) for
+  SSR, then re-anchors to the viewer's real `Date.now()` on mount and stays frozen — so countdowns
+  tick and a vehicle moves upcoming → live → ended as real time advances.
+- Distribution at the anchor moment: ~40% live, ~40% upcoming, ~20% ended; upcoming/ended are
+  spread across ~5 days each (a ~10-day calendar).
 - Live auctions run a **45-minute window** (matching OPENLANE's "always-on 45-minute auctions").
-- The home route is `force-dynamic` so the anchor is request-time, not frozen at build.
+
+**Why client-anchored (update 2026-06-24).** The anchor was originally the server timestamp alone.
+On Vercel a cached/stale render left `auctionNowMs` older than the 45-min live window while the
+client clock advanced to real time → every live auction was already in the past and the **Live tab
+showed empty**. Anchoring to the client clock makes freshness independent of server/CDN caching.
 
 **Consequences.**
-- ✅ Realistic, populated Live / Upcoming / Ended tabs and live countdowns, with no real timestamps.
-- ✅ Deterministic + hydration-safe: server and client share the same anchor, so first render
-  matches; a 1s client clock then advances phases.
+- ✅ Realistic, populated Live / Upcoming / Ended tabs and live countdowns, with no real timestamps —
+  reliably, regardless of cache staleness.
+- ✅ Deterministic + hydration-safe: SSR uses the server seed (first render matches), then the client
+  re-anchors and a 1s clock advances phases.
 - ⚠️ Phases are synthetic, not real auction times — clearly a prototype normalization, documented
   here and in `lib/auction.ts`.
 

@@ -95,14 +95,14 @@ One meaning per color — never mix.
 
 | Component | File | Variants / API | Status |
 |-----------|------|----------------|--------|
-| `Button` | `components/ui/Button.tsx` | `primary` / `secondary` / `ghost` × `sm` / `md` / `lg` | ✅ |
-| `Card` | `components/ui/Card.tsx` | Static white surface, `border-line`, `shadow-sm` | ✅ |
-| `Pill` | `components/ui/Pill.tsx` | tone `neutral` / `blue` / `green` / `amber` / `red` | ✅ |
-| `Skeleton` | `components/ui/Skeleton.tsx` | Pulsing placeholder (no spinners) | ✅ |
-| `Input` / `SearchInput` | — | Text input with icon slot | ⏳ planned (inlined for now) |
-| `ThemeToggle` | — | Sun/moon, toggles `.dark`, persists to `localStorage` | ⏳ Slice 7 |
-| `CountdownPill` | — | upcoming / live / ended + countdown | ⏳ Slice 6 |
-| `Toaster` | — | provider + `toast()` for non-blocking errors | ⏳ Slice 4 |
+| `Button` | `components/shared/Button.tsx` | `primary` / `secondary` / `ghost` × `sm` / `md` / `lg` | ✅ |
+| `Card` | `components/shared/Card.tsx` | Static white surface, `border-line`, `shadow-sm` | ✅ |
+| `Pill` | `components/shared/Pill.tsx` | tone `neutral` / `blue` / `green` / `amber` / `red` | ✅ |
+| `Skeleton` | `components/shared/Skeleton.tsx` | Pulsing placeholder (no spinners) | ✅ |
+| `Toaster` | `components/shared/Toaster.tsx` | provider + `toast()` for non-blocking errors | ✅ |
+| `ThemeToggle` | `components/layout/ThemeToggle.tsx` | Sun/moon, toggles `.dark`, persists to `localStorage` | ✅ |
+| Countdown badge / label | `hooks/useCountdown.ts` | upcoming / live / ended + countdown (rendered inline) | ✅ |
+| `Input` / `SearchInput` | — | Text input with icon slot — inlined in `Toolbar` | ⏳ still inlined |
 
 ### Buttons
 - **Primary:** `bg-primary-600 hover:bg-primary-700 text-white`.
@@ -136,8 +136,9 @@ Use these consistently in component and file names.
 ## 10. Layout
 
 - Max content width: `max-w-7xl`, centered, with `px-4 sm:px-6`.
-- Inventory: vertical **list rows** (`VehicleRow`) — thumbnail · details + badges · right-aligned
-  bid. (A card grid was the original direction; switched to rows to match the OPENLANE look.)
+- Inventory: vertical **list rows** (`VehicleRow`) — thumbnail · details + badges · a right-aligned
+  bid amount + quick-bid/place-bid cluster (which stacks onto one row on mobile). (A card grid was
+  the original direction; switched to rows to match the OPENLANE look.)
 - Page canvas: `bg-canvas`; the content wrapper is transparent.
 
 ## 11. Accessibility

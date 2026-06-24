@@ -43,7 +43,7 @@ key never reaches the client.
 | Layer | Where | Responsibility |
 |-------|-------|----------------|
 | **Presentation** | `components/` (`shared` · `layout` · `bidding` · `views/browse` · `views/vehicle`) + `hooks/` | Primitives, app chrome, the bidding domain, and per-page views |
-| **Domain logic** | `lib/` | Pure, testable logic: `filters`, `bids`, `auction`, `bidHistory`, `contracts` (types + validators) |
+| **Domain logic** | `lib/` | Pure, testable logic: `filters`, `bids`, `auction`, `bidHistory`, `aiFilterChips`, `browseState`, `contracts` (types + validators) |
 | **Data** | `data/vehicles.json` → `lib/data` | Static import, validated once at load via `isVehicle` |
 | **AI proxy** | `app/api/*` + `server/claude` + `server/prompts` | Server-only Claude calls; structured-output prompts |
 
@@ -118,8 +118,10 @@ Full ADRs in [`DECISIONS.md`](DECISIONS.md). The architecturally significant one
   No runtime "data failed to load" path, so `error.tsx` is just a generic safety net.
 - **`localStorage` + `useSyncExternalStore`** for bids — reactive across components without a
   state library, and hydration-safe.
-- **`force-dynamic` on time-sensitive routes** — auction phases are normalized to "now"
-  (ADR 0002), so the anchor is read per request, not frozen at build.
+- **Client-anchored auction clock** — auction phases are normalized to "now" (ADR 0002) using a
+  client-side anchor (`useAuctionClock`): SSR seeds from a server timestamp, then the viewer's own
+  clock takes over. Freshness comes from the browser, so Live/Upcoming/Ended stay populated even if
+  Vercel serves a stale/cached render.
 - **Design tokens only in `app/globals.css` `@theme`** (Tailwind v4, CSS-first) — one source of
   truth; see [`design-system.md`](design-system.md).
 

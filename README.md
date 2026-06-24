@@ -52,7 +52,7 @@ the API routes and never reaches the browser.
 | --- | --- |
 | `npm run dev` | Dev server (:3000) |
 | `npm run build` | Production build |
-| `npm run test` | Vitest (28 tests) |
+| `npm run test` | Vitest (154 tests) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 
@@ -75,12 +75,15 @@ the API routes and never reaches the browser.
 ## What I built
 
 **Browse**
-- List of all 200 vehicles with a small thumbnail, specs, condition/title/damage pills, and
+- List of all 200 vehicles as OPENLANE-style rows (thumbnail, specs, condition/title/damage pills) and
   live bid info
 - **Auction status tabs** — All / Live / Upcoming / Ended with live counts
 - Filters in a left rail (Make, Body, Province, Condition) + **range sliders** (Year,
   Odometer, Price); active filters shown as removable chips
-- **Quick bid / Buy now** directly from a card (two-step confirm), plus sort and pagination
+- **Quick bid / Buy now** directly from a row (two-step confirm), 8 sort options (year / make /
+  mileage / seller / ending / starting soonest), and pagination
+- **Filters persist across navigation** — open a vehicle and come back (or reload) and your tab,
+  filters, search + ✨ chips are restored from `sessionStorage`; the header logo resets to a fresh All tab
 - Responsive: compact rows that re-flow for mobile
 
 **Vehicle detail**
@@ -134,6 +137,10 @@ full decision rationale (with alternatives rejected) lives in
   back gracefully. AI is purely additive, never a dependency.
 - **Reserve is shown as met/not-met only** — the reserve *price* stays hidden, mirroring real
   auctions.
+- **Browse state persists in `sessionStorage`** — filters/tab/search survive a VDP round-trip and
+  reloads; the logo resets. Chosen over URL params for v1 simplicity. (ADR 0005)
+- **Auction clock is client-anchored** — phase freshness comes from the viewer's `Date.now()`
+  (`useAuctionClock`), not a server timestamp a CDN could staledate. (ADR 0002)
 - **Design system in one place** — tokens live only in `app/globals.css` `@theme`; see
   **[`docs/design-system.md`](docs/design-system.md)**.
 
@@ -179,14 +186,14 @@ to a shared store for multi-instance deploys.
 
 ## Testing
 
-`npm run test` — **35 Vitest tests** over the pure logic that matters:
+`npm run test` — **154 Vitest tests** across pure logic, hooks, components, and route handlers:
 
-- `lib/filters` — filter + sort, price/odometer/year ranges, no-bid handling
-- `lib/bids` — minimum-bid rules, place-bid persistence, store parsing
-- `lib/bidDisplay` — phase-aware bid label/amount/actions (upcoming / live / sold / no-sale)
+- `lib/filters` — filter + sort (year/make/mileage/seller/ending/starting), price/odometer/year ranges
+- `lib/bids` / `lib/bidDisplay` — minimum-bid rules, persistence, phase-aware bid label/amount/actions
+- `lib/auction` + `useAuctionClock` — phase derivation, ~10-day spread, client re-anchor
 - `lib/contracts/search` — `parseSearchFilters` validator (drops bad/unknown LLM output)
-- `lib/auction` — phase derivation + countdown formatting
-- `lib/bidHistory` — deterministic history reconstruction
+- `lib/browseState` / `SearchView` — filter persistence, tabs/chips, AI-search fallback
+- Components/hooks/routes — VehicleRow, Toolbar, bidding UI, `/api/search` + `/api/condition-summary`
 
 Plus `npm run typecheck` and `npm run lint` are clean, and `npm run build` passes.
 
@@ -223,9 +230,11 @@ components/
   bidding/                # bid form/bar/panel, history, quick-bid (used by both pages)
   views/browse/           # the browse page (app/page.tsx → SearchView)
   views/vehicle/          # the VDP (app/vehicle/[id] → VehicleDetail)
-hooks/                    # client hooks (useFormat, useCountdown, useToastMessages)
+hooks/                    # client hooks (useFormat, useCountdown, useToastMessages,
+                          #   useAiSearchFilters, useAuctionClock)
 server/                   # server-only: Claude client, prompts, rate-limit
-lib/                      # pure logic + contracts + data + i18n (+ colocated tests)
+lib/                      # pure logic + contracts + data + i18n + aiFilterChips + browseState
+
 messages/                 # en.json / fr.json translation catalogs
 i18n/request.ts           # next-intl server config (cookie locale)
 data/vehicles.json        # the 200-vehicle dataset
