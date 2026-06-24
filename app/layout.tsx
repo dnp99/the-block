@@ -36,7 +36,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
-      <body className="flex min-h-full flex-col font-sans">
+      <body className="flex min-h-full flex-col overflow-x-clip font-sans">
         <Script id="tb-theme-init" strategy="beforeInteractive">
           {themeScript}
         </Script>

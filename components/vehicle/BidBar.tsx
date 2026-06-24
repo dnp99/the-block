@@ -30,8 +30,8 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur lg:hidden">
       <div className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-1.5">
-        <div className="flex items-center justify-between gap-3">
-          <span className="truncate text-sm text-ink-muted">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
+          <span className="text-sm text-ink-muted">
             Current bid{" "}
             <span className="font-semibold text-ink">{formatCurrency(amount)}</span>
           </span>
