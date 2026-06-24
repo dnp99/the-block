@@ -19,8 +19,8 @@ import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { capitalize, vehicleLocation, vehicleTitle } from "@/lib/format";
-import { useCountdownBadge } from "@/lib/useCountdown";
-import { useFormat } from "@/lib/useFormat";
+import { useCountdownBadge } from "@/hooks/useCountdown";
+import { useFormat } from "@/hooks/useFormat";
 
 const Sep = () => (
   <span aria-hidden className="text-ink-subtle">

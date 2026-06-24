@@ -18,8 +18,8 @@ import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
 import { effectivePrice } from "@/lib/format";
-import { useFormat } from "@/lib/useFormat";
-import { useToastMessages } from "@/lib/useToastMessages";
+import { useFormat } from "@/hooks/useFormat";
+import { useToastMessages } from "@/hooks/useToastMessages";
 
 export interface PhasedVehicle {
   vehicle: Vehicle;

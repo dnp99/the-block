@@ -5,7 +5,7 @@ import { InfoHint } from "@/components/ui/InfoHint";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toaster";
 import { postJson } from "@/lib/api-client";
-import { useToastMessages } from "@/lib/useToastMessages";
+import { useToastMessages } from "@/hooks/useToastMessages";
 
 // Module-level cache: avoids re-calling Claude when navigating back to a vehicle.
 const cache = new Map<string, string>();

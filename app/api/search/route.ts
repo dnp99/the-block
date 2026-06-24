@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getAnthropic, hasAnthropicKey, SEARCH_MODEL } from "@/lib/claude";
+import { getAnthropic, hasAnthropicKey, SEARCH_MODEL } from "@/server/claude";
 import { parseSearchFilters } from "@/lib/contracts/search";
-import { SEARCH_SYSTEM, SEARCH_TOOL } from "@/lib/prompts";
-import { rateLimit } from "@/lib/rateLimit";
+import { SEARCH_SYSTEM, SEARCH_TOOL } from "@/server/prompts";
+import { rateLimit } from "@/server/rateLimit";
 
 export const runtime = "nodejs";
 

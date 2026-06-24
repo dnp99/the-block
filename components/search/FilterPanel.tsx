@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { RangeSlider } from "@/components/ui/RangeSlider";
 import { SelectChevron } from "@/components/ui/SelectChevron";
 import { cn } from "@/lib/cn";
-import { useFormat } from "@/lib/useFormat";
+import { useFormat } from "@/hooks/useFormat";
 
 const selectClass =
   "w-full appearance-none rounded-xl border border-line bg-surface px-3 py-2 pr-9 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30";

@@ -12,8 +12,8 @@ import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { useCountdownLabel } from "@/lib/useCountdown";
-import { useFormat } from "@/lib/useFormat";
+import { useCountdownLabel } from "@/hooks/useCountdown";
+import { useFormat } from "@/hooks/useFormat";
 
 const PHASE_DOT: Record<AuctionPhase, string> = {
   live: "bg-success",

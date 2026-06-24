@@ -7,8 +7,8 @@ import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleTitle } from "@/lib/format";
-import { useFormat } from "@/lib/useFormat";
-import { useToastMessages } from "@/lib/useToastMessages";
+import { useFormat } from "@/hooks/useFormat";
+import { useToastMessages } from "@/hooks/useToastMessages";
 
 /*
   One-tap quick bid from the browse list — OPENLANE-style "⚡ +$100". Sits above

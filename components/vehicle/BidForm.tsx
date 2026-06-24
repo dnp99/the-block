@@ -7,8 +7,8 @@ import { useToast } from "@/components/ui/Toaster";
 import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { useFormat } from "@/lib/useFormat";
-import { useToastMessages } from "@/lib/useToastMessages";
+import { useFormat } from "@/hooks/useFormat";
+import { useToastMessages } from "@/hooks/useToastMessages";
 
 export function BidForm({ vehicle }: { vehicle: Vehicle }) {
   const { toast } = useToast();

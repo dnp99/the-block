@@ -9,8 +9,8 @@ import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { useCountdownLabel } from "@/lib/useCountdown";
-import { useFormat } from "@/lib/useFormat";
+import { useCountdownLabel } from "@/hooks/useCountdown";
+import { useFormat } from "@/hooks/useFormat";
 
 /** Sticky bottom bid bar for small screens (the desktop bid UI is AuctionPanel). */
 export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: number }) {

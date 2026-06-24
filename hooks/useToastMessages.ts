@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleTitle } from "@/lib/format";
-import { useFormat } from "@/lib/useFormat";
+import { useFormat } from "@/hooks/useFormat";
 
 type TitleInput = Pick<Vehicle, "year" | "make" | "model">;
 
