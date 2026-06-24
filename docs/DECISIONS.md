@@ -68,6 +68,29 @@ a window around now:
 **Alternatives rejected.** Use the raw timestamps (everything shows as ended); random assignment
 (non-deterministic — breaks SSR/hydration and is unstable across renders).
 
+## ADR 0003 — Synthesized bid history (no per-bid data in the dataset)
+
+- **Status:** Accepted · **Date:** 2026-06-23
+
+**Context.** The dataset has only `current_bid` and `bid_count` — no list of individual bids,
+bidders, or timestamps. A "bid history" (clicking the bid count) therefore can't come from the
+data; it has to be constructed.
+
+**Decision.** Deterministically reconstruct a plausible ascending history from `starting_bid` →
+`current_bid` over `bid_count` steps (hashed from the vehicle id, stable across renders), with
+**masked bidder IDs** ("Bidder ••4821") and relative timestamps. The buyer's **real** local bids
+are overlaid on top labeled **"You"**. The modal carries a note that prior bids are reconstructed
+and identities masked.
+
+**Consequences.**
+- ✅ A complete-feeling bid history with no real per-bid data; consistent with ADR 0002.
+- ✅ The user's own bids remain genuinely real (from localStorage).
+- ⚠️ Prior bids are fabricated — clearly labeled in the UI and here. We only store the buyer's
+  latest bid, so multiple own-bids collapse to one "You" entry.
+
+**Alternatives rejected.** Show only the user's local bids (usually empty); random history
+(non-deterministic, unstable across renders).
+
 ## Design & UX decisions (high level)
 
 Captured concisely; see `git log` for the change-by-change detail.

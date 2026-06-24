@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BidForm } from "@/components/vehicle/BidForm";
+import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
 import { Card } from "@/components/ui/Card";
 import { Pill } from "@/components/ui/Pill";
 import { reserveStatusFor } from "@/components/vehicle/vehiclePills";
@@ -70,9 +71,12 @@ export function AuctionPanel({
         <p className="text-xs text-ink-subtle">{hasBids ? "Current bid" : "Starting bid"}</p>
         <p className="text-3xl font-bold tracking-tight text-ink">{formatCurrency(amount)}</p>
         <div className="mt-1 flex items-center gap-2">
-          <span className="text-sm text-ink-muted">
-            {hasBids ? `${count} ${count === 1 ? "bid" : "bids"}` : "No bids yet"}
-          </span>
+          <BidHistoryButton
+            vehicle={v}
+            count={hasBids ? count : 0}
+            override={override}
+            nowMs={now}
+          />
           <Pill tone={reserve.tone}>{reserve.label}</Pill>
         </div>
       </div>

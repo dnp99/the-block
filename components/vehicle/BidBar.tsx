@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BidForm } from "@/components/vehicle/BidForm";
+import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
 import { auctionCountdownLabel, auctionState } from "@/lib/auction";
 import { effectiveBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
@@ -17,7 +18,9 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
   }, []);
 
   const overrides = useBidOverrides();
-  const { amount, count, isHighBidder } = effectiveBid(v, overrides[v.id]);
+  const override = overrides[v.id];
+  const { amount, count, isHighBidder } = effectiveBid(v, override);
+  const hasBids = (override?.amount ?? v.current_bid) !== null;
   const state = auctionState(v.id, anchorMs, now);
   const ended = state.phase === "ended";
   const urgent = state.phase === "live" && state.endMs - now <= 120_000;
@@ -26,10 +29,16 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur lg:hidden">
       <div className="mx-auto flex max-w-7xl flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-ink-muted">
+          <span className="flex items-center gap-1.5 text-sm text-ink-muted">
             Current bid{" "}
             <span className="font-semibold text-ink">{formatCurrency(amount)}</span>
-            <span className="text-ink-subtle"> · {count} bids</span>
+            <span aria-hidden className="text-ink-subtle">·</span>
+            <BidHistoryButton
+              vehicle={v}
+              count={hasBids ? count : 0}
+              override={override}
+              nowMs={now}
+            />
           </span>
           <span
             className={cn(
