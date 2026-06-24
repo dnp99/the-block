@@ -14,6 +14,15 @@ export function conditionPill(grade: Vehicle["condition_grade"]): {
   return { tone, label: formatGrade(grade) };
 }
 
+/** Qualitative word for a condition grade (used where the number is shown separately). */
+export function conditionDescriptor(grade: number): string {
+  if (grade >= 4.5) return "Excellent";
+  if (grade >= 4) return "Good";
+  if (grade >= 3) return "Average";
+  if (grade >= 2) return "Fair";
+  return "Rough";
+}
+
 const TITLE_TONE: Record<TitleStatus, PillTone> = {
   clean: "blue",
   rebuilt: "amber",

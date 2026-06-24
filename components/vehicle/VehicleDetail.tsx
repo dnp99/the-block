@@ -4,6 +4,7 @@ import { ConditionSection } from "@/components/vehicle/ConditionSection";
 import { DealerBlock } from "@/components/vehicle/DealerBlock";
 import { SpecGrid } from "@/components/vehicle/SpecGrid";
 import { VehicleGallery } from "@/components/vehicle/VehicleGallery";
+import { VinCopy } from "@/components/vehicle/VinCopy";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleLocation, vehicleTitle } from "@/lib/format";
 
@@ -30,9 +31,13 @@ export function VehicleDetail({
         <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
           {vehicleTitle(v)} <span className="text-ink-muted">{v.trim}</span>
         </h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          Lot {v.lot} · {vehicleLocation(v)}
-        </p>
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
+          <VinCopy vin={v.vin} />
+          <span aria-hidden className="text-ink-subtle">
+            ·
+          </span>
+          <span>{vehicleLocation(v)}</span>
+        </div>
       </header>
 
       <div className="mt-5 flex flex-col gap-5 lg:grid lg:grid-cols-[1fr_22rem] lg:items-start lg:gap-6">

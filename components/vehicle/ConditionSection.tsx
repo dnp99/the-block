@@ -1,6 +1,10 @@
 import { Card } from "@/components/ui/Card";
 import { Pill } from "@/components/ui/Pill";
-import { conditionPill, titlePill } from "@/components/vehicle/vehiclePills";
+import {
+  conditionDescriptor,
+  conditionPill,
+  titlePill,
+} from "@/components/vehicle/vehiclePills";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatGrade } from "@/lib/format";
 
@@ -23,7 +27,7 @@ export function ConditionSection({ vehicle: v }: { vehicle: Vehicle }) {
         <span className="text-2xl font-semibold text-ink">{formatGrade(v.condition_grade)}</span>
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-ink-subtle">Condition grade</span>
-          <Pill tone={condition.tone}>{condition.label}</Pill>
+          <Pill tone={condition.tone}>{conditionDescriptor(v.condition_grade)}</Pill>
         </div>
       </div>
 
