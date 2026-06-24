@@ -22,7 +22,7 @@ describe("BidBar", () => {
   it("live: shows the current bid and the bid form", () => {
     vi.mocked(auctionState).mockReturnValue(live);
     renderWithIntl(
-      <BidBar vehicle={makeVehicle({ current_bid: 26300, bid_count: 12 })} anchorMs={NOW} />,
+      <BidBar vehicle={makeVehicle({ current_bid: 26300, bid_count: 12 })} auctionNowMs={NOW} />,
     );
     expect(screen.getByText(/Current bid/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Place bid" })).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe("BidBar", () => {
 
   it("ended: ended message, no bid form", () => {
     vi.mocked(auctionState).mockReturnValue(ended);
-    renderWithIntl(<BidBar vehicle={makeVehicle({ current_bid: 26300 })} anchorMs={NOW} />);
+    renderWithIntl(<BidBar vehicle={makeVehicle({ current_bid: 26300 })} auctionNowMs={NOW} />);
     expect(screen.getByText("This auction has ended.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Place bid" })).toBeNull();
   });

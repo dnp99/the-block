@@ -6,7 +6,7 @@ import {
   type AuctionPhase,
 } from "@/lib/auction";
 
-const ANCHOR = 1_700_000_000_000; // arbitrary fixed anchor for determinism
+const ANCHOR = 1_700_000_000_000;
 
 describe("auctionState", () => {
   it("is deterministic for the same id + anchor + now", () => {
@@ -20,7 +20,7 @@ describe("auctionState", () => {
     for (let i = 0; i < 200; i++) {
       counts[auctionState(`vehicle-${i}`, ANCHOR, ANCHOR).phase]++;
     }
-    // every phase represented, with live the plurality-ish (~40/40/20 target)
+
     expect(counts.live).toBeGreaterThan(0);
     expect(counts.upcoming).toBeGreaterThan(0);
     expect(counts.ended).toBeGreaterThan(0);
@@ -28,7 +28,6 @@ describe("auctionState", () => {
   });
 
   it("transitions live → ended as time passes the end", () => {
-    // find an id that is live at the anchor
     let liveId = "";
     for (let i = 0; i < 200 && !liveId; i++) {
       const id = `v${i}`;
@@ -48,6 +47,22 @@ describe("auctionState", () => {
     const s = auctionState(upId, ANCHOR, ANCHOR);
     expect(s.startMs).toBeGreaterThan(ANCHOR);
     expect(s.endMs - s.startMs).toBe(LIVE_DURATION_MS);
+  });
+
+  it("spreads upcoming/ended across roughly a 10-day window", () => {
+    const DAY = 24 * 60 * 60_000;
+    let maxUpcoming = 0;
+    let maxEndedAgo = 0;
+    for (let i = 0; i < 400; i++) {
+      const s = auctionState(`spread-${i}`, ANCHOR, ANCHOR);
+      if (s.phase === "upcoming") maxUpcoming = Math.max(maxUpcoming, s.startMs - ANCHOR);
+      if (s.phase === "ended") maxEndedAgo = Math.max(maxEndedAgo, ANCHOR - s.endMs);
+    }
+    // ~5 days each side (beyond the old 3-day upcoming / 2-day ended bounds).
+    expect(maxUpcoming).toBeGreaterThan(3 * DAY);
+    expect(maxUpcoming).toBeLessThanOrEqual(5 * DAY);
+    expect(maxEndedAgo).toBeGreaterThan(2 * DAY);
+    expect(maxEndedAgo).toBeLessThanOrEqual(5 * DAY);
   });
 });
 

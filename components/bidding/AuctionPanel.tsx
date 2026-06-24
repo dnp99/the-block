@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import { BidForm } from "@/components/bidding/BidForm";
 import { BidHistoryButton } from "@/components/bidding/BidHistoryButton";
 import { Card } from "@/components/shared/Card";
@@ -12,6 +11,7 @@ import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
+import { useAuctionClock } from "@/hooks/useAuctionClock";
 import { useCountdownLabel } from "@/hooks/useCountdown";
 import { useFormat } from "@/hooks/useFormat";
 
@@ -23,16 +23,12 @@ const PHASE_DOT: Record<AuctionPhase, string> = {
 
 export function AuctionPanel({
   vehicle: v,
-  anchorMs,
+  auctionNowMs,
 }: {
   vehicle: Vehicle;
-  anchorMs: number;
+  auctionNowMs: number;
 }) {
-  const [now, setNow] = useState(anchorMs);
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
+  const { anchorMs, nowMs } = useAuctionClock(auctionNowMs);
 
   const tBadge = useTranslations("badge");
   const tBid = useTranslations("bidding");
@@ -43,12 +39,12 @@ export function AuctionPanel({
   const overrides = useBidOverrides();
   const override = overrides[v.id];
 
-  const state = auctionState(v.id, anchorMs, now);
+  const state = auctionState(v.id, anchorMs, nowMs);
   const ended = state.phase === "ended";
   const upcoming = state.phase === "upcoming";
   const d = bidDisplay(v, state.phase, override);
   const reserve = reserveStatusFor(d.amount, v.reserve_price);
-  const urgent = state.phase === "live" && state.endMs - now <= 120_000;
+  const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
 
   return (
     <Card className="flex flex-col gap-4 p-4 sm:p-5">
@@ -67,7 +63,7 @@ export function AuctionPanel({
                 : "text-ink-muted",
           )}
         >
-          {countdownLabel(state, now)}
+          {countdownLabel(state, nowMs)}
         </span>
       </div>
 
@@ -79,7 +75,7 @@ export function AuctionPanel({
             vehicle={v}
             count={d.showCount ? d.count : 0}
             override={override}
-            nowMs={now}
+            nowMs={nowMs}
           />
           <Pill tone={reserve.tone}>
             {tPills(reserve.met ? "reserveMet" : "reserveNotMet")}

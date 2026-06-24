@@ -131,6 +131,39 @@ dataset **enum values** (make / body / drivetrain / fuel — these are data, not
 URL-routed locales (SEO-correct but more work across every route — deferred); translating dataset
 enums (they're data values, not UI copy).
 
+## ADR 0005 — Persist browse filters in sessionStorage (not URL query params)
+
+- **Status:** Accepted · **Date:** 2026-06-24
+
+**Context.** All browse state (tab, search query + AI filters, manual filters, slider ranges,
+sort) lives in `SearchView` local state. Opening a vehicle navigates to `/vehicle/[id]`, which
+unmounts the browse view; the VDP "Back to browse" is a `<Link href="/">`, so returning remounts
+`SearchView` fresh and **loses the user's filters**. We want filters to survive the
+VDP round-trip and a reload, but a click on the header **logo** should give a clean slate.
+
+**Decision.** Persist a `BrowseState` snapshot to **`sessionStorage`** (`lib/browseState.ts`):
+- `SearchView` **saves** on every state change and **restores once on mount**.
+- AI chips restore via a `restoreAi` seam on `useAiSearchFilters` that **seeds the request cache**,
+  so restored filters re-apply with **no refetch** and chip removals are preserved.
+- The header logo is a client `BrandLink` that **clears** the store on click — so the back button
+  and reloads restore filters, while the logo resets to a fresh browse.
+
+**Consequences.**
+- ✅ Filters survive VDP → back and reloads within the tab; logo = explicit reset; cleared on tab close.
+- ✅ Self-contained — no routing changes, no churn to the data-fetching layer; one client store.
+- ⚠️ State is **not in the URL**, so a filtered view isn't shareable or bookmarkable, and the
+  browser Back/Forward stack doesn't step through filter changes.
+
+**Alternatives rejected (with more time → preferred).** Encode filters in **URL query params**
+(`?tab=live&make=Toyota&price_max=50000&q=…`). This is the better long-term design: shareable,
+bookmarkable, SEO-friendly, and Back/Forward navigates filter history natively (with a debounced
+`router.replace` to avoid history spam). We deferred it because it's a larger refactor —
+two-way state↔URL sync, validation/parsing of every param, and changing the VDP back link to
+preserve the query string (or use `router.back()`), all of which need their own tests. For v1,
+`sessionStorage` delivers the required UX (survive round-trip + reload, logo resets) with far less
+surface area. Also rejected: `localStorage` (persists across tabs/sessions — too sticky; users
+would return days later to stale filters).
+
 ## Design & UX decisions (high level)
 
 Captured concisely; see `git log` for the change-by-change detail.

@@ -23,7 +23,7 @@ describe("AuctionPanel", () => {
   it("live: shows current bid and the bid form", () => {
     vi.mocked(auctionState).mockReturnValue(live);
     renderWithIntl(
-      <AuctionPanel vehicle={makeVehicle({ current_bid: 26300, bid_count: 12 })} anchorMs={NOW} />,
+      <AuctionPanel vehicle={makeVehicle({ current_bid: 26300, bid_count: 12 })} auctionNowMs={NOW} />,
     );
     expect(screen.getByText("Current bid")).toBeInTheDocument();
     expect(screen.getByText("$26,300")).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe("AuctionPanel", () => {
   it("ended: 'Sold for' + ended message, no bid form", () => {
     vi.mocked(auctionState).mockReturnValue(ended);
     renderWithIntl(
-      <AuctionPanel vehicle={makeVehicle({ current_bid: 26300, reserve_price: 20000 })} anchorMs={NOW} />,
+      <AuctionPanel vehicle={makeVehicle({ current_bid: 26300, reserve_price: 20000 })} auctionNowMs={NOW} />,
     );
     expect(screen.getByText("Sold for")).toBeInTheDocument();
     expect(screen.getByText("This auction has ended.")).toBeInTheDocument();
@@ -42,8 +42,8 @@ describe("AuctionPanel", () => {
 
   it("upcoming: starting bid + 'bidding opens' message", () => {
     vi.mocked(auctionState).mockReturnValue(upcoming);
-    renderWithIntl(<AuctionPanel vehicle={makeVehicle({ starting_bid: 14500 })} anchorMs={NOW} />);
-    // "Starting bid" appears as both the bid label and the bottom starting-bid row.
+    renderWithIntl(<AuctionPanel vehicle={makeVehicle({ starting_bid: 14500 })} auctionNowMs={NOW} />);
+
     expect(screen.getAllByText("Starting bid").length).toBeGreaterThan(0);
     expect(screen.getByText("Bidding opens when the auction goes live.")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Place bid" })).toBeNull();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AuctionTabs, type AuctionTab } from "@/components/views/browse/AuctionTabs";
 import { FilterChips, type Chip } from "@/components/views/browse/FilterChips";
 import { FilterPanel } from "@/components/views/browse/FilterPanel";
@@ -10,16 +10,17 @@ import { Toolbar } from "@/components/views/browse/Toolbar";
 import { VehicleList } from "@/components/views/browse/VehicleList";
 import { Button } from "@/components/shared/Button";
 import { InfoHint } from "@/components/shared/InfoHint";
-import { useToast } from "@/components/shared/Toaster";
-import { postJson } from "@/lib/api-client";
 import { auctionState, type AuctionState } from "@/lib/auction";
 import { useBidOverrides } from "@/lib/bids";
-import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
+import { buildAiFilterChips } from "@/lib/aiFilterChips";
+import { BROWSE_RESET_EVENT, loadBrowseState, saveBrowseState } from "@/lib/browseState";
+import type { SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
 import { effectivePrice } from "@/lib/format";
+import { useAiSearchFilters } from "@/hooks/useAiSearchFilters";
+import { useAuctionClock } from "@/hooks/useAuctionClock";
 import { useFormat } from "@/hooks/useFormat";
-import { useToastMessages } from "@/hooks/useToastMessages";
 
 export interface PhasedVehicle {
   vehicle: Vehicle;
@@ -36,8 +37,6 @@ function uniqueSorted<T>(values: T[]): T[] {
 
 const isNarrowed = (range: Range, bounds: Range) =>
   range[0] > bounds[0] || range[1] < bounds[1];
-
-/** Owns pagination; remounted via `key` on filter change to reset to PAGE. */
 function PaginatedResults({ items, nowMs }: { items: PhasedVehicle[]; nowMs: number }) {
   const [visibleCount, setVisibleCount] = useState(PAGE);
   const visible = items.slice(0, visibleCount);
@@ -66,10 +65,10 @@ function PaginatedResults({ items, nowMs }: { items: PhasedVehicle[]; nowMs: num
 
 export function SearchView({
   vehicles,
-  anchorMs,
+  auctionNowMs,
 }: {
   vehicles: Vehicle[];
-  anchorMs: number;
+  auctionNowMs: number;
 }) {
   const facets = useMemo(
     () => ({
@@ -98,7 +97,6 @@ export function SearchView({
     };
   }, [vehicles]);
 
-  // Merge any locally-placed bids so rows reflect updated price/count + reserve.
   const overrides = useBidOverrides();
   const effectiveVehicles = useMemo(
     () =>
@@ -109,7 +107,7 @@ export function SearchView({
     [vehicles, overrides],
   );
 
-  const [now, setNow] = useState(anchorMs);
+  const { anchorMs, nowMs } = useAuctionClock(auctionNowMs);
   const [tab, setTab] = useState<AuctionTab>("all");
   const [query, setQuery] = useState("");
   const [make, setMake] = useState("");
@@ -122,73 +120,56 @@ export function SearchView({
   const [sort, setSort] = useState<SortKey>("ending");
   const [showFilters, setShowFilters] = useState(false);
 
-  // AI natural-language search: the query is parsed (server-side via Claude) into
-  // structured filters, applied on top of the manual rail. Falls back to keyword
-  // matching if the AI call fails.
-  const aiCache = useRef(new Map<string, SearchFilters>());
-  const [aiResult, setAiResult] = useState<{
-    query: string;
-    filters: SearchFilters;
-  } | null>(null);
-  const { toast } = useToast();
   const tBrowse = useTranslations("browse");
   const tFilters = useTranslations("filters");
   const tStates = useTranslations("states");
-  const aiSearchUnavailable = useToastMessages().aiSearchUnavailable;
   const fmt = useFormat();
 
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(id);
-  }, []);
+  const { aiFilters, aiLoading, removeAiFilter, resetAi, restoreAi } = useAiSearchFilters(query);
 
+  // Restore the browse state saved before navigating to a VDP (or a reload). The Header logo
+  // clears the store, so only the back button / reload re-applies filters.
+  const hydrated = useRef(false);
   useEffect(() => {
-    const q = query.trim();
-    if (q.length < 3) return;
-    let cancelled = false;
-    const cached = aiCache.current.get(q);
-    const handle = window.setTimeout(async () => {
-      try {
-        const filters =
-          cached ??
-          parseSearchFilters(
-            (await postJson<{ filters: unknown }>("/api/search", { query: q })).filters,
-          );
-        if (cancelled) return;
-        aiCache.current.set(q, filters);
-        setAiResult({ query: q, filters });
-      } catch {
-        if (cancelled) return;
-        setAiResult({ query: q, filters: { keywords: q.split(/\s+/) } }); // fallback
-        toast(aiSearchUnavailable, "error");
+    if (hydrated.current) return; // already restored (StrictMode re-invoke / re-run) — skip
+    const s = loadBrowseState();
+    if (s) {
+      // One-time hydration from sessionStorage (unavailable during SSR, so a lazy initializer
+      // would cause a hydration mismatch — the mount effect is the correct place).
+      /* eslint-disable react-hooks/set-state-in-effect */
+      setTab(s.tab);
+      setQuery(s.query);
+      setMake(s.make);
+      setBodyStyle(s.bodyStyle);
+      setProvince(s.province);
+      setConditionMin(s.conditionMin);
+      setYearRange(s.yearRange);
+      setOdoRange(s.odoRange);
+      setPriceRange(s.priceRange);
+      setSort(s.sort);
+      /* eslint-enable react-hooks/set-state-in-effect */
+      if (s.query && Object.keys(s.aiFilters).length > 0) {
+        restoreAi({ query: s.query, filters: s.aiFilters });
       }
-    }, cached ? 0 : 600);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(handle);
-    };
-  }, [query, toast, aiSearchUnavailable]);
+    }
+    hydrated.current = true;
+  }, [restoreAi]);
 
-  // Effective AI filters: the parsed result for the current query, or provisional
-  // keyword matching while the AI call is in flight. Derived (not stored) to keep
-  // state changes out of the effect body.
-  const trimmedQuery = query.trim();
-  const aiLoading = trimmedQuery.length >= 3 && aiResult?.query !== trimmedQuery;
-  const aiFilters = useMemo<SearchFilters>(() => {
-    // While the AI parses (loading), don't pre-filter — we show skeletons instead
-    // of a misleading empty state. Only apply once the result for this query lands.
-    if (aiResult?.query === trimmedQuery) return aiResult.filters;
-    return {};
-  }, [trimmedQuery, aiResult]);
+  useEffect(() => {
+    if (!hydrated.current) return;
+    saveBrowseState({
+      tab, query, make, bodyStyle, province, conditionMin,
+      yearRange, odoRange, priceRange, sort, aiFilters,
+    });
+  }, [tab, query, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, sort, aiFilters]);
 
   const stateById = useMemo(() => {
     const m = new Map<string, AuctionState>();
-    for (const v of vehicles) m.set(v.id, auctionState(v.id, anchorMs, now));
+    for (const v of vehicles) m.set(v.id, auctionState(v.id, anchorMs, nowMs));
     return m;
-  }, [vehicles, anchorMs, now]);
+  }, [vehicles, anchorMs, nowMs]);
 
   const searchSorted = useMemo(() => {
-    // Manual filters from the rail; the search query drives aiFilters separately.
     const manual: SearchFilters = {
       make: make || undefined,
       body_style: (bodyStyle || undefined) as BodyStyle | undefined,
@@ -202,8 +183,8 @@ export function SearchView({
       price_max: priceRange[1] < bounds.price[1] ? priceRange[1] : undefined,
     };
     const filtered = applyFilters(applyFilters(effectiveVehicles, manual), aiFilters);
-    return sortVehicles(filtered, sort);
-  }, [effectiveVehicles, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, aiFilters, sort, bounds]);
+    return sortVehicles(filtered, sort, anchorMs);
+  }, [effectiveVehicles, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, aiFilters, sort, bounds, anchorMs]);
 
   const counts = useMemo(() => {
     const c: Record<AuctionTab, number> = { all: 0, live: 0, upcoming: 0, ended: 0 };
@@ -222,7 +203,7 @@ export function SearchView({
     [searchSorted, stateById, tab],
   );
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setQuery("");
     setMake("");
     setBodyStyle("");
@@ -231,8 +212,19 @@ export function SearchView({
     setYearRange(bounds.year);
     setOdoRange(bounds.odo);
     setPriceRange(bounds.price);
-    setAiResult(null);
-  };
+    resetAi();
+  }, [bounds, resetAi]);
+
+  // The header logo broadcasts a reset (same-route nav doesn't remount this view). Unlike the
+  // "Clear all" chips button (filters only), the logo also returns to the All tab.
+  useEffect(() => {
+    const onReset = () => {
+      reset();
+      setTab("all");
+    };
+    window.addEventListener(BROWSE_RESET_EVENT, onReset);
+    return () => window.removeEventListener(BROWSE_RESET_EVENT, onReset);
+  }, [reset]);
 
   const num = fmt.number;
   const chips: Chip[] = [];
@@ -248,30 +240,17 @@ export function SearchView({
   if (isNarrowed(priceRange, bounds.price))
     chips.push({ key: "price", label: `${fmt.currency(priceRange[0])}–${fmt.currency(priceRange[1])}`, onRemove: () => setPriceRange(bounds.price) });
 
-  // AI-extracted constraints (✨), individually removable.
-  const removeAi = (k: keyof SearchFilters) =>
-    setAiResult((p) => {
-      if (!p) return p;
-      const filters = { ...p.filters };
-      delete filters[k];
-      return { query: p.query, filters };
+  const aiChips = buildAiFilterChips(aiFilters, { number: num, currency: fmt.currency });
+  for (const aiChip of aiChips) {
+    chips.push({
+      key: aiChip.key,
+      label: aiChip.label,
+      onRemove: () => {
+        removeAiFilter(aiChip.filterKey);
+        if (aiChips.length === 1) setQuery("");
+      },
     });
-  const ai = aiFilters;
-  if (ai.keywords?.length)
-    chips.push({ key: "ai-kw", label: `✨ “${ai.keywords.join(" ")}”`, onRemove: () => removeAi("keywords") });
-  if (ai.make) chips.push({ key: "ai-make", label: `✨ ${ai.make}`, onRemove: () => removeAi("make") });
-  if (ai.body_style) chips.push({ key: "ai-body", label: `✨ ${ai.body_style}`, onRemove: () => removeAi("body_style") });
-  if (ai.drivetrain) chips.push({ key: "ai-dt", label: `✨ ${ai.drivetrain}`, onRemove: () => removeAi("drivetrain") });
-  if (ai.fuel_type) chips.push({ key: "ai-fuel", label: `✨ ${ai.fuel_type}`, onRemove: () => removeAi("fuel_type") });
-  if (ai.title_status) chips.push({ key: "ai-title", label: `✨ ${ai.title_status} title`, onRemove: () => removeAi("title_status") });
-  if (ai.province) chips.push({ key: "ai-prov", label: `✨ ${ai.province}`, onRemove: () => removeAi("province") });
-  if (ai.odometer_min) chips.push({ key: "ai-odomin", label: `✨ ≥ ${num(ai.odometer_min)} km`, onRemove: () => removeAi("odometer_min") });
-  if (ai.odometer_max) chips.push({ key: "ai-odomax", label: `✨ ≤ ${num(ai.odometer_max)} km`, onRemove: () => removeAi("odometer_max") });
-  if (ai.price_min) chips.push({ key: "ai-pmin", label: `✨ ≥ ${fmt.currency(ai.price_min)}`, onRemove: () => removeAi("price_min") });
-  if (ai.price_max) chips.push({ key: "ai-pmax", label: `✨ ≤ ${fmt.currency(ai.price_max)}`, onRemove: () => removeAi("price_max") });
-  if (ai.year_min) chips.push({ key: "ai-ymin", label: `✨ ${ai.year_min}+`, onRemove: () => removeAi("year_min") });
-  if (ai.year_max) chips.push({ key: "ai-ymax", label: `✨ ≤ ${ai.year_max}`, onRemove: () => removeAi("year_max") });
-  if (ai.condition_min) chips.push({ key: "ai-cond", label: `✨ Condition ${ai.condition_min}+`, onRemove: () => removeAi("condition_min") });
+  }
 
   const filterKey = [
     tab, sort, make, bodyStyle, province, conditionMin,
@@ -318,7 +297,6 @@ export function SearchView({
       <AuctionTabs value={tab} onChange={setTab} counts={counts} />
 
       <div className="lg:grid lg:grid-cols-[16rem_1fr] lg:gap-6">
-        {/* Desktop: sticky left rail */}
         <aside className="hidden lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto">
           {filterPanel}
         </aside>
@@ -335,7 +313,6 @@ export function SearchView({
             onToggleFilters={() => setShowFilters((s) => !s)}
             loading={aiLoading}
           />
-          {/* Mobile/tablet: panel opens inline, right below the Filters button */}
           {showFilters && <div className="lg:hidden">{filterPanel}</div>}
           {chips.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
@@ -348,7 +325,7 @@ export function SearchView({
           {aiLoading ? (
             <ResultsSkeleton />
           ) : (
-            <PaginatedResults key={filterKey} items={results} nowMs={now} />
+            <PaginatedResults key={filterKey} items={results} nowMs={nowMs} />
           )}
         </div>
       </div>

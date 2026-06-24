@@ -1,23 +1,10 @@
-/*
-  Auction phase derivation. The dataset's auction_start values are synthetic and
-  all in the past, so (per the challenge) we normalize them relative to "now".
-
-  Each vehicle gets a deterministic synthetic start time, derived from a hash of
-  its id and anchored to a per-session reference (`anchorMs`, captured once at
-  request time). Because the start is FIXED at the anchor, real time advancing
-  past it moves a vehicle upcoming → live → ended and makes countdowns tick.
-
-  Distribution at the anchor moment: ~40% live, ~40% upcoming, ~20% ended.
-*/
 import type { Vehicle } from "@/lib/contracts/vehicle";
 
 export type AuctionPhase = "upcoming" | "live" | "ended";
 
 const MIN = 60_000;
-/** OPENLANE-style "always-on 45-minute auctions". */
 export const LIVE_DURATION_MS = 45 * MIN;
-
-/** FNV-1a hash → stable unsigned int per id. */
+const SPREAD_MIN = 5 * 24 * 60; // upcoming/ended spread ~5 days each → a ~10-day calendar
 function hashId(id: string): number {
   let h = 2166136261;
   for (let i = 0; i < id.length; i++) {
@@ -26,21 +13,17 @@ function hashId(id: string): number {
   }
   return h >>> 0;
 }
-
-/** Fixed (anchor-relative) start time for a vehicle's auction. */
-export function auctionStartMs(id: string, anchorMs: number): number {
+export function auctionStartMs(id: string, auctionNowMs: number): number {
   const h = hashId(id);
   const bucket = h % 100;
   if (bucket < 40) {
-    // Live: started 0–44 min ago, so it's mid-window at the anchor.
-    return anchorMs - (h % 45) * MIN;
+    return auctionNowMs - (h % 45) * MIN;
   }
   if (bucket < 80) {
-    // Upcoming: starts 1 min – 72 h ahead.
-    return anchorMs + (1 + (h % (72 * 60))) * MIN;
+    return auctionNowMs + (1 + (h % SPREAD_MIN)) * MIN;
   }
-  // Ended: finished before the anchor.
-  return anchorMs - (LIVE_DURATION_MS + (1 + (h % 2880)) * MIN);
+
+  return auctionNowMs - (LIVE_DURATION_MS + (1 + (h % SPREAD_MIN)) * MIN);
 }
 
 export interface AuctionState {
@@ -51,10 +34,10 @@ export interface AuctionState {
 
 export function auctionState(
   id: string,
-  anchorMs: number,
+  auctionNowMs: number,
   nowMs: number,
 ): AuctionState {
-  const startMs = auctionStartMs(id, anchorMs);
+  const startMs = auctionStartMs(id, auctionNowMs);
   const endMs = startMs + LIVE_DURATION_MS;
   const phase: AuctionPhase =
     nowMs < startMs ? "upcoming" : nowMs < endMs ? "live" : "ended";
@@ -72,8 +55,6 @@ function formatDuration(ms: number): string {
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
 }
-
-/** Short label: "Ends in 12m 4s" · "Starts in 3h 5m" · "Auction ended". */
 export function auctionCountdownLabel(state: AuctionState, nowMs: number): string {
   if (state.phase === "ended") return "Auction ended";
   const target = state.phase === "live" ? state.endMs : state.startMs;
@@ -84,8 +65,6 @@ export function auctionCountdownLabel(state: AuctionState, nowMs: number): strin
 export type CountdownParts =
   | { phase: "ended" }
   | { phase: "live" | "upcoming"; d: number; h: number; m: number; s: number };
-
-/** Pure time breakdown for the countdown — the i18n labelling lives in useCountdownLabel. */
 export function countdownParts(state: AuctionState, nowMs: number): CountdownParts {
   if (state.phase === "ended") return { phase: "ended" };
   const target = state.phase === "live" ? state.endMs : state.startMs;
@@ -98,12 +77,10 @@ export function countdownParts(state: AuctionState, nowMs: number): CountdownPar
     s: total % 60,
   };
 }
-
-/** Convenience: state for a full vehicle. */
 export function vehicleAuctionState(
   v: Pick<Vehicle, "id">,
-  anchorMs: number,
+  auctionNowMs: number,
   nowMs: number,
 ): AuctionState {
-  return auctionState(v.id, anchorMs, nowMs);
+  return auctionState(v.id, auctionNowMs, nowMs);
 }
