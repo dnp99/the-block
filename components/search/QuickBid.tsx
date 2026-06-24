@@ -36,11 +36,7 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
     setConfirming(false);
   }
 
-  const label = confirming
-    ? `Confirm bid ${formatCurrency(min)}`
-    : override
-      ? `Raise to ${formatCurrency(min)}`
-      : `Quick bid ${formatCurrency(min)}`;
+  const label = confirming ? `Confirm ${formatCurrency(min)}` : `Bid ${formatCurrency(min)}`;
 
   return (
     <button
@@ -48,7 +44,7 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
       onClick={handle}
       aria-label={`Quick bid ${formatCurrency(min)} on ${vehicle.year} ${vehicle.make} ${vehicle.model}`}
       className={cn(
-        "relative z-[2] mt-1 w-full cursor-pointer rounded-xl border px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+        "relative z-[2] mt-1.5 cursor-pointer whitespace-nowrap rounded-lg border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
         confirming
           ? "border-primary-600 bg-primary-600 text-white hover:bg-primary-700"
           : "border-primary-600 text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/20",

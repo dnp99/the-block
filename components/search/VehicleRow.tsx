@@ -109,6 +109,7 @@ export function VehicleRow({
                 Buy now {formatCurrency(v.buy_now_price)}
               </p>
             )}
+            {state.phase !== "ended" && <QuickBid vehicle={v} />}
           </div>
         </div>
 
@@ -125,8 +126,6 @@ export function VehicleRow({
           <Pill tone={damage.tone}>{damage.label}</Pill>
           <Pill tone={reserve.tone}>{reserve.label}</Pill>
         </div>
-
-        {state.phase !== "ended" && <QuickBid vehicle={v} />}
       </div>
     </div>
   );
