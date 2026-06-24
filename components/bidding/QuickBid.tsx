@@ -9,13 +9,15 @@ import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleTitle } from "@/lib/format";
 import { useFormat } from "@/hooks/useFormat";
 import { useToastMessages } from "@/hooks/useToastMessages";
-
-/*
-  One-tap quick bid from the browse list — OPENLANE-style "⚡ +$100". Sits above
-  the card (z-[2]) and stops propagation so it bids instead of navigating. Two-step
-  confirm guards against accidental taps; reuses the shared bid logic.
-*/
-export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
+export function QuickBid({
+  vehicle,
+  variant = "primary",
+  className,
+}: {
+  vehicle: Vehicle;
+  variant?: "primary" | "secondary";
+  className?: string;
+}) {
   const overrides = useBidOverrides();
   const override = overrides[vehicle.id];
   const min = minimumBid(vehicle, override);
@@ -48,10 +50,15 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
       onClick={handle}
       aria-label={t("quickBidAria", { amount: fmt.currency(min), vehicle: vehicleTitle(vehicle) })}
       className={cn(
-        "relative z-[2] inline-flex w-fit cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
-        confirming
-          ? "bg-primary-700 text-white hover:bg-primary-800"
-          : "bg-primary-600 text-white hover:bg-primary-700",
+        "relative z-[2] inline-flex w-fit cursor-pointer items-center justify-center gap-1 rounded-xl px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+        variant === "primary"
+          ? confirming
+            ? "bg-primary-700 text-white hover:bg-primary-800"
+            : "bg-primary-600 text-white hover:bg-primary-700"
+          : confirming
+            ? "bg-neutral-200 text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-600"
+            : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700",
+        className,
       )}
     >
       {confirming ? (

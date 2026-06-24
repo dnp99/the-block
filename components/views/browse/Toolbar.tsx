@@ -30,7 +30,6 @@ export function Toolbar({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        {/* Search — full width on mobile, grows on desktop */}
         <div className="relative w-full lg:flex-1">
           <svg
             aria-hidden
@@ -51,7 +50,7 @@ export function Toolbar({
           {loading ? (
             <span
               aria-label={t("searching")}
-              className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin rounded-full border-2 border-primary-500/30 border-t-primary-600"
+              className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-[skeleton-pulse_1.5s_ease-in-out_infinite] rounded-full bg-neutral-200 dark:bg-neutral-800"
             />
           ) : (
             query && (
@@ -69,7 +68,6 @@ export function Toolbar({
           )}
         </div>
 
-        {/* Filters + Sort: one row on mobile/tablet; individual controls at lg */}
         <div className="flex gap-2 lg:contents">
           <button
             type="button"

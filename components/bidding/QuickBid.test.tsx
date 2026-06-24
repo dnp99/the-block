@@ -13,10 +13,10 @@ describe("QuickBid", () => {
     renderWithIntl(<QuickBid vehicle={v} />);
     const btn = screen.getByRole("button");
 
-    fireEvent.click(btn); // first tap → confirm step, nothing placed yet
+    fireEvent.click(btn);
     expect(readBids()["q1"]).toBeUndefined();
 
-    fireEvent.click(btn); // second tap → places current + $100 increment
+    fireEvent.click(btn);
     expect(readBids()["q1"]?.amount).toBe(16600);
   });
 });

@@ -22,13 +22,14 @@
     "resultCount": "<strong>{count}</strong> sur {total} véhicules"
   },
   "sort": {
+    "year-asc": "Année la plus ancienne",
+    "year-desc": "Année la plus récente",
+    "make": "Marque",
+    "odometer-asc": "Kilométrage le plus bas",
+    "odometer-desc": "Kilométrage le plus élevé",
+    "seller": "Nom du vendeur",
     "ending": "Fin imminente",
-    "bids": "Plus d’enchères",
-    "price-asc": "Prix : croissant",
-    "price-desc": "Prix : décroissant",
-    "odometer": "Kilométrage le plus bas",
-    "year": "Année la plus récente",
-    "condition": "Meilleur état"
+    "starting": "Début imminent"
   },
   "pagination": {
     "showing": "Affichage de {shown} sur {total}",

@@ -22,13 +22,14 @@
     "resultCount": "<strong>{count}</strong> of {total} vehicles"
   },
   "sort": {
+    "year-asc": "Oldest year",
+    "year-desc": "Newest year",
+    "make": "Make",
+    "odometer-asc": "Mileage low",
+    "odometer-desc": "Mileage high",
+    "seller": "Seller name",
     "ending": "Ending soonest",
-    "bids": "Most bids",
-    "price-asc": "Price: low to high",
-    "price-desc": "Price: high to low",
-    "odometer": "Lowest km",
-    "year": "Newest year",
-    "condition": "Best condition"
+    "starting": "Starting soonest"
   },
   "pagination": {
     "showing": "Showing {shown} of {total}",

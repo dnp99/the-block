@@ -26,8 +26,8 @@ describe("Toolbar", () => {
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "tacoma" } });
     expect(props.onQuery).toHaveBeenCalledWith("tacoma");
 
-    fireEvent.change(screen.getByLabelText("Sort by"), { target: { value: "bids" } });
-    expect(props.onSort).toHaveBeenCalledWith("bids");
+    fireEvent.change(screen.getByLabelText("Sort by"), { target: { value: "make" } });
+    expect(props.onSort).toHaveBeenCalledWith("make");
 
     fireEvent.click(screen.getByRole("button", { name: /Filters/ }));
     expect(props.onToggleFilters).toHaveBeenCalledOnce();

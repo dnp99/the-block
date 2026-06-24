@@ -83,25 +83,41 @@ describe("applyFilters", () => {
     expect(applyFilters(fleet, { title_status: "salvage" }).map((v) => v.id)).toEqual(["c"]);
     expect(applyFilters(fleet, { condition_min: 4 }).map((v) => v.id).sort()).toEqual(["a", "b"]);
   });
+
+  it("uses starting_bid for effective price when current_bid is null (no bids yet)", () => {
+    const noBids = makeVehicle({ id: "d", current_bid: null, starting_bid: 5000 });
+    expect(applyFilters([noBids], { price_max: 6000 })).toHaveLength(1);
+    expect(applyFilters([noBids], { price_max: 4000 })).toHaveLength(0);
+  });
 });
 
 describe("sortVehicles", () => {
-  it("sorts price ascending and descending without mutating input", () => {
-    const asc = sortVehicles(fleet, "price-asc");
-    expect(asc.map((v) => v.id)).toEqual(["c", "a", "b"]);
-    expect(sortVehicles(fleet, "price-desc").map((v) => v.id)).toEqual(["b", "a", "c"]);
-    expect(fleet[0].id).toBe("a"); // original order intact
+  it("sorts mileage low and high without mutating input", () => {
+    expect(sortVehicles(fleet, "odometer-asc").map((v) => v.id)).toEqual(["b", "a", "c"]);
+    expect(sortVehicles(fleet, "odometer-desc").map((v) => v.id)).toEqual(["c", "a", "b"]);
+    expect(fleet[0].id).toBe("a");
   });
 
-  it("sorts by best condition", () => {
-    expect(sortVehicles(fleet, "condition").map((v) => v.id)).toEqual(["b", "a", "c"]);
+  it("sorts by make alphabetically (model as tiebreak)", () => {
+    expect(sortVehicles(fleet, "make").map((v) => v.id)).toEqual(["a", "c", "b"]);
   });
 
-  it("uses starting_bid for price when current_bid is null (no bids yet)", () => {
-    const noBids = makeVehicle({ id: "d", current_bid: null, starting_bid: 5000 });
-    const sorted = sortVehicles([...fleet, noBids], "price-asc");
-    expect(sorted[0].id).toBe("d"); // 5000 starting bid is the lowest
-    expect(applyFilters([noBids], { price_max: 6000 })).toHaveLength(1);
-    expect(applyFilters([noBids], { price_max: 4000 })).toHaveLength(0);
+  it("sorts by year, oldest and newest", () => {
+    const years = [
+      makeVehicle({ id: "y1", year: 2025 }),
+      makeVehicle({ id: "y2", year: 2018 }),
+      makeVehicle({ id: "y3", year: 2022 }),
+    ];
+    expect(sortVehicles(years, "year-asc").map((v) => v.id)).toEqual(["y2", "y3", "y1"]);
+    expect(sortVehicles(years, "year-desc").map((v) => v.id)).toEqual(["y1", "y3", "y2"]);
+  });
+
+  it("sorts by seller name", () => {
+    const sellers = [
+      makeVehicle({ id: "s1", selling_dealership: "Zenith Motors" }),
+      makeVehicle({ id: "s2", selling_dealership: "Apex Auto" }),
+      makeVehicle({ id: "s3", selling_dealership: "Maple Cars" }),
+    ];
+    expect(sortVehicles(sellers, "seller").map((v) => v.id)).toEqual(["s2", "s3", "s1"]);
   });
 });
