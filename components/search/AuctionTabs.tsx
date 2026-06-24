@@ -19,7 +19,11 @@ export function AuctionTabs({
 }) {
   const t = useTranslations("tabs");
   return (
-    <div role="tablist" aria-label="Auction status" className="flex gap-1 border-b border-line">
+    <div
+      role="tablist"
+      aria-label="Auction status"
+      className="flex gap-1 overflow-x-auto border-b border-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
       {TAB_KEYS.map((key) => {
         const active = value === key;
         return (
@@ -29,7 +33,7 @@ export function AuctionTabs({
             aria-selected={active}
             onClick={() => onChange(key)}
             className={cn(
-              "relative flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:px-4",
+              "relative flex shrink-0 cursor-pointer items-center gap-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:px-4",
               active ? "text-primary-700" : "text-ink-muted hover:text-ink",
             )}
           >
@@ -45,7 +49,7 @@ export function AuctionTabs({
             {t(key)}
             <span
               className={cn(
-                "rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+                "hidden rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums sm:inline",
                 active
                   ? "bg-primary-100 text-primary-700"
                   : "bg-neutral-100 text-ink-muted dark:bg-neutral-800",

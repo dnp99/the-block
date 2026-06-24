@@ -15,16 +15,28 @@ const tones: Record<PillTone, string> = {
   red: "bg-error-soft text-error dark:bg-error/20 dark:text-error-soft",
 };
 
+// Bordered chips on a white surface (OPENLANE-style inventory rows).
+const outlineTones: Record<PillTone, string> = {
+  neutral: "border-line text-ink-muted",
+  blue: "border-primary-300 text-primary-700 dark:border-primary-800 dark:text-primary-300",
+  green: "border-success/40 text-success",
+  amber: "border-warning/50 text-warning",
+  red: "border-error/40 text-error",
+};
+
 interface PillProps extends HTMLAttributes<HTMLSpanElement> {
   tone?: PillTone;
+  variant?: "soft" | "outline";
 }
 
-export function Pill({ tone = "neutral", className, ...props }: PillProps) {
+export function Pill({ tone = "neutral", variant = "soft", className, ...props }: PillProps) {
   return (
     <span
       className={cn(
         "inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold",
-        tones[tone],
+        variant === "outline"
+          ? cn("border bg-surface", outlineTones[tone])
+          : tones[tone],
         className,
       )}
       {...props}

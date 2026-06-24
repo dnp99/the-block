@@ -3,7 +3,6 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { QuickBid } from "@/components/search/QuickBid";
-import { QuickBuyNow } from "@/components/search/QuickBuyNow";
 import { Pill } from "@/components/ui/Pill";
 import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
@@ -14,22 +13,22 @@ import {
   reserveStatusFor,
   titlePill,
 } from "@/components/vehicle/vehiclePills";
-import { type AuctionPhase, type AuctionState } from "@/lib/auction";
+import { type AuctionState } from "@/lib/auction";
 import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { capitalize, vehicleLocation, vehicleTitle } from "@/lib/format";
-import { useCountdownLabel } from "@/lib/useCountdown";
+import { useCountdownBadge } from "@/lib/useCountdown";
 import { useFormat } from "@/lib/useFormat";
 
-const PHASE_DOT: Record<AuctionPhase, string> = {
-  live: "bg-success",
-  upcoming: "bg-primary-500",
-  ended: "bg-ink-subtle",
-};
+const Sep = () => (
+  <span aria-hidden className="text-ink-subtle">
+    |
+  </span>
+);
 
-/** Compact inventory row: thumbnail + auction status (left) · details · bid (right). */
+/** OPENLANE-style inventory row: large thumbnail + details + bottom meta/bid row. */
 export function VehicleRow({
   vehicle: v,
   state,
@@ -41,114 +40,138 @@ export function VehicleRow({
 }) {
   const override = useBidOverrides()[v.id];
   const d = bidDisplay(v, state.phase, override);
-  const tBadge = useTranslations("badge");
   const tBid = useTranslations("bidding");
   const tPills = useTranslations("pills");
   const fmt = useFormat();
-  const countdownLabel = useCountdownLabel();
+  const badgeLabel = useCountdownBadge()(state, nowMs);
 
+  const ended = state.phase === "ended";
+  const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
   const condition = conditionPill(v.condition_grade);
   const damageCount = v.damage_notes.length;
   const reserve = reserveStatusFor(d.amount, v.reserve_price);
-  const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
-  const countdown = countdownLabel(state, nowMs);
-  const countdownColor = urgent
-    ? "font-semibold text-error"
-    : state.phase === "live"
-      ? "font-medium text-success"
-      : "text-ink-subtle";
+  // French puts a space before the colon.
+  const labelSep = fmt.locale.startsWith("fr") ? " : " : ": ";
+
+  // The bottom meta + bid row is rendered twice: full-width below on mobile, and
+  // inside the content column (right of the tall thumbnail) on desktop.
+  const footer = () => (
+    <div className="flex items-end justify-between gap-3">
+      <div className="min-w-0 text-xs text-ink-subtle">
+        <p className="truncate">{vehicleLocation(v)}</p>
+        <p className="truncate">{v.selling_dealership}</p>
+      </div>
+      <div className="shrink-0 text-right">
+        <p className="leading-tight">
+          <span className="text-[11px] text-ink-subtle">
+            {tBid(d.labelKey)}
+            {labelSep}
+          </span>
+          <span className="text-base font-bold text-ink sm:text-lg">{fmt.currency(d.amount)}</span>
+        </p>
+        {d.showCount ? (
+          <div className="flex justify-end">
+            <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
+          </div>
+        ) : (
+          state.phase !== "ended" && (
+            <p className="text-[11px] text-ink-subtle">{tBid("noBidsYet")}</p>
+          )
+        )}
+        {d.showActions && (
+          <div className="mt-2 flex items-center justify-end gap-2">
+            <Link
+              href={`/vehicle/${v.id}`}
+              className="rounded-lg bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700 transition hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
+            >
+              {tBid("placeABid")}
+            </Link>
+            <QuickBid vehicle={v} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="group flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:gap-4 sm:p-4">
-      {/* Left column: thumbnail + (mobile only) auction countdown */}
-      <div className="flex w-24 shrink-0 flex-col gap-1.5 self-start sm:w-40">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+    <article
+      className={cn(
+        "rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:p-4",
+        ended && "opacity-80",
+      )}
+    >
+      <div className="flex gap-3 sm:items-stretch sm:gap-5">
+        {/* Thumbnail — small on mobile, tall on desktop, with status badge */}
+        <div className="group relative aspect-[4/3] w-28 shrink-0 self-start overflow-hidden rounded-xl bg-neutral-100 sm:aspect-auto sm:min-h-44 sm:w-60 sm:self-stretch dark:bg-neutral-800">
           <VehicleImage
             src={v.images[0]}
             alt={vehicleTitle(v)}
-            sizes="(max-width: 640px) 6rem, 10rem"
+            sizes="(max-width: 640px) 7rem, 15rem"
           />
-          <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-surface/95 px-1.5 py-0.5 text-[11px] font-semibold text-ink shadow-sm backdrop-blur">
-            <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", PHASE_DOT[state.phase])} />
-            {tBadge(state.phase)}
+          <span
+            className={cn(
+              "absolute left-2 top-2 rounded-md px-2 py-0.5 text-[11px] font-semibold shadow-sm",
+              ended
+                ? "bg-ink text-white"
+                : urgent
+                  ? "bg-surface text-error"
+                  : "bg-surface/95 text-ink backdrop-blur",
+            )}
+          >
+            {badgeLabel}
           </span>
         </div>
-        <span
-          className={cn("px-0.5 text-xs leading-snug tabular-nums sm:hidden", countdownColor)}
-        >
-          {countdown}
-        </span>
-      </div>
 
-      {/* Right column: vehicle details + bid summary */}
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h3 className="truncate font-semibold">
-              <Link
-                href={`/vehicle/${v.id}`}
-                className="rounded text-ink transition hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-              >
-                {vehicleTitle(v)}
-              </Link>
-            </h3>
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-ink-muted sm:text-sm">
-              <span>
-                {v.trim} · {v.body_style}
+        {/* Content */}
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <h3 className="truncate text-base leading-tight sm:text-lg">
+            <Link
+              href={`/vehicle/${v.id}`}
+              className="rounded text-ink transition hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
+              <span className="font-medium text-ink-muted">
+                {v.year} {v.make}{" "}
               </span>
-              <span aria-hidden className="text-ink-subtle">
-                ·
-              </span>
+              <span className="font-bold">{v.model}</span>
+            </Link>
+          </h3>
+
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-ink-muted sm:text-sm">
+            <span>{fmt.km(v.odometer_km)}</span>
+            <Sep />
+            <span>{v.drivetrain}</span>
+            <Sep />
+            <span className="truncate">{v.trim}</span>
+            <span className="hidden items-center gap-x-1.5 sm:inline-flex">
+              <Sep />
               <VinCopy vin={v.vin} className="text-xs" />
-            </div>
+            </span>
           </div>
-          <div className="shrink-0 text-right">
-            {/* Desktop: countdown sits with the bid info (mobile shows it under the thumbnail) */}
-            <p className={cn("hidden text-[11px] leading-tight tabular-nums sm:block", countdownColor)}>
-              {countdown}
-            </p>
-            <p className="text-[11px] text-ink-subtle">{tBid(d.labelKey)}</p>
-            <p className="text-base font-semibold text-ink">{fmt.currency(d.amount)}</p>
-            {d.showCount ? (
-              <div className="mt-0.5 hidden justify-end text-xs sm:flex">
-                <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
-              </div>
-            ) : (
-              state.phase !== "ended" && (
-                <p className="hidden text-[11px] text-ink-subtle sm:block">{tBid("noBidsYet")}</p>
-              )
-            )}
-            {d.showActions && (
-              <div className="mt-1.5 flex flex-col items-end gap-1.5 sm:flex-row sm:justify-end">
-                <QuickBid vehicle={v} />
-                <QuickBuyNow vehicle={v} />
-              </div>
-            )}
-          </div>
-        </div>
 
-        <p className="truncate text-xs text-ink-muted">
-          {fmt.km(v.odometer_km)} · {v.drivetrain} · {v.transmission} · {v.fuel_type}
-        </p>
-        <p className="hidden truncate text-xs text-ink-subtle sm:block">
-          {vehicleLocation(v)} · {v.selling_dealership}
-        </p>
-
-        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <Pill tone={condition.tone}>{condition.label}</Pill>
-          {v.title_status !== "clean" && (
-            <Pill tone={titlePill(v.title_status).tone}>
-              {tPills(`title${capitalize(v.title_status)}`)}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Pill variant="outline" tone={condition.tone}>
+              {condition.label}
             </Pill>
-          )}
-          <Pill tone={damagePill(v).tone}>
-            {damageCount === 0 ? tPills("noDamage") : tPills("disclosures", { count: damageCount })}
-          </Pill>
-          <Pill tone={reserve.tone}>
-            {tPills(reserve.met ? "reserveMet" : "reserveNotMet")}
-          </Pill>
+            {v.title_status !== "clean" && (
+              <Pill variant="outline" tone={titlePill(v.title_status).tone}>
+                {tPills(`title${capitalize(v.title_status)}`)}
+              </Pill>
+            )}
+            <Pill variant="outline" tone={damagePill(v).tone}>
+              {damageCount === 0 ? tPills("noDamage") : tPills("disclosures", { count: damageCount })}
+            </Pill>
+            <Pill variant="outline" tone={reserve.tone}>
+              {tPills(reserve.met ? "reserveMet" : "reserveNotMet")}
+            </Pill>
+          </div>
+
+          {/* Desktop footer — pinned to the bottom of the content column */}
+          <div className="mt-auto hidden border-t border-line pt-2.5 sm:block">{footer()}</div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile footer — full width below the thumbnail */}
+      <div className="mt-3 border-t border-line pt-2.5 sm:hidden">{footer()}</div>
+    </article>
   );
 }

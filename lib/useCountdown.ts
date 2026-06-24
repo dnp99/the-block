@@ -20,3 +20,24 @@ export function useCountdownLabel() {
     return p.phase === "live" ? t("endsIn", { value }) : t("startsIn", { value });
   };
 }
+
+/*
+  Compact countdown for the thumbnail badge, single largest unit:
+  live → "2h left", upcoming → "Starts in 2h", ended → "Auction over".
+*/
+export function useCountdownBadge() {
+  const t = useTranslations("auction");
+  return (state: AuctionState, nowMs: number): string => {
+    const p = countdownParts(state, nowMs);
+    if (p.phase === "ended") return t("auctionOver");
+    const value =
+      p.d > 0
+        ? t("d", { n: p.d })
+        : p.h > 0
+          ? t("h", { n: p.h })
+          : p.m > 0
+            ? t("m", { n: p.m })
+            : t("s", { n: p.s });
+    return p.phase === "live" ? t("leftCompact", { value }) : t("startsIn", { value });
+  };
+}

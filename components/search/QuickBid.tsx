@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useToast } from "@/components/ui/Toaster";
-import { minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
+import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleTitle } from "@/lib/format";
@@ -11,9 +11,9 @@ import { useFormat } from "@/lib/useFormat";
 import { useToastMessages } from "@/lib/useToastMessages";
 
 /*
-  One-tap quick bid from the browse list. Sits above the card (z-[2]) and stops
-  propagation so it bids instead of navigating. Two-step confirm guards against
-  accidental taps; reuses the shared bid logic.
+  One-tap quick bid from the browse list — OPENLANE-style "⚡ +$100". Sits above
+  the card (z-[2]) and stops propagation so it bids instead of navigating. Two-step
+  confirm guards against accidental taps; reuses the shared bid logic.
 */
 export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
   const overrides = useBidOverrides();
@@ -24,7 +24,6 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
   const t = useTranslations("bidding");
   const fmt = useFormat();
   const tm = useToastMessages();
-  const amount = fmt.currency(min);
 
   function handle(e: React.MouseEvent) {
     e.preventDefault();
@@ -43,21 +42,28 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
     setConfirming(false);
   }
 
-  const label = confirming ? t("confirmBid", { amount }) : t("bid", { amount });
-
   return (
     <button
       type="button"
       onClick={handle}
-      aria-label={t("quickBidAria", { amount, vehicle: vehicleTitle(vehicle) })}
+      aria-label={t("quickBidAria", { amount: fmt.currency(min), vehicle: vehicleTitle(vehicle) })}
       className={cn(
-        "focus-visible:ring-primary-500 relative z-[2] w-fit cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:outline-none",
+        "relative z-[2] inline-flex w-fit cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
         confirming
-          ? "border-primary-600 bg-primary-600 hover:bg-primary-700 text-white"
-          : "border-primary-600 text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/20",
+          ? "bg-primary-700 text-white hover:bg-primary-800"
+          : "bg-primary-600 text-white hover:bg-primary-700",
       )}
     >
-      {label}
+      {confirming ? (
+        t("confirmBid", { amount: fmt.currency(min) })
+      ) : (
+        <>
+          <svg aria-hidden viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
+            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z" />
+          </svg>
+          {t("plusIncrement", { amount: fmt.currency(BID_INCREMENT) })}
+        </>
+      )}
     </button>
   );
 }
