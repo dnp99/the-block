@@ -41,8 +41,13 @@ in this file or the spec; reference token *names* (`bg-surface`, `primary-600`) 
 Components consume Tailwind utilities generated from those tokens — **never hardcode hex colors
 or arbitrary spacing**.
 
-1. **Surfaces:** page canvas = `bg-base` (slate-50); cards/inputs = `bg-surface` (white). Never gray cards.
-2. **Borders:** default `border` (slate-200), hover `border-strong` (slate-300). Never default to the strong border.
+Semantic token names (chosen to avoid doubled class names and a collision with the `primary`
+brand scale): surfaces `bg-canvas` / `bg-surface` / `bg-elevated`; text `text-ink` / `text-ink-muted`
+/ `text-ink-subtle`; borders `border-line` / `border-line-strong`; brand `primary-{50..900}`;
+semantic `success` / `warning` / `error`.
+
+1. **Surfaces:** page canvas = `bg-canvas` (slate-50); cards/inputs = `bg-surface` (white). Never gray cards.
+2. **Borders:** default `border-line` (slate-200), hover `border-line-strong` (slate-300). Never default to the strong border.
 3. **Buttons:** primary `bg-primary-600 hover:bg-primary-700 text-white`; secondary slate-100 → slate-200, no border.
 4. **Radius:** `rounded-2xl` cards/sections, `rounded-xl` buttons/inputs/pills.
 5. **Shadows:** one level per element — `shadow-sm` for cards. Never stack.
