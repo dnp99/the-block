@@ -83,7 +83,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
             }}
             aria-label="Your bid amount"
             aria-invalid={Boolean(error)}
-            className="w-full bg-transparent py-2 pl-1.5 pr-1 text-sm font-medium text-ink outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-full min-w-0 bg-transparent py-2 pl-1.5 pr-1 text-sm font-medium text-ink outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
           />
           <div className="flex flex-col self-stretch border-l border-line">
             <button
@@ -109,7 +109,9 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
             </button>
           </div>
         </div>
-        <Button onClick={() => place(current)}>Place bid</Button>
+        <Button onClick={() => place(current)} className="shrink-0">
+          Place bid
+        </Button>
       </div>
       {error ? (
         <p role="alert" className="text-xs font-medium text-error">

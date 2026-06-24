@@ -29,11 +29,13 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur lg:hidden">
-      <div className="mx-auto flex w-full max-w-xl flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-1.5 text-sm text-ink-muted">
-            Current bid{" "}
-            <span className="font-semibold text-ink">{formatCurrency(amount)}</span>
+      <div className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
+          <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 text-sm text-ink-muted">
+            <span className="whitespace-nowrap">
+              Current bid{" "}
+              <span className="font-semibold text-ink">{formatCurrency(amount)}</span>
+            </span>
             <span aria-hidden className="text-ink-subtle">·</span>
             <BidHistoryButton
               vehicle={v}
@@ -44,7 +46,7 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
           </span>
           <span
             className={cn(
-              "text-xs tabular-nums",
+              "shrink-0 text-xs tabular-nums",
               urgent
                 ? "font-semibold text-error"
                 : state.phase === "live"
