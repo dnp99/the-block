@@ -29,14 +29,16 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, min, vehicle.bid_count);
-      toast(`Bid placed — ${formatCurrency(min)}`, "success");
+      toast(`Bid placed successfully for ${formatCurrency(min)}`, "success");
     } catch {
       toast("Couldn’t place your bid, please try again", "error");
     }
     setConfirming(false);
   }
 
-  const label = confirming ? `Confirm ${formatCurrency(min)}` : `Bid ${formatCurrency(min)}`;
+  const label = confirming
+    ? `Confirm ${formatCurrency(min)}`
+    : `Bid ${formatCurrency(min)}`;
 
   return (
     <button
@@ -44,9 +46,9 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
       onClick={handle}
       aria-label={`Quick bid ${formatCurrency(min)} on ${vehicle.year} ${vehicle.make} ${vehicle.model}`}
       className={cn(
-        "relative z-[2] ml-auto mt-1.5 block w-fit cursor-pointer whitespace-nowrap rounded-lg border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+        "focus-visible:ring-primary-500 relative z-[2] mt-1.5 ml-auto block w-fit cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:outline-none",
         confirming
-          ? "border-primary-600 bg-primary-600 text-white hover:bg-primary-700"
+          ? "border-primary-600 bg-primary-600 hover:bg-primary-700 text-white"
           : "border-primary-600 text-primary-700 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/20",
       )}
     >

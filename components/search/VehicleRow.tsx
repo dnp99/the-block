@@ -46,13 +46,7 @@ export function VehicleRow({
   const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
 
   return (
-    <div className="group relative flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:gap-4 sm:p-4">
-      <Link
-        href={`/vehicle/${v.id}`}
-        aria-label={`View ${vehicleTitle(v)}`}
-        className="absolute inset-0 z-[1] rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-      />
-
+    <div className="group flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:gap-4 sm:p-4">
       {/* Left column: thumbnail + auction countdown */}
       <div className="flex w-24 shrink-0 flex-col gap-1.5 self-start sm:w-40">
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
@@ -84,7 +78,14 @@ export function VehicleRow({
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-ink">{vehicleTitle(v)}</h3>
+            <h3 className="truncate font-semibold">
+              <Link
+                href={`/vehicle/${v.id}`}
+                className="rounded text-ink transition hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              >
+                {vehicleTitle(v)}
+              </Link>
+            </h3>
             <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-ink-muted sm:text-sm">
               <span>
                 {v.trim} · {v.body_style}
