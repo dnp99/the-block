@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { QuickBid } from "@/components/search/QuickBid";
 import { Pill } from "@/components/ui/Pill";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { VinCopy } from "@/components/vehicle/VinCopy";
@@ -124,6 +125,8 @@ export function VehicleRow({
           <Pill tone={damage.tone}>{damage.label}</Pill>
           <Pill tone={reserve.tone}>{reserve.label}</Pill>
         </div>
+
+        {state.phase !== "ended" && <QuickBid vehicle={v} />}
       </div>
     </div>
   );
