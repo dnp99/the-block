@@ -216,9 +216,16 @@ everything after is layered on top.
 ## Project layout
 
 ```
-app/                     # routes — pages + api (Claude proxy)
-components/               # ui primitives, search, vehicle, layout
-lib/                      # contracts, data, filters, bids, auction, claude, prompts, i18n (+ tests)
+app/                      # routes — pages + api (Claude proxy)
+components/
+  shared/                 # design-system primitives + cross-page atoms
+  layout/                 # app chrome (header, theme/language toggles)
+  bidding/                # bid form/bar/panel, history, quick-bid (used by both pages)
+  views/browse/           # the browse page (app/page.tsx → SearchView)
+  views/vehicle/          # the VDP (app/vehicle/[id] → VehicleDetail)
+hooks/                    # client hooks (useFormat, useCountdown, useToastMessages)
+server/                   # server-only: Claude client, prompts, rate-limit
+lib/                      # pure logic + contracts + data + i18n (+ colocated tests)
 messages/                 # en.json / fr.json translation catalogs
 i18n/request.ts           # next-intl server config (cookie locale)
 data/vehicles.json        # the 200-vehicle dataset

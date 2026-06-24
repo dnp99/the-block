@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { VehicleDetail } from "@/components/vehicle/VehicleDetail";
+import { VehicleDetail } from "@/components/views/vehicle/VehicleDetail";
 import { getVehicleById } from "@/lib/data/vehicles";
 import { vehicleTitle } from "@/lib/format";
 

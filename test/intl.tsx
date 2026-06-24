@@ -5,7 +5,7 @@
 import { render, renderHook } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactElement, ReactNode } from "react";
-import { ToastProvider } from "@/components/ui/Toaster";
+import { ToastProvider } from "@/components/shared/Toaster";
 import en from "@/messages/en.json";
 import fr from "@/messages/fr.json";
 import type { Locale } from "@/lib/i18n";

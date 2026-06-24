@@ -42,10 +42,10 @@ key never reaches the client.
 
 | Layer | Where | Responsibility |
 |-------|-------|----------------|
-| **Presentation** | `components/` | UI primitives + feature components (search, vehicle, layout) |
+| **Presentation** | `components/` (`shared` · `layout` · `bidding` · `views/browse` · `views/vehicle`) + `hooks/` | Primitives, app chrome, the bidding domain, and per-page views |
 | **Domain logic** | `lib/` | Pure, testable logic: `filters`, `bids`, `auction`, `bidHistory`, `contracts` (types + validators) |
 | **Data** | `data/vehicles.json` → `lib/data` | Static import, validated once at load via `isVehicle` |
-| **AI proxy** | `app/api/*` + `lib/claude` + `lib/prompts` | Server-only Claude calls; structured-output prompts |
+| **AI proxy** | `app/api/*` + `server/claude` + `server/prompts` | Server-only Claude calls; structured-output prompts |
 
 The domain logic is deliberately framework-free (no React, no I/O), which is why it's the part
 that's unit-tested.

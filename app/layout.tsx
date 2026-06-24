@@ -4,7 +4,7 @@ import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Header } from "@/components/layout/Header";
-import { ToastProvider } from "@/components/ui/Toaster";
+import { ToastProvider } from "@/components/shared/Toaster";
 import "./globals.css";
 
 const inter = Inter({

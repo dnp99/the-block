@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/shared/Button";
 
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   const t = useTranslations("states");

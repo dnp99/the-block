@@ -1,4 +1,4 @@
-import { SearchView } from "@/components/search/SearchView";
+import { SearchView } from "@/components/views/browse/SearchView";
 import { getAllVehicles } from "@/lib/data/vehicles";
 
 // Auction phases are normalized to "now", so render per request (not at build time).
