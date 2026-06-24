@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { Pill } from "@/components/ui/Pill";
+import { ConditionSummary } from "@/components/vehicle/ConditionSummary";
 import {
   conditionDescriptor,
   conditionPill,
@@ -36,7 +37,7 @@ export function ConditionSection({ vehicle: v }: { vehicle: Vehicle }) {
         <Pill tone={title.tone}>{title.label}</Pill>
       </div>
 
-      {/* AI Summary slot — populated in the AI-condition slice. */}
+      <ConditionSummary id={v.id} />
 
       {explainer && (
         <div className={cn("flex items-start gap-2 rounded-xl border p-3", titleTone)}>

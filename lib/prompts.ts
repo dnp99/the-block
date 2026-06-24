@@ -10,6 +10,7 @@ import {
   FUEL_TYPES,
   PROVINCES,
   TITLE_STATUSES,
+  type Vehicle,
 } from "@/lib/contracts/vehicle";
 
 export const MAKES = [
@@ -61,3 +62,24 @@ export const SEARCH_TOOL: Anthropic.Tool = {
     },
   },
 };
+
+/* ── Condition summary ──────────────────────────────────────────────────── */
+
+export const CONDITION_SUMMARY_SYSTEM = `You help a used-vehicle auction buyer quickly judge a vehicle's condition. Given the inspection grade (1-5), the inspector's report, listed damage, and the title status, write a balanced 2-3 sentence plain-English summary to help them decide whether to bid.
+
+Rules:
+- Be factual and grounded ONLY in the data provided. Never invent specifics.
+- Lead with the overall condition, then flag the real concerns — especially a salvage/rebuilt title or significant damage.
+- Do NOT mention price or tell the buyer to bid; only summarize condition and risk.
+- No preamble, no markdown, no bullet points — just the sentences.`;
+
+export function conditionSummaryUserMessage(
+  v: Pick<Vehicle, "condition_grade" | "condition_report" | "damage_notes" | "title_status">,
+): string {
+  return [
+    `Condition grade: ${v.condition_grade} out of 5`,
+    `Title status: ${v.title_status}`,
+    `Inspector report: ${v.condition_report}`,
+    `Damage notes: ${v.damage_notes.length ? v.damage_notes.join("; ") : "None reported"}`,
+  ].join("\n");
+}
