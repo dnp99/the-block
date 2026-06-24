@@ -23,15 +23,6 @@ export function conditionDescriptor(grade: number): string {
   return "Rough";
 }
 
-/** One-line plain-English context for what a grade implies. */
-export function conditionContext(grade: number): string {
-  if (grade >= 4.5) return "Minimal wear, fully functional";
-  if (grade >= 4) return "Light wear, no major issues";
-  if (grade >= 3) return "Visible wear, mechanically sound";
-  if (grade >= 2) return "Notable wear or issues — inspect closely";
-  return "Significant damage — typically sold as-is";
-}
-
 /** Risk explainer for non-clean titles (null for clean). */
 export function titleExplainer(status: TitleStatus): string | null {
   switch (status) {

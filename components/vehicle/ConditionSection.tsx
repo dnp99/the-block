@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { Pill } from "@/components/ui/Pill";
 import {
-  conditionContext,
   conditionDescriptor,
   conditionPill,
   titleExplainer,
@@ -69,7 +68,6 @@ export function ConditionSection({ vehicle: v }: { vehicle: Vehicle }) {
             style={{ width: `${(v.condition_grade / 5) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-ink-subtle">{conditionContext(v.condition_grade)}</p>
       </div>
 
       <div>
