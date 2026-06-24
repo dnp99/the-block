@@ -17,6 +17,7 @@ import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
 import { effectivePrice } from "@/lib/format";
+import { toastMessages } from "@/lib/toasts";
 
 export interface PhasedVehicle {
   vehicle: Vehicle;
@@ -151,7 +152,7 @@ export function SearchView({
       } catch {
         if (cancelled) return;
         setAiResult({ query: q, filters: { keywords: q.split(/\s+/) } }); // fallback
-        toast("AI search unavailable — using basic search", "error");
+        toast(toastMessages.aiSearchUnavailable, "error");
       }
     }, cached ? 0 : 600);
     return () => {

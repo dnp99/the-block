@@ -7,6 +7,7 @@ import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { formatCurrency } from "@/lib/format";
+import { toastMessages } from "@/lib/toasts";
 
 export function BidForm({ vehicle }: { vehicle: Vehicle }) {
   const { toast } = useToast();
@@ -32,9 +33,9 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       setError(null);
       setConfirmBuyNow(false);
       setValue(String(buyNow + BID_INCREMENT));
-      toast(`Bought now — ${formatCurrency(buyNow)}`, "success");
+      toast(toastMessages.boughtNow(vehicle, buyNow), "success");
     } catch {
-      setError("Couldn’t complete buy now, please try again.");
+      setError(toastMessages.buyNowFailed);
     }
   }
 
@@ -53,9 +54,9 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       placeBid(vehicle.id, amount, vehicle.bid_count);
       setError(null);
       setValue(String(amount + BID_INCREMENT));
-      toast(`Bid placed — ${formatCurrency(amount)}`, "success");
+      toast(toastMessages.bidPlaced(vehicle, amount), "success");
     } catch {
-      setError("Couldn’t place your bid, please try again.");
+      setError(toastMessages.bidFailed);
     }
   }
 

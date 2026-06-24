@@ -5,6 +5,7 @@ import { InfoHint } from "@/components/ui/InfoHint";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toaster";
 import { postJson } from "@/lib/api-client";
+import { toastMessages } from "@/lib/toasts";
 
 // Module-level cache: avoids re-calling Claude when navigating back to a vehicle.
 const cache = new Map<string, string>();
@@ -48,7 +49,7 @@ export function ConditionSummary({ id }: { id: string }) {
         setSummary(summary);
       } catch {
         if (cancelled) return;
-        toast("AI summary unavailable", "error");
+        toast(toastMessages.aiSummaryUnavailable, "error");
       } finally {
         if (!cancelled) setLoading(false);
       }
