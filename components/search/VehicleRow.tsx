@@ -3,6 +3,8 @@ import { Pill } from "@/components/ui/Pill";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { VinCopy } from "@/components/vehicle/VinCopy";
 import { conditionPill, titlePill } from "@/components/vehicle/vehiclePills";
+import { auctionCountdownLabel, type AuctionPhase, type AuctionState } from "@/lib/auction";
+import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import {
   effectivePrice,
@@ -12,11 +14,26 @@ import {
   vehicleTitle,
 } from "@/lib/format";
 
+const PHASE_BADGE: Record<AuctionPhase, { label: string; dot: string }> = {
+  live: { label: "Live", dot: "bg-success" },
+  upcoming: { label: "Upcoming", dot: "bg-primary-500" },
+  ended: { label: "Ended", dot: "bg-ink-subtle" },
+};
+
 /** OPENLANE-style inventory row: thumbnail · details + badges · right-aligned bid. */
-export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
+export function VehicleRow({
+  vehicle: v,
+  state,
+  nowMs,
+}: {
+  vehicle: Vehicle;
+  state: AuctionState;
+  nowMs: number;
+}) {
   const condition = conditionPill(v.condition_grade);
   const title = titlePill(v.title_status);
   const hasBids = v.current_bid !== null;
+  const badge = PHASE_BADGE[state.phase];
 
   return (
     // Stretched-link pattern: the row is a div; an absolute Link overlay makes the
@@ -34,6 +51,10 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
           alt={vehicleTitle(v)}
           sizes="(max-width: 640px) 7rem, 11rem"
         />
+        <span className="absolute left-2 top-2 inline-flex items-center gap-1.5 rounded-full bg-surface/95 px-2 py-0.5 text-xs font-semibold text-ink shadow-sm backdrop-blur">
+          <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", badge.dot)} />
+          {badge.label}
+        </span>
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -73,11 +94,19 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
           {vehicleLocation(v)} · {v.selling_dealership}
         </p>
 
-        <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           <Pill tone={condition.tone}>{condition.label}</Pill>
           {v.title_status !== "clean" && (
             <Pill tone={title.tone}>{title.label}</Pill>
           )}
+          <span
+            className={cn(
+              "text-xs tabular-nums",
+              state.phase === "live" ? "font-medium text-success" : "text-ink-subtle",
+            )}
+          >
+            {auctionCountdownLabel(state, nowMs)}
+          </span>
         </div>
 
         {/* Bid below the details on mobile */}

@@ -1,13 +1,19 @@
 import { VehicleRow } from "@/components/search/VehicleRow";
-import type { Vehicle } from "@/lib/contracts/vehicle";
+import type { PhasedVehicle } from "@/components/search/SearchView";
 
-export function VehicleList({ vehicles }: { vehicles: Vehicle[] }) {
-  if (vehicles.length === 0) {
+export function VehicleList({
+  items,
+  nowMs,
+}: {
+  items: PhasedVehicle[];
+  nowMs: number;
+}) {
+  if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface px-4 py-16 text-center">
         <p className="text-sm font-semibold text-ink">No vehicles match your search</p>
         <p className="mt-1 text-sm text-ink-muted">
-          Try removing a filter or broadening your search.
+          Try a different tab, removing a filter, or broadening your search.
         </p>
       </div>
     );
@@ -15,8 +21,8 @@ export function VehicleList({ vehicles }: { vehicles: Vehicle[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      {vehicles.map((v) => (
-        <VehicleRow key={v.id} vehicle={v} />
+      {items.map(({ vehicle, state }) => (
+        <VehicleRow key={vehicle.id} vehicle={vehicle} state={state} nowMs={nowMs} />
       ))}
     </div>
   );
