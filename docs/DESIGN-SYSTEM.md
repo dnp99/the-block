@@ -102,7 +102,7 @@ One meaning per color — never mix.
 | `Toaster` | `components/shared/Toaster.tsx` | provider + `toast()` for non-blocking errors | ✅ |
 | `ThemeToggle` | `components/layout/ThemeToggle.tsx` | Sun/moon, toggles `.dark`, persists to `localStorage` | ✅ |
 | Countdown badge / label | `hooks/useCountdown.ts` | upcoming / live / ended + countdown (rendered inline) | ✅ |
-| `Input` / `SearchInput` | — | Text input with icon slot — inlined in `Toolbar` | ⏳ still inlined |
+| `Input` / `SearchInput` | inline | Inlined by design — only two inputs exist (Toolbar search, BidForm amount) and they're structurally different (bordered standalone vs. transparent field in a stepper), so no shared primitive | ✅ |
 
 ### Buttons
 - **Primary:** `bg-primary-600 hover:bg-primary-700 text-white`.

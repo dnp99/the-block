@@ -5,9 +5,7 @@ bottom. Each entry: what we decided, why, the trade-offs, and alternatives rejec
 
 ---
 
-## Next.js (App Router) over Vite + separate backend
-
-- **Status:** Accepted · **Date:** 2026-06-23
+## 1) Next.js (App Router) over Vite + separate backend
 
 **Context.** The challenge suggests "React + Vite" as one example, while stating *"none of
 these are required."* Two requirements drive the choice: (1) the AI features call the
@@ -35,15 +33,12 @@ React + Tailwind render the UI; two Route Handlers (`app/api/search`,
 |--------|---------|
 | Vite SPA, call Claude from the browser | Leaks the API key. Unacceptable. |
 | Vite SPA + separate Express/Railway backend | Secures the key but adds a second service, CORS, and a second deploy. (This was the original plan; changed.) |
-| Vite SPA, mocked/no live AI | Drops the headline differentiator for an AI-first role. |
 | **Next.js single app (chosen)** | Server boundary for the key, one deploy, no CORS. |
 
 This is purely an infrastructure choice — the product would be near-identical under Vite;
 the difference is *where the Claude calls run*.
 
-## Normalize synthetic auction timestamps to a live window around "now"
-
-- **Status:** Accepted · **Date:** 2026-06-23
+## 2) Normalize synthetic auction timestamps to a live window around "now"
 
 **Context.** The dataset's `auction_start` values are synthetic and all in the past, so taken
 literally every auction is "ended" — there'd be nothing live or upcoming to show. The challenge
@@ -75,9 +70,7 @@ showed empty**. Anchoring to the client clock makes freshness independent of ser
 **Alternatives rejected.** Use the raw timestamps (everything shows as ended); random assignment
 (non-deterministic — breaks SSR/hydration and is unstable across renders).
 
-## Synthesized bid history (no per-bid data in the dataset)
-
-- **Status:** Accepted · **Date:** 2026-06-23
+## 3) Synthesized bid history (no per-bid data in the dataset)
 
 **Context.** The dataset has only `current_bid` and `bid_count` — no list of individual bids,
 bidders, or timestamps. A "bid history" (clicking the bid count) therefore can't come from the
@@ -98,9 +91,7 @@ and identities masked.
 **Alternatives rejected.** Show only the user's local bids (usually empty); random history
 (non-deterministic, unstable across renders).
 
-## Bilingual EN/FR with next-intl, cookie locale (no URL routing)
-
-- **Status:** Accepted · **Date:** 2026-06-24
+## 4) Bilingual EN/FR with next-intl, cookie locale (no URL routing)
 
 **Context.** OPENLANE is a Canadian marketplace and Canada is officially bilingual, so EN/FR
 is both on-brand and a relevant signal for an AI-first SWE role. The data is already Canadian
@@ -138,9 +129,7 @@ dataset **enum values** (make / body / drivetrain / fuel — these are data, not
 URL-routed locales (SEO-correct but more work across every route — deferred); translating dataset
 enums (they're data values, not UI copy).
 
-## Persist browse filters in sessionStorage (not URL query params)
-
-- **Status:** Accepted · **Date:** 2026-06-24
+## 5) Persist browse filters in sessionStorage (not URL query params)
 
 **Context.** All browse state (tab, search query + AI filters, manual filters, slider ranges,
 sort) lives in `SearchView` local state. Opening a vehicle navigates to `/vehicle/[id]`, which
@@ -172,8 +161,6 @@ surface area. Also rejected: `localStorage` (persists across tabs/sessions — t
 would return days later to stale filters).
 
 ## Design & UX decisions (high level)
-
-Captured concisely; see `git log` for the change-by-change detail.
 
 - **Branding:** App presented as **Openlane** (the marketplace) in the header and page metadata.
 - **Theme:** **Light is the default** look; dark mode is opt-in

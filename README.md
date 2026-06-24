@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/the_block_repo.png" alt="The Block" width="880" />
-</p>
-
 # Openlane — The Block
 
 Buyer side of a vehicle auction platform. Browse 200 vehicles, inspect details, and place
@@ -135,7 +131,7 @@ persistence.
   *Deferred (phase 2):* the vehicle-detail descriptive body and the AI summary text stay English
   — see [DECISIONS.md](docs/DECISIONS.md)
 
-**AI (the differentiators)**
+**AI**
 - **Natural-language search** — e.g. *"AWD SUV under $20k, clean title in Ontario"* →
   Claude returns structured filters (via forced tool-use) → applied to the list, shown as
   editable ✨ chips

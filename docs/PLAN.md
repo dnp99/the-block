@@ -7,7 +7,7 @@ Single Next.js app, Vercel-only. AI-first. Full architecture/decisions live in
 ## Working agreement
 
 - Build in **vertical slices** — each is independently demoable.
-- Every slice ends **green**: `npm run typecheck`, `npm run lint`, `npm run build` pass.
+- Every slice ends **green**: `npm run typecheck`, `npm run lint`, `npm run test`, `npm run build` pass.
 - After each slice: **commit with a Conventional Commit message** (`feat:` / `fix:` /
   `chore:` / `test:` / `docs:`), then **pause for review** before the next.
 

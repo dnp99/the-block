@@ -13,7 +13,7 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "text-summary", "html"],
       // Coverage targets the logic / hooks / server / API layers. Components are
-      // the view layer — exercised by example tests, but not the coverage target.
+      // the view layer — exercised by example tests, but not the coverage target by design due to time constraint.
       include: ["lib/**/*.ts", "hooks/**/*.ts", "server/**/*.ts", "app/api/**/*.ts"],
       exclude: ["**/*.test.{ts,tsx}", "lib/data/**", "test/**"],
     },
