@@ -18,7 +18,7 @@ export function InfoHint({ label, className }: { label: string; className?: stri
       </button>
       <span
         role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-full z-30 mt-1.5 w-56 -translate-x-1/2 rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs leading-snug text-ink-muted opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100"
+        className="pointer-events-none absolute right-0 top-full z-30 mt-1.5 w-56 max-w-[calc(100vw-2rem)] rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs leading-snug text-ink-muted opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100"
       >
         {label}
       </span>

@@ -114,7 +114,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
             </button>
           </div>
         </div>
-        <Button onClick={() => place(current)} className="shrink-0">
+        <Button onClick={() => place(current)} className="flex-1 lg:flex-none">
           {t("placeBid")}
         </Button>
       </div>

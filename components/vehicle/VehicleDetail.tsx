@@ -27,7 +27,7 @@ export function VehicleDetail({
   const damage = damagePill(v);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pb-40 sm:px-6 lg:pb-6">
+    <div className="mx-auto w-full max-w-7xl px-4 pb-[calc(13rem+env(safe-area-inset-bottom))] sm:px-6 lg:pb-6">
       <div className="sticky top-14 z-20 -mx-4 border-b border-line/0 bg-canvas/90 px-4 py-3 backdrop-blur transition-colors sm:-mx-6 sm:px-6">
         <Link
           href="/"
