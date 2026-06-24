@@ -29,7 +29,7 @@ Anthropic SDK (`claude-haiku-4-5`, server-only) · Vitest. Data: `data/vehicles.
 | `feat: ai condition summary` | **AI condition summary** | `/api/condition-summary` on VDP; skeleton + cache + toast fallback | ⬜ |
 | `feat: live auction state` | **Live auction state** | Normalize `auction_start` → upcoming/live/ended pill + countdown | ⬜ |
 | `feat: polish & accessibility` | **Polish & a11y** | `error.tsx`, ThemeToggle, focus/keyboard/safe-area, mobile, empty/loading states | ⬜ |
-| `test: …` / `docs: …` | **Tests + docs** | Vitest (filters/bids/search-parser), `docs/design-system.md`, README (submission + AI-usage) | ⬜ |
+| `test: …` / `docs: …` | **Tests + docs** | Vitest (filters/bids/search-parser), README (submission + AI-usage). `docs/design-system.md` ✅ done early | ⬜ |
 | `chore: release` | **Submission** | Final pass, deploy, share link | ⬜ |
 
 ## Acceptance per slice
