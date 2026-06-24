@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { VehicleRow } from "@/components/search/VehicleRow";
 import type { PhasedVehicle } from "@/components/search/SearchView";
 
@@ -8,13 +11,12 @@ export function VehicleList({
   items: PhasedVehicle[];
   nowMs: number;
 }) {
+  const t = useTranslations("states");
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface px-4 py-16 text-center">
-        <p className="text-sm font-semibold text-ink">No vehicles match your search</p>
-        <p className="mt-1 text-sm text-ink-muted">
-          Try a different tab, removing a filter, or broadening your search.
-        </p>
+        <p className="text-sm font-semibold text-ink">{t("emptyTitle")}</p>
+        <p className="mt-1 text-sm text-ink-muted">{t("emptyBody")}</p>
       </div>
     );
   }

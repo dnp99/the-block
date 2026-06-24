@@ -1,12 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useToast } from "@/components/ui/Toaster";
 import { placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { formatCurrency } from "@/lib/format";
-import { toastMessages } from "@/lib/toasts";
+import { useFormat } from "@/lib/useFormat";
+import { useToastMessages } from "@/lib/useToastMessages";
 
 /*
   One-tap buy now from the browse list. Like QuickBid, but places a winning bid
@@ -17,12 +18,16 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
   const override = overrides[vehicle.id];
   const [confirming, setConfirming] = useState(false);
   const { toast } = useToast();
+  const t = useTranslations("bidding");
+  const fmt = useFormat();
+  const tm = useToastMessages();
 
   const buyNow = vehicle.buy_now_price;
   const currentBid = override?.amount ?? vehicle.current_bid ?? vehicle.starting_bid;
   if (buyNow === null || buyNow <= currentBid) return null;
 
   const price = buyNow;
+  const amount = fmt.currency(price);
 
   function handle(e: React.MouseEvent) {
     e.preventDefault();
@@ -34,9 +39,9 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, price, vehicle.bid_count);
-      toast(toastMessages.boughtNow(vehicle, price), "success");
+      toast(tm.boughtNow(vehicle, price), "success");
     } catch {
-      toast(toastMessages.buyNowFailed, "error");
+      toast(tm.buyNowFailed, "error");
     }
     setConfirming(false);
   }
@@ -45,7 +50,7 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
     <button
       type="button"
       onClick={handle}
-      aria-label={`Buy now for ${formatCurrency(price)}`}
+      aria-label={t("buyNowAria", { amount })}
       className={cn(
         "relative z-[2] w-fit cursor-pointer whitespace-nowrap rounded-lg border px-2.5 py-1 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
         confirming
@@ -53,7 +58,7 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
           : "border-line text-ink hover:bg-neutral-100 dark:hover:bg-neutral-800",
       )}
     >
-      {confirming ? `Confirm buy ${formatCurrency(price)}` : `Buy now ${formatCurrency(price)}`}
+      {confirming ? t("confirmBuyNow", { amount }) : t("buyNow", { amount })}
     </button>
   );
 }

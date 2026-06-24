@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AuctionTabs, type AuctionTab } from "@/components/search/AuctionTabs";
 import { FilterChips, type Chip } from "@/components/search/FilterChips";
@@ -17,7 +18,8 @@ import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
 import { effectivePrice } from "@/lib/format";
-import { toastMessages } from "@/lib/toasts";
+import { useFormat } from "@/lib/useFormat";
+import { useToastMessages } from "@/lib/useToastMessages";
 
 export interface PhasedVehicle {
   vehicle: Vehicle;
@@ -39,6 +41,7 @@ const isNarrowed = (range: Range, bounds: Range) =>
 function PaginatedResults({ items, nowMs }: { items: PhasedVehicle[]; nowMs: number }) {
   const [visibleCount, setVisibleCount] = useState(PAGE);
   const visible = items.slice(0, visibleCount);
+  const t = useTranslations("pagination");
 
   return (
     <>
@@ -46,14 +49,14 @@ function PaginatedResults({ items, nowMs }: { items: PhasedVehicle[]; nowMs: num
       {visibleCount < items.length && (
         <div className="flex flex-col items-center gap-2 pt-1">
           <p className="text-xs text-ink-subtle">
-            Showing {visible.length} of {items.length}
+            {t("showing", { shown: visible.length, total: items.length })}
           </p>
           <Button
             variant="secondary"
             onClick={() => setVisibleCount((c) => c + PAGE)}
             className="w-auto"
           >
-            Load more
+            {t("loadMore")}
           </Button>
         </div>
       )}
@@ -128,6 +131,11 @@ export function SearchView({
     filters: SearchFilters;
   } | null>(null);
   const { toast } = useToast();
+  const tBrowse = useTranslations("browse");
+  const tFilters = useTranslations("filters");
+  const tStates = useTranslations("states");
+  const aiSearchUnavailable = useToastMessages().aiSearchUnavailable;
+  const fmt = useFormat();
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -152,14 +160,14 @@ export function SearchView({
       } catch {
         if (cancelled) return;
         setAiResult({ query: q, filters: { keywords: q.split(/\s+/) } }); // fallback
-        toast(toastMessages.aiSearchUnavailable, "error");
+        toast(aiSearchUnavailable, "error");
       }
     }, cached ? 0 : 600);
     return () => {
       cancelled = true;
       window.clearTimeout(handle);
     };
-  }, [query, toast]);
+  }, [query, toast, aiSearchUnavailable]);
 
   // Effective AI filters: the parsed result for the current query, or provisional
   // keyword matching while the AI call is in flight. Derived (not stored) to keep
@@ -226,19 +234,19 @@ export function SearchView({
     setAiResult(null);
   };
 
-  const num = (n: number) => n.toLocaleString("en-CA");
+  const num = fmt.number;
   const chips: Chip[] = [];
   if (make) chips.push({ key: "make", label: make, onRemove: () => setMake("") });
   if (bodyStyle) chips.push({ key: "body", label: bodyStyle, onRemove: () => setBodyStyle("") });
   if (province) chips.push({ key: "prov", label: province, onRemove: () => setProvince("") });
   if (conditionMin)
-    chips.push({ key: "cond", label: `Condition ${conditionMin}+`, onRemove: () => setConditionMin("") });
+    chips.push({ key: "cond", label: tFilters("conditionPlus", { n: conditionMin }), onRemove: () => setConditionMin("") });
   if (isNarrowed(yearRange, bounds.year))
     chips.push({ key: "year", label: `${yearRange[0]}–${yearRange[1]}`, onRemove: () => setYearRange(bounds.year) });
   if (isNarrowed(odoRange, bounds.odo))
     chips.push({ key: "odo", label: `${num(odoRange[0])}–${num(odoRange[1])} km`, onRemove: () => setOdoRange(bounds.odo) });
   if (isNarrowed(priceRange, bounds.price))
-    chips.push({ key: "price", label: `$${num(priceRange[0])}–$${num(priceRange[1])}`, onRemove: () => setPriceRange(bounds.price) });
+    chips.push({ key: "price", label: `${fmt.currency(priceRange[0])}–${fmt.currency(priceRange[1])}`, onRemove: () => setPriceRange(bounds.price) });
 
   // AI-extracted constraints (✨), individually removable.
   const removeAi = (k: keyof SearchFilters) =>
@@ -259,8 +267,8 @@ export function SearchView({
   if (ai.province) chips.push({ key: "ai-prov", label: `✨ ${ai.province}`, onRemove: () => removeAi("province") });
   if (ai.odometer_min) chips.push({ key: "ai-odomin", label: `✨ ≥ ${num(ai.odometer_min)} km`, onRemove: () => removeAi("odometer_min") });
   if (ai.odometer_max) chips.push({ key: "ai-odomax", label: `✨ ≤ ${num(ai.odometer_max)} km`, onRemove: () => removeAi("odometer_max") });
-  if (ai.price_min) chips.push({ key: "ai-pmin", label: `✨ ≥ $${num(ai.price_min)}`, onRemove: () => removeAi("price_min") });
-  if (ai.price_max) chips.push({ key: "ai-pmax", label: `✨ ≤ $${num(ai.price_max)}`, onRemove: () => removeAi("price_max") });
+  if (ai.price_min) chips.push({ key: "ai-pmin", label: `✨ ≥ ${fmt.currency(ai.price_min)}`, onRemove: () => removeAi("price_min") });
+  if (ai.price_max) chips.push({ key: "ai-pmax", label: `✨ ≤ ${fmt.currency(ai.price_max)}`, onRemove: () => removeAi("price_max") });
   if (ai.year_min) chips.push({ key: "ai-ymin", label: `✨ ${ai.year_min}+`, onRemove: () => removeAi("year_min") });
   if (ai.year_max) chips.push({ key: "ai-ymax", label: `✨ ≤ ${ai.year_max}`, onRemove: () => removeAi("year_max") });
   if (ai.condition_min) chips.push({ key: "ai-cond", label: `✨ Condition ${ai.condition_min}+`, onRemove: () => removeAi("condition_min") });
@@ -301,9 +309,9 @@ export function SearchView({
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">Browse inventory</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink">{tBrowse("heading")}</h1>
         <p className="mt-1 text-sm text-ink-muted">
-          {vehicles.length} vehicles up for auction across Canada.
+          {tBrowse("subtitle", { count: vehicles.length })}
         </p>
       </div>
 
@@ -333,7 +341,7 @@ export function SearchView({
             <div className="flex flex-wrap items-center gap-2">
               <FilterChips chips={chips} onClearAll={reset} />
               {chips.some((c) => c.key.startsWith("ai-")) && (
-                <InfoHint label="AI interprets your search and can make mistakes. Remove or adjust any ✨ chip that's off." />
+                <InfoHint label={tStates("aiHint")} />
               )}
             </div>
           )}

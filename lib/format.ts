@@ -1,20 +1,39 @@
 import type { Vehicle } from "@/lib/contracts/vehicle";
 
-const cad = new Intl.NumberFormat("en-CA", {
-  style: "currency",
-  currency: "CAD",
-  maximumFractionDigits: 0,
-});
-const plain = new Intl.NumberFormat("en-CA");
+// Cache one formatter per locale (en-CA: "$22,800" · fr-CA: "22 800 $").
+const currencyFmt = new Map<string, Intl.NumberFormat>();
+const numberFmt = new Map<string, Intl.NumberFormat>();
 
-/** "$22,800" — whole dollars, CAD. */
-export function formatCurrency(n: number): string {
-  return cad.format(n);
+function currencyFormatter(locale: string): Intl.NumberFormat {
+  let f = currencyFmt.get(locale);
+  if (!f) {
+    f = new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "CAD",
+      maximumFractionDigits: 0,
+    });
+    currencyFmt.set(locale, f);
+  }
+  return f;
 }
 
-/** "47,731 km" */
-export function formatKm(n: number): string {
-  return `${plain.format(n)} km`;
+function numberFormatter(locale: string): Intl.NumberFormat {
+  let f = numberFmt.get(locale);
+  if (!f) {
+    f = new Intl.NumberFormat(locale);
+    numberFmt.set(locale, f);
+  }
+  return f;
+}
+
+/** "$22,800" (en-CA) · "22 800 $" (fr-CA) — whole dollars, CAD. */
+export function formatCurrency(n: number, locale = "en-CA"): string {
+  return currencyFormatter(locale).format(n);
+}
+
+/** "47,731 km" (en-CA) · "47 731 km" (fr-CA) */
+export function formatKm(n: number, locale = "en-CA"): string {
+  return `${numberFormatter(locale).format(n)} km`;
 }
 
 /** "3.8 / 5" */

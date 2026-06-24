@@ -1,17 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useToast } from "@/components/ui/Toaster";
 import { minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { formatCurrency } from "@/lib/format";
-import { toastMessages } from "@/lib/toasts";
+import { vehicleTitle } from "@/lib/format";
+import { useFormat } from "@/lib/useFormat";
+import { useToastMessages } from "@/lib/useToastMessages";
 
 /*
-  One-tap quick bid from the browse list. Sits above the card's stretched link
-  (z-[2]) and stops propagation, so it bids instead of navigating. Two-step
-  confirm guards against accidental taps; reuses the shared bid logic.
+  One-tap quick bid from the browse list. Sits above the card (z-[2]) and stops
+  propagation so it bids instead of navigating. Two-step confirm guards against
+  accidental taps; reuses the shared bid logic.
 */
 export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
   const overrides = useBidOverrides();
@@ -19,6 +21,10 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
   const min = minimumBid(vehicle, override);
   const [confirming, setConfirming] = useState(false);
   const { toast } = useToast();
+  const t = useTranslations("bidding");
+  const fmt = useFormat();
+  const tm = useToastMessages();
+  const amount = fmt.currency(min);
 
   function handle(e: React.MouseEvent) {
     e.preventDefault();
@@ -30,22 +36,20 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, min, vehicle.bid_count);
-      toast(toastMessages.bidPlaced(vehicle, min), "success");
+      toast(tm.bidPlaced(vehicle, min), "success");
     } catch {
-      toast(toastMessages.bidFailed, "error");
+      toast(tm.bidFailed, "error");
     }
     setConfirming(false);
   }
 
-  const label = confirming
-    ? `Confirm ${formatCurrency(min)}`
-    : `Bid ${formatCurrency(min)}`;
+  const label = confirming ? t("confirmBid", { amount }) : t("bid", { amount });
 
   return (
     <button
       type="button"
       onClick={handle}
-      aria-label={`Quick bid ${formatCurrency(min)} on ${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+      aria-label={t("quickBidAria", { amount, vehicle: vehicleTitle(vehicle) })}
       className={cn(
         "focus-visible:ring-primary-500 relative z-[2] w-fit cursor-pointer rounded-lg border px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:outline-none",
         confirming

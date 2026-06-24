@@ -1,7 +1,10 @@
 {
   "languageToggle": {
-    "label": "Language",
-    "switchTo": "Switch to {language}"
+    "label": "Language"
+  },
+  "browse": {
+    "heading": "Browse inventory",
+    "subtitle": "{count} vehicles up for auction across Canada."
   },
   "tabs": {
     "all": "All",
@@ -26,5 +29,91 @@
     "odometer": "Lowest km",
     "year": "Newest year",
     "condition": "Best condition"
+  },
+  "pagination": {
+    "showing": "Showing {shown} of {total}",
+    "loadMore": "Load more"
+  },
+  "filters": {
+    "title": "Filters",
+    "clearAll": "Clear all",
+    "make": "Make",
+    "bodyStyle": "Body style",
+    "province": "Province",
+    "minCondition": "Minimum condition",
+    "allMakes": "All makes",
+    "allBodyStyles": "All body styles",
+    "allProvinces": "All provinces",
+    "anyCondition": "Any condition",
+    "conditionPlus": "Condition {n}+",
+    "year": "Year",
+    "odometer": "Odometer (km)",
+    "price": "Price"
+  },
+  "chips": {
+    "clearAll": "Clear all",
+    "remove": "Remove filter {label}"
+  },
+  "states": {
+    "emptyTitle": "No vehicles match your search",
+    "emptyBody": "Try a different tab, removing a filter, or broadening your search.",
+    "aiHint": "AI interprets your search and can make mistakes. Remove or adjust any ✨ chip that's off.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "An unexpected error occurred. You can try again, or head back to browsing.",
+    "retry": "Try again",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you’re looking for doesn’t exist or has moved.",
+    "backToBrowse": "Back to browse"
+  },
+  "badge": {
+    "live": "Live",
+    "upcoming": "Upcoming",
+    "ended": "Ended"
+  },
+  "bidding": {
+    "starting": "Starting bid",
+    "current": "Current bid",
+    "sold": "Sold for",
+    "final": "Final bid",
+    "noBids": "No bids",
+    "noBidsYet": "No bids yet",
+    "bidCount": "{count, plural, one {# bid} other {# bids}}",
+    "bid": "Bid {amount}",
+    "confirmBid": "Confirm {amount}",
+    "buyNow": "Buy now {amount}",
+    "confirmBuyNow": "Confirm buy {amount}",
+    "quickBidAria": "Quick bid {amount} on {vehicle}",
+    "buyNowAria": "Buy now for {amount}"
+  },
+  "auction": {
+    "endsIn": "Ends in {value}",
+    "startsIn": "Starts in {value}",
+    "ended": "Auction ended",
+    "d": "{n}d",
+    "h": "{n}h",
+    "m": "{n}m",
+    "s": "{n}s"
+  },
+  "pills": {
+    "titleClean": "Clean title",
+    "titleRebuilt": "Rebuilt title",
+    "titleSalvage": "Salvage title",
+    "noDamage": "No damage",
+    "disclosures": "{count, plural, one {# disclosure} other {# disclosures}}",
+    "reserveMet": "Reserve met",
+    "reserveNotMet": "Reserve not met"
+  },
+  "history": {
+    "title": "Bid history",
+    "you": "You",
+    "footnote": "Bidder identities are masked. Prior bids are reconstructed for this prototype."
+  },
+  "toasts": {
+    "bidPlaced": "Bid placed — {amount} for {vehicle}",
+    "bidFailed": "Couldn’t place your bid, please try again",
+    "boughtNow": "Bought now — {amount} for {vehicle}",
+    "buyNowFailed": "Couldn’t complete buy now, please try again",
+    "aiSearchUnavailable": "AI search unavailable — using basic search",
+    "aiSummaryUnavailable": "AI summary unavailable"
   }
 }

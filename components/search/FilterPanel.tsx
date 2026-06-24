@@ -1,7 +1,9 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { RangeSlider } from "@/components/ui/RangeSlider";
 import { cn } from "@/lib/cn";
+import { useFormat } from "@/lib/useFormat";
 
 const selectClass =
   "w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30";
@@ -73,80 +75,82 @@ export interface FilterPanelProps {
 }
 
 export function FilterPanel(props: FilterPanelProps) {
+  const t = useTranslations("filters");
+  const fmt = useFormat();
   return (
     <div className="flex flex-col gap-5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-ink">Filters</h2>
+        <h2 className="text-sm font-semibold text-ink">{t("title")}</h2>
         {props.hasActiveFilters && (
           <button
             type="button"
             onClick={props.onClearAll}
             className="rounded text-xs font-medium text-primary-600 underline-offset-2 transition hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
           >
-            Clear all
+            {t("clearAll")}
           </button>
         )}
       </div>
 
       <Select
-        label="Make"
+        label={t("make")}
         value={props.make}
         onChange={props.onMake}
         options={props.makeOptions}
-        allLabel="All makes"
+        allLabel={t("allMakes")}
       />
       <Select
-        label="Body style"
+        label={t("bodyStyle")}
         value={props.bodyStyle}
         onChange={props.onBodyStyle}
         options={props.bodyStyleOptions}
-        allLabel="All body styles"
+        allLabel={t("allBodyStyles")}
       />
       <Select
-        label="Province"
+        label={t("province")}
         value={props.province}
         onChange={props.onProvince}
         options={props.provinceOptions}
-        allLabel="All provinces"
+        allLabel={t("allProvinces")}
       />
-      <Field label="Minimum condition">
+      <Field label={t("minCondition")}>
         <select
-          aria-label="Minimum condition"
+          aria-label={t("minCondition")}
           value={props.conditionMin}
           onChange={(e) => props.onConditionMin(e.target.value)}
           className={selectClass}
         >
-          <option value="">Any condition</option>
-          <option value="4">Condition 4+</option>
-          <option value="3">Condition 3+</option>
-          <option value="2">Condition 2+</option>
+          <option value="">{t("anyCondition")}</option>
+          <option value="4">{t("conditionPlus", { n: 4 })}</option>
+          <option value="3">{t("conditionPlus", { n: 3 })}</option>
+          <option value="2">{t("conditionPlus", { n: 2 })}</option>
         </select>
       </Field>
 
       <RangeSlider
-        label="Year"
+        label={t("year")}
         min={props.yearBounds[0]}
         max={props.yearBounds[1]}
         value={props.yearRange}
         onValueChange={props.onYearRange}
       />
       <RangeSlider
-        label="Odometer (km)"
+        label={t("odometer")}
         min={props.odoBounds[0]}
         max={props.odoBounds[1]}
         step={1000}
         value={props.odoRange}
         onValueChange={props.onOdoRange}
-        format={(n) => n.toLocaleString("en-CA")}
+        format={(n) => fmt.number(n)}
       />
       <RangeSlider
-        label="Price"
+        label={t("price")}
         min={props.priceBounds[0]}
         max={props.priceBounds[1]}
         step={1000}
         value={props.priceRange}
         onValueChange={props.onPriceRange}
-        format={(n) => `$${n.toLocaleString("en-CA")}`}
+        format={(n) => fmt.currency(n)}
       />
     </div>
   );

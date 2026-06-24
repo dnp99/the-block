@@ -5,7 +5,7 @@ import { InfoHint } from "@/components/ui/InfoHint";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toaster";
 import { postJson } from "@/lib/api-client";
-import { toastMessages } from "@/lib/toasts";
+import { useToastMessages } from "@/lib/useToastMessages";
 
 // Module-level cache: avoids re-calling Claude when navigating back to a vehicle.
 const cache = new Map<string, string>();
@@ -34,6 +34,7 @@ export function ConditionSummary({ id }: { id: string }) {
   const [summary, setSummary] = useState<string | null>(() => cache.get(id) ?? null);
   const [loading, setLoading] = useState(() => !cache.has(id));
   const { toast } = useToast();
+  const errorMessage = useToastMessages().aiSummaryUnavailable;
 
   useEffect(() => {
     if (cache.has(id)) return;
@@ -49,7 +50,7 @@ export function ConditionSummary({ id }: { id: string }) {
         setSummary(summary);
       } catch {
         if (cancelled) return;
-        toast(toastMessages.aiSummaryUnavailable, "error");
+        toast(errorMessage, "error");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -57,7 +58,7 @@ export function ConditionSummary({ id }: { id: string }) {
     return () => {
       cancelled = true;
     };
-  }, [id, toast]);
+  }, [id, toast, errorMessage]);
 
   if (loading) {
     return (

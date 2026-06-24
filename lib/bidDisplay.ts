@@ -11,9 +11,14 @@ import type { BidOverride } from "@/lib/contracts/bid";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { effectivePrice } from "@/lib/format";
 
+/** Stable key for the label, for i18n (the `label` string is the English default). */
+export type BidLabelKey = "starting" | "current" | "sold" | "final" | "noBids";
+
 export interface BidDisplay {
   /** Label above the amount, e.g. "Current bid" · "Starting bid" · "Sold for". */
   label: string;
+  /** i18n key matching `label` (translate via the `bidding` namespace). */
+  labelKey: BidLabelKey;
   /** Dollar figure to show. */
   amount: number;
   /** Number of bids (0 when none or not applicable). */
@@ -37,6 +42,7 @@ export function bidDisplay(
   if (phase === "upcoming") {
     return {
       label: "Starting bid",
+      labelKey: "starting",
       amount: v.starting_bid,
       count: 0,
       showCount: false,
@@ -55,6 +61,7 @@ export function bidDisplay(
     if (!hasBids) {
       return {
         label: "No bids",
+        labelKey: "noBids",
         amount: v.starting_bid,
         count: 0,
         showCount: false,
@@ -65,6 +72,7 @@ export function bidDisplay(
     }
     return {
       label: reserveMet ? "Sold for" : "Final bid",
+      labelKey: reserveMet ? "sold" : "final",
       amount,
       count,
       showCount: true,
@@ -77,6 +85,7 @@ export function bidDisplay(
   // live
   return {
     label: hasBids ? "Current bid" : "Starting bid",
+    labelKey: hasBids ? "current" : "starting",
     amount,
     count: hasBids ? count : 0,
     showCount: hasBids,

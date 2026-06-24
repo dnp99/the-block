@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { QuickBid } from "@/components/search/QuickBid";
 import { QuickBuyNow } from "@/components/search/QuickBuyNow";
@@ -13,17 +14,19 @@ import {
   reserveStatusFor,
   titlePill,
 } from "@/components/vehicle/vehiclePills";
-import { auctionCountdownLabel, type AuctionPhase, type AuctionState } from "@/lib/auction";
+import { type AuctionPhase, type AuctionState } from "@/lib/auction";
 import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { formatCurrency, formatKm, vehicleLocation, vehicleTitle } from "@/lib/format";
+import { capitalize, vehicleLocation, vehicleTitle } from "@/lib/format";
+import { useCountdownLabel } from "@/lib/useCountdown";
+import { useFormat } from "@/lib/useFormat";
 
-const PHASE_BADGE: Record<AuctionPhase, { label: string; dot: string }> = {
-  live: { label: "Live", dot: "bg-success" },
-  upcoming: { label: "Upcoming", dot: "bg-primary-500" },
-  ended: { label: "Ended", dot: "bg-ink-subtle" },
+const PHASE_DOT: Record<AuctionPhase, string> = {
+  live: "bg-success",
+  upcoming: "bg-primary-500",
+  ended: "bg-ink-subtle",
 };
 
 /** Compact inventory row: thumbnail + auction status (left) · details · bid (right). */
@@ -38,13 +41,17 @@ export function VehicleRow({
 }) {
   const override = useBidOverrides()[v.id];
   const d = bidDisplay(v, state.phase, override);
+  const tBadge = useTranslations("badge");
+  const tBid = useTranslations("bidding");
+  const tPills = useTranslations("pills");
+  const fmt = useFormat();
+  const countdownLabel = useCountdownLabel();
+
   const condition = conditionPill(v.condition_grade);
-  const title = titlePill(v.title_status);
-  const damage = damagePill(v);
+  const damageCount = v.damage_notes.length;
   const reserve = reserveStatusFor(d.amount, v.reserve_price);
-  const badge = PHASE_BADGE[state.phase];
   const urgent = state.phase === "live" && state.endMs - nowMs <= 120_000;
-  const countdown = auctionCountdownLabel(state, nowMs);
+  const countdown = countdownLabel(state, nowMs);
   const countdownColor = urgent
     ? "font-semibold text-error"
     : state.phase === "live"
@@ -62,8 +69,8 @@ export function VehicleRow({
             sizes="(max-width: 640px) 6rem, 10rem"
           />
           <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-surface/95 px-1.5 py-0.5 text-[11px] font-semibold text-ink shadow-sm backdrop-blur">
-            <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", badge.dot)} />
-            {badge.label}
+            <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", PHASE_DOT[state.phase])} />
+            {tBadge(state.phase)}
           </span>
         </div>
         <span
@@ -100,15 +107,15 @@ export function VehicleRow({
             <p className={cn("hidden text-[11px] leading-tight tabular-nums sm:block", countdownColor)}>
               {countdown}
             </p>
-            <p className="text-[11px] text-ink-subtle">{d.label}</p>
-            <p className="text-base font-semibold text-ink">{formatCurrency(d.amount)}</p>
+            <p className="text-[11px] text-ink-subtle">{tBid(d.labelKey)}</p>
+            <p className="text-base font-semibold text-ink">{fmt.currency(d.amount)}</p>
             {d.showCount ? (
               <div className="mt-0.5 hidden justify-end text-xs sm:flex">
                 <BidHistoryButton vehicle={v} count={d.count} override={override} nowMs={nowMs} />
               </div>
             ) : (
               state.phase !== "ended" && (
-                <p className="hidden text-[11px] text-ink-subtle sm:block">No bids yet</p>
+                <p className="hidden text-[11px] text-ink-subtle sm:block">{tBid("noBidsYet")}</p>
               )
             )}
             {d.showActions && (
@@ -121,7 +128,7 @@ export function VehicleRow({
         </div>
 
         <p className="truncate text-xs text-ink-muted">
-          {formatKm(v.odometer_km)} · {v.drivetrain} · {v.transmission} · {v.fuel_type}
+          {fmt.km(v.odometer_km)} · {v.drivetrain} · {v.transmission} · {v.fuel_type}
         </p>
         <p className="hidden truncate text-xs text-ink-subtle sm:block">
           {vehicleLocation(v)} · {v.selling_dealership}
@@ -129,9 +136,17 @@ export function VehicleRow({
 
         <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <Pill tone={condition.tone}>{condition.label}</Pill>
-          {v.title_status !== "clean" && <Pill tone={title.tone}>{title.label}</Pill>}
-          <Pill tone={damage.tone}>{damage.label}</Pill>
-          <Pill tone={reserve.tone}>{reserve.label}</Pill>
+          {v.title_status !== "clean" && (
+            <Pill tone={titlePill(v.title_status).tone}>
+              {tPills(`title${capitalize(v.title_status)}`)}
+            </Pill>
+          )}
+          <Pill tone={damagePill(v).tone}>
+            {damageCount === 0 ? tPills("noDamage") : tPills("disclosures", { count: damageCount })}
+          </Pill>
+          <Pill tone={reserve.tone}>
+            {tPills(reserve.met ? "reserveMet" : "reserveNotMet")}
+          </Pill>
         </div>
       </div>
     </div>

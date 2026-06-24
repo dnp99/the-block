@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 export interface Chip {
   key: string;
   label: string;
@@ -13,6 +15,7 @@ export function FilterChips({
   chips: Chip[];
   onClearAll: () => void;
 }) {
+  const t = useTranslations("chips");
   if (chips.length === 0) return null;
 
   return (
@@ -23,7 +26,7 @@ export function FilterChips({
           type="button"
           onClick={c.onRemove}
           className="inline-flex items-center gap-1 rounded-full bg-primary-50 py-1 pl-2.5 pr-2 text-xs font-medium capitalize text-primary-700 transition hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-primary-900/30 dark:text-primary-200 dark:hover:bg-primary-900/50"
-          aria-label={`Remove filter ${c.label}`}
+          aria-label={t("remove", { label: c.label })}
         >
           {c.label}
           <svg
@@ -44,7 +47,7 @@ export function FilterChips({
         onClick={onClearAll}
         className="rounded text-xs font-medium text-ink-muted underline-offset-2 transition hover:text-ink hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
       >
-        Clear all
+        {t("clearAll")}
       </button>
     </div>
   );

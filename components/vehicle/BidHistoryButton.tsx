@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import type { BidOverride } from "@/lib/contracts/bid";
@@ -20,9 +21,11 @@ export function BidHistoryButton({
   nowMs: number;
 }) {
   const [open, setOpen] = useState(false);
+  const tBid = useTranslations("bidding");
+  const tHistory = useTranslations("history");
 
   if (count <= 0) {
-    return <span className="text-sm text-ink-muted">No bids yet</span>;
+    return <span className="text-sm text-ink-muted">{tBid("noBidsYet")}</span>;
   }
 
   const entries = open ? buildBidHistory(vehicle, override, nowMs) : [];
@@ -34,10 +37,10 @@ export function BidHistoryButton({
         onClick={() => setOpen(true)}
         className="cursor-pointer rounded text-sm text-ink-muted underline decoration-dotted underline-offset-2 transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
       >
-        {count} {count === 1 ? "bid" : "bids"}
+        {tBid("bidCount", { count })}
       </button>
 
-      <Modal open={open} onClose={() => setOpen(false)} title="Bid history">
+      <Modal open={open} onClose={() => setOpen(false)} title={tHistory("title")}>
         <ul className="flex flex-col divide-y divide-line">
           {entries.map((e, i) => (
             <li key={i} className="flex items-center justify-between gap-3 py-2.5">
@@ -52,7 +55,7 @@ export function BidHistoryButton({
                 </span>
                 {e.isYou && (
                   <span className="rounded-full bg-success-soft px-1.5 py-0.5 text-[11px] font-semibold text-success">
-                    You
+                    {tHistory("you")}
                   </span>
                 )}
               </div>
@@ -66,7 +69,7 @@ export function BidHistoryButton({
           ))}
         </ul>
         <p className="mt-3 border-t border-line pt-3 text-xs text-ink-subtle">
-          Bidder identities are masked. Prior bids are reconstructed for this prototype.
+          {tHistory("footnote")}
         </p>
       </Modal>
     </>

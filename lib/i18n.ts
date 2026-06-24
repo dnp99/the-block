@@ -16,3 +16,8 @@ export const LOCALE_LABELS: Record<Locale, string> = { en: "EN", fr: "FR" };
 export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (LOCALES as readonly string[]).includes(value);
 }
+
+/** Map a UI locale to its Canadian BCP-47 tag for Intl formatting. */
+export function intlLocale(locale: string): string {
+  return locale === "fr" ? "fr-CA" : "en-CA";
+}

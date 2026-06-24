@@ -1,7 +1,10 @@
 {
   "languageToggle": {
-    "label": "Langue",
-    "switchTo": "Passer au {language}"
+    "label": "Langue"
+  },
+  "browse": {
+    "heading": "Parcourir l’inventaire",
+    "subtitle": "{count} véhicules aux enchères partout au Canada."
   },
   "tabs": {
     "all": "Tous",
@@ -26,5 +29,91 @@
     "odometer": "Kilométrage le plus bas",
     "year": "Année la plus récente",
     "condition": "Meilleur état"
+  },
+  "pagination": {
+    "showing": "Affichage de {shown} sur {total}",
+    "loadMore": "Afficher plus"
+  },
+  "filters": {
+    "title": "Filtres",
+    "clearAll": "Tout effacer",
+    "make": "Marque",
+    "bodyStyle": "Type de carrosserie",
+    "province": "Province",
+    "minCondition": "État minimum",
+    "allMakes": "Toutes les marques",
+    "allBodyStyles": "Tous les types",
+    "allProvinces": "Toutes les provinces",
+    "anyCondition": "Tout état",
+    "conditionPlus": "État {n}+",
+    "year": "Année",
+    "odometer": "Kilométrage (km)",
+    "price": "Prix"
+  },
+  "chips": {
+    "clearAll": "Tout effacer",
+    "remove": "Retirer le filtre {label}"
+  },
+  "states": {
+    "emptyTitle": "Aucun véhicule ne correspond à votre recherche",
+    "emptyBody": "Essayez un autre onglet, retirez un filtre ou élargissez votre recherche.",
+    "aiHint": "L’IA interprète votre recherche et peut faire des erreurs. Retirez ou ajustez toute puce ✨ inexacte.",
+    "errorTitle": "Une erreur s’est produite",
+    "errorBody": "Une erreur inattendue est survenue. Vous pouvez réessayer ou revenir à l’inventaire.",
+    "retry": "Réessayer",
+    "notFoundTitle": "Page introuvable",
+    "notFoundBody": "La page que vous recherchez n’existe pas ou a été déplacée.",
+    "backToBrowse": "Retour à l’inventaire"
+  },
+  "badge": {
+    "live": "En direct",
+    "upcoming": "À venir",
+    "ended": "Terminée"
+  },
+  "bidding": {
+    "starting": "Mise de départ",
+    "current": "Enchère actuelle",
+    "sold": "Vendu pour",
+    "final": "Enchère finale",
+    "noBids": "Aucune enchère",
+    "noBidsYet": "Aucune enchère pour l’instant",
+    "bidCount": "{count, plural, one {# enchère} other {# enchères}}",
+    "bid": "Enchérir {amount}",
+    "confirmBid": "Confirmer {amount}",
+    "buyNow": "Achat immédiat {amount}",
+    "confirmBuyNow": "Confirmer l’achat {amount}",
+    "quickBidAria": "Enchère rapide de {amount} sur {vehicle}",
+    "buyNowAria": "Achat immédiat pour {amount}"
+  },
+  "auction": {
+    "endsIn": "Se termine dans {value}",
+    "startsIn": "Débute dans {value}",
+    "ended": "Enchère terminée",
+    "d": "{n} j",
+    "h": "{n} h",
+    "m": "{n} min",
+    "s": "{n} s"
+  },
+  "pills": {
+    "titleClean": "Titre propre",
+    "titleRebuilt": "Titre reconstruit",
+    "titleSalvage": "Titre de récupération",
+    "noDamage": "Aucun dommage",
+    "disclosures": "{count, plural, one {# divulgation} other {# divulgations}}",
+    "reserveMet": "Prix de réserve atteint",
+    "reserveNotMet": "Réserve non atteinte"
+  },
+  "history": {
+    "title": "Historique des enchères",
+    "you": "Vous",
+    "footnote": "L’identité des enchérisseurs est masquée. Les enchères antérieures sont reconstituées pour ce prototype."
+  },
+  "toasts": {
+    "bidPlaced": "Enchère placée — {amount} pour {vehicle}",
+    "bidFailed": "Impossible de placer votre enchère, veuillez réessayer",
+    "boughtNow": "Achat immédiat — {amount} pour {vehicle}",
+    "buyNowFailed": "Impossible de finaliser l’achat immédiat, veuillez réessayer",
+    "aiSearchUnavailable": "Recherche IA indisponible — recherche standard utilisée",
+    "aiSummaryUnavailable": "Résumé IA indisponible"
   }
 }

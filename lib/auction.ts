@@ -81,6 +81,24 @@ export function auctionCountdownLabel(state: AuctionState, nowMs: number): strin
   return `${verb} ${formatDuration(Math.max(0, target - nowMs))}`;
 }
 
+export type CountdownParts =
+  | { phase: "ended" }
+  | { phase: "live" | "upcoming"; d: number; h: number; m: number; s: number };
+
+/** Pure time breakdown for the countdown — the i18n labelling lives in useCountdownLabel. */
+export function countdownParts(state: AuctionState, nowMs: number): CountdownParts {
+  if (state.phase === "ended") return { phase: "ended" };
+  const target = state.phase === "live" ? state.endMs : state.startMs;
+  const total = Math.floor(Math.max(0, target - nowMs) / 1000);
+  return {
+    phase: state.phase,
+    d: Math.floor(total / 86400),
+    h: Math.floor((total % 86400) / 3600),
+    m: Math.floor((total % 3600) / 60),
+    s: total % 60,
+  };
+}
+
 /** Convenience: state for a full vehicle. */
 export function vehicleAuctionState(
   v: Pick<Vehicle, "id">,
