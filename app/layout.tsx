@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import { Header } from "@/components/layout/Header";
 import { ToastProvider } from "@/components/ui/Toaster";
 import "./globals.css";
@@ -35,10 +36,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body className="flex min-h-full flex-col font-sans">
+        <Script id="tb-theme-init" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
         <ToastProvider>
           <Header />
           <main className="flex flex-1 flex-col">{children}</main>
