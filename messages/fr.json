@@ -91,7 +91,7 @@
     "minimum": "Enchère minimale {amount}",
     "enterAtLeast": "Saisissez au moins {amount}",
     "buyItNow": "Achat immédiat · {amount}",
-    "confirmBuyAt": "Confirmer — acheter à {amount}",
+    "confirmBuyAt": "Confirmer - acheter à {amount}",
     "cancel": "Annuler",
     "yourBidAmount": "Votre montant d’enchère",
     "increaseBy": "Augmenter l’enchère de {amount}",
@@ -127,11 +127,11 @@
     "footnote": "L’identité des enchérisseurs est masquée. Les enchères antérieures sont reconstituées pour ce prototype."
   },
   "toasts": {
-    "bidPlaced": "Enchère placée — {amount} pour {vehicle}",
+    "bidPlaced": "Enchère placée. {amount} pour {vehicle}",
     "bidFailed": "Impossible de placer votre enchère, veuillez réessayer",
-    "boughtNow": "Achat immédiat — {amount} pour {vehicle}",
+    "boughtNow": "Achat immédiat. {amount} pour {vehicle}",
     "buyNowFailed": "Impossible de finaliser l’achat immédiat, veuillez réessayer",
-    "aiSearchUnavailable": "Recherche IA indisponible — recherche standard utilisée",
+    "aiSearchUnavailable": "Recherche IA indisponible. Recherche standard utilisée",
     "aiSummaryUnavailable": "Résumé IA indisponible"
   }
 }

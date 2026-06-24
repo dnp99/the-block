@@ -91,7 +91,7 @@
     "minimum": "Minimum bid {amount}",
     "enterAtLeast": "Enter at least {amount}",
     "buyItNow": "Buy it now · {amount}",
-    "confirmBuyAt": "Confirm — buy at {amount}",
+    "confirmBuyAt": "Confirm - buy at {amount}",
     "cancel": "Cancel",
     "yourBidAmount": "Your bid amount",
     "increaseBy": "Increase bid by {amount}",
@@ -127,11 +127,11 @@
     "footnote": "Bidder identities are masked. Prior bids are reconstructed for this prototype."
   },
   "toasts": {
-    "bidPlaced": "Bid placed — {amount} for {vehicle}",
+    "bidPlaced": "Bid placed. {amount} for {vehicle}",
     "bidFailed": "Couldn’t place your bid, please try again",
-    "boughtNow": "Bought now — {amount} for {vehicle}",
+    "boughtNow": "Bought now. {amount} for {vehicle}",
     "buyNowFailed": "Couldn’t complete buy now, please try again",
-    "aiSearchUnavailable": "AI search unavailable — using basic search",
+    "aiSearchUnavailable": "AI search unavailable. Using basic search",
     "aiSummaryUnavailable": "AI summary unavailable"
   }
 }

@@ -24,12 +24,12 @@ context); this file is the complete reference.
 
 ```
 app/globals.css        → token VALUES (the only place hex/radius/shadow live)
-docs/design-system.md  → this file — full spec, names + rationale
+docs/DESIGN-SYSTEM.md  → this file — full spec, names + rationale
 CLAUDE.md              → enforced subset, always in agent context
 ```
 
-**Light is the default look** (white surfaces, light-gray canvas, blue accents — matching the
-OPENLANE marketplace). Dark mode is a `.dark` class on `<html>`, opt-in via the toggle (we do
+**Light is the default look** (white surfaces, light-gray canvas, blue accents). Dark mode is a
+`.dark` class on `<html>`, opt-in via the toggle (we do
 not follow the OS setting); tokens remap underneath, so the same markup themes correctly with
 no per-component color variants.
 
@@ -75,7 +75,7 @@ One meaning per color — never mix.
 | **Amber** (`warning`) | Caution | Condition 2.5–4, rebuilt title, reserve **not** met |
 | **Red** (`error`) | Problem | Condition < 2.5, salvage title, invalid bid |
 
-**Vehicle mappings** (implemented in `components/vehicle/vehiclePills.ts`):
+**Vehicle mappings** (implemented in `lib/vehiclePills.ts`):
 - Condition grade: `≥4` green · `2.5–4` amber · `<2.5` red
 - Title status: `clean` blue · `rebuilt` amber · `salvage` red
 

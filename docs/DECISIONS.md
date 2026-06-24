@@ -5,7 +5,7 @@ bottom. Each entry: what we decided, why, the trade-offs, and alternatives rejec
 
 ---
 
-## ADR 0001 — Next.js (App Router) over Vite + separate backend
+## Next.js (App Router) over Vite + separate backend
 
 - **Status:** Accepted · **Date:** 2026-06-23
 
@@ -41,7 +41,7 @@ React + Tailwind render the UI; two Route Handlers (`app/api/search`,
 This is purely an infrastructure choice — the product would be near-identical under Vite;
 the difference is *where the Claude calls run*.
 
-## ADR 0002 — Normalize synthetic auction timestamps to a live window around "now"
+## Normalize synthetic auction timestamps to a live window around "now"
 
 - **Status:** Accepted · **Date:** 2026-06-23
 
@@ -75,7 +75,7 @@ showed empty**. Anchoring to the client clock makes freshness independent of ser
 **Alternatives rejected.** Use the raw timestamps (everything shows as ended); random assignment
 (non-deterministic — breaks SSR/hydration and is unstable across renders).
 
-## ADR 0003 — Synthesized bid history (no per-bid data in the dataset)
+## Synthesized bid history (no per-bid data in the dataset)
 
 - **Status:** Accepted · **Date:** 2026-06-23
 
@@ -90,7 +90,7 @@ are overlaid on top labeled **"You"**. The modal carries a note that prior bids 
 and identities masked.
 
 **Consequences.**
-- ✅ A complete-feeling bid history with no real per-bid data; consistent with ADR 0002.
+- ✅ A complete-feeling bid history with no real per-bid data; consistent with the synthetic auction times.
 - ✅ The user's own bids remain genuinely real (from localStorage).
 - ⚠️ Prior bids are fabricated — clearly labeled in the UI and here. We only store the buyer's
   latest bid, so multiple own-bids collapse to one "You" entry.
@@ -98,7 +98,7 @@ and identities masked.
 **Alternatives rejected.** Show only the user's local bids (usually empty); random history
 (non-deterministic, unstable across renders).
 
-## ADR 0004 — Bilingual EN/FR with next-intl, cookie locale (no URL routing)
+## Bilingual EN/FR with next-intl, cookie locale (no URL routing)
 
 - **Status:** Accepted · **Date:** 2026-06-24
 
@@ -138,7 +138,7 @@ dataset **enum values** (make / body / drivetrain / fuel — these are data, not
 URL-routed locales (SEO-correct but more work across every route — deferred); translating dataset
 enums (they're data values, not UI copy).
 
-## ADR 0005 — Persist browse filters in sessionStorage (not URL query params)
+## Persist browse filters in sessionStorage (not URL query params)
 
 - **Status:** Accepted · **Date:** 2026-06-24
 
@@ -176,7 +176,7 @@ would return days later to stale filters).
 Captured concisely; see `git log` for the change-by-change detail.
 
 - **Branding:** App presented as **Openlane** (the marketplace) in the header and page metadata.
-- **Theme:** **Light is the default** look (matches the OPENLANE marketplace); dark mode is opt-in
+- **Theme:** **Light is the default** look; dark mode is opt-in
   via the toggle, not driven by the OS setting.
 - **Inventory layout:** **List rows**, not a card grid — fits more per row (VIN, specs, badges) and
   mirrors OPENLANE.

@@ -6,7 +6,7 @@ canonical set of instructions for any AI coding agent working in this repo.
 See `CLAUDE.md` for:
 
 - Stack and project structure
-- Design-system rules (and the canonical spec in `docs/design-system.md`)
+- Design-system rules (and the canonical spec in `docs/DESIGN-SYSTEM.md`)
 - AI integration conventions (server-only key, prompt location, structured-output validation, fallbacks)
 - Error-handling tiers and bid rules
 - The mandatory pre-commit checklist

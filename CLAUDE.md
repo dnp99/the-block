@@ -33,7 +33,7 @@ npm run test
 
 ## Design system (mandatory)
 
-**Canonical spec: [`docs/design-system.md`](docs/design-system.md) — read it before any UI work.**
+**Canonical spec: [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) — read it before any UI work.**
 The rules below are the always-in-context enforced subset; the spec is the full reference.
 Token **values** live only in `app/globals.css` under `@theme` — never repeat hex/spacing values
 in this file or the spec; reference token *names* (`bg-surface`, `primary-600`) instead.

@@ -52,7 +52,7 @@ the API routes and never reaches the browser.
 | --- | --- |
 | `npm run dev` | Dev server (:3000) |
 | `npm run build` | Production build |
-| `npm run test` | Vitest (154 tests) |
+| `npm run test` | Vitest (157 tests) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 
@@ -69,6 +69,33 @@ the API routes and never reaches the browser.
 - **Persistence:** `localStorage` for bids (versioned + type-guarded). Dataset is a static
   bundled import of `data/vehicles.json`.
 - **Tests:** Vitest
+
+---
+
+## Assumptions & scope
+
+**Built:** the full buyer journey — browse (200 vehicles, status tabs, filters, sort,
+pagination), vehicle detail (gallery, condition & disclosures, dealer), and the complete bidding
+flow (place / quick / buy-now) — plus the two AI features, EN/FR i18n, dark mode, and filter
+persistence.
+
+**Simplified / assumed:**
+- **No database or auth.** Bids live in the browser's `localStorage` (per-device, no accounts);
+  the 200-vehicle dataset is a static bundled import.
+- **Synthetic auction times.** The dataset's `auction_start` values are all in the past, so
+  schedules are deterministically normalized to "now" (anchored to the viewer's clock) — a
+  prototype normalization the challenge's data note permits.
+- **Reconstructed bid history.** The dataset has only a bid *count*, so prior bids are synthesized
+  with masked bidders and labeled as such; your own bids are real.
+- **AI is additive, never required.** With no `ANTHROPIC_API_KEY` the app fully works (search
+  falls back to keyword; the condition summary is skipped).
+- **Single-instance infra.** The per-IP rate limit and per-query cache are in-memory (a
+  multi-instance deploy would use a shared store like Redis).
+- **Placeholders & phase-2 i18n.** Photos are `placehold.co` URLs; the vehicle-detail descriptive
+  body and AI-summary text stay English for now.
+
+**Out of scope (deliberate):** watchlist / saved searches, vehicle compare, a live bid feed, and
+`/en` `/fr` URL routing — collected under *What I'd do with more time*.
 
 ---
 
@@ -106,7 +133,7 @@ the API routes and never reaches the browser.
   countdowns and plurals ("1 bid" / "1 enchère")
 - Covered: browse, filters, cards, the **full bidding flow**, toasts, and error/not-found pages.
   *Deferred (phase 2):* the vehicle-detail descriptive body and the AI summary text stay English
-  — see [ADR 0004](docs/DECISIONS.md)
+  — see [DECISIONS.md](docs/DECISIONS.md)
 
 **AI (the differentiators)**
 - **Natural-language search** — e.g. *"AWD SUV under $20k, clean title in Ontario"* →
@@ -119,30 +146,30 @@ the API routes and never reaches the browser.
 
 ## Notable decisions
 
-System diagrams and the layer breakdown are in **[`docs/architecture.md`](docs/architecture.md)**;
+System diagrams and the layer breakdown are in **[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)**;
 full decision rationale (with alternatives rejected) lives in
 **[`docs/DECISIONS.md`](docs/DECISIONS.md)**. Highlights:
 
 - **Next.js single app over Vite + a separate backend** — the AI features need a server
   boundary to keep the API key secret; one app means one deploy and the simplest
-  clone-and-run. (ADR 0001)
+  clone-and-run.
 - **Auction times are synthetic** (the dataset's `auction_start` is all in the past), so they
   are **normalized to "now"** deterministically — giving a realistic mix of live/upcoming/
-  ended with working countdowns. The challenge's data note explicitly permits this. (ADR 0002)
+  ended with working countdowns. The challenge's data note explicitly permits this.
 - **Bid history is reconstructed** — the dataset has only a bid *count*, no per-bid history,
   so the history modal synthesizes plausible prior bids and overlays your real local bids.
-  Clearly labeled in the UI. (ADR 0003)
+  Clearly labeled in the UI.
 - **Never trust raw LLM output** — every Claude response is parsed through a runtime
   validator (`parseSearchFilters`); bad/unknown fields are dropped, and any failure falls
   back gracefully. AI is purely additive, never a dependency.
 - **Reserve is shown as met/not-met only** — the reserve *price* stays hidden, mirroring real
   auctions.
 - **Browse state persists in `sessionStorage`** — filters/tab/search survive a VDP round-trip and
-  reloads; the logo resets. Chosen over URL params for v1 simplicity. (ADR 0005)
+  reloads; the logo resets. Chosen over URL params for v1 simplicity.
 - **Auction clock is client-anchored** — phase freshness comes from the viewer's `Date.now()`
-  (`useAuctionClock`), not a server timestamp a CDN could staledate. (ADR 0002)
+  (`useAuctionClock`), not a server timestamp a CDN could staledate.
 - **Design system in one place** — tokens live only in `app/globals.css` `@theme`; see
-  **[`docs/design-system.md`](docs/design-system.md)**.
+  **[`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)**.
 
 ---
 
@@ -160,7 +187,7 @@ role.
   fallback + toast on failure, and validation of every response.
 
 ### To build it
-I used Claude Code throughout — planning, scaffolding, and implementation in small,
+I used Claude Code throughout. Planning, scaffolding, and implementation happened in small,
 reviewable slices (see [`docs/PLAN.md`](docs/PLAN.md)), each committed with conventional
 messages.
 
@@ -172,8 +199,6 @@ messages.
 - The data validator was **too strict** (required a numeric `current_bid`) — it would have
   silently dropped **112 of 200 vehicles** that have `current_bid: null` (no bids yet). Caught
   it and fixed the contract to allow null.
-- `placehold.co` serves **SVG**, which Next's image optimizer rejects — debugged the broken
-  images and rendered them `unoptimized` with a branded fallback tile.
 - An early **hardcoded condition blurb** ("mechanically sound") could contradict the real
   inspector report on some vehicles — removed it and let the *grounded* AI summary handle it
   instead.
@@ -186,7 +211,7 @@ to a shared store for multi-instance deploys.
 
 ## Testing
 
-`npm run test` — **154 Vitest tests** across pure logic, hooks, components, and route handlers:
+`npm run test` — **157 Vitest tests** across pure logic, hooks, components, and route handlers:
 
 - `lib/filters` — filter + sort (year/make/mileage/seller/ending/starting), price/odometer/year ranges
 - `lib/bids` / `lib/bidDisplay` — minimum-bid rules, persistence, phase-aware bid label/amount/actions
@@ -194,6 +219,8 @@ to a shared store for multi-instance deploys.
 - `lib/contracts/search` — `parseSearchFilters` validator (drops bad/unknown LLM output)
 - `lib/browseState` / `SearchView` — filter persistence, tabs/chips, AI-search fallback
 - Components/hooks/routes — VehicleRow, Toolbar, bidding UI, `/api/search` + `/api/condition-summary`
+- **Smoke** — browse (`SearchView`) and detail (`VehicleDetail`) render end-to-end against the real
+  200-vehicle dataset and mount without crashing
 
 Plus `npm run typecheck` and `npm run lint` are clean, and `npm run build` passes.
 
@@ -217,6 +244,7 @@ everything after is layered on top.
 - A live **bid feed** on the detail page, and outbid notifications
 - Real photos / a richer gallery (lightbox, zoom)
 - Search-prompt evals + condition-summary streaming
+- More unit-test coverage and integration tests (end-to-end browse → bid flows)
 
 ---
 
@@ -238,6 +266,6 @@ lib/                      # pure logic + contracts + data + i18n + aiFilterChips
 messages/                 # en.json / fr.json translation catalogs
 i18n/request.ts           # next-intl server config (cookie locale)
 data/vehicles.json        # the 200-vehicle dataset
-docs/                     # architecture.md, DECISIONS.md, design-system.md, PLAN.md
+docs/                     # ARCHITECTURE.md, DECISIONS.md, DESIGN-SYSTEM.md, PLAN.md
 CLAUDE.md / AGENTS.md      # agent guardrails (design rules, AI conventions)
 ```

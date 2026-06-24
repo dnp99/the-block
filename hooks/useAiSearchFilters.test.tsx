@@ -79,7 +79,7 @@ describe("useAiSearchFilters", () => {
 
     expect(result.current.aiFilters).toEqual({ keywords: ["awd", "suv"] });
     expect(
-      screen.getByText("AI search unavailable — using basic search"),
+      screen.getByText("AI search unavailable. Using basic search"),
     ).toBeInTheDocument();
   });
 

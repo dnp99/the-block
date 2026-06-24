@@ -227,7 +227,7 @@ describe("SearchView", () => {
 
     expect(screen.getByRole("button", { name: /Remove filter ✨.*awd suv/ })).toBeInTheDocument();
     expect(
-      screen.getByText("AI search unavailable — using basic search"),
+      screen.getByText("AI search unavailable. Using basic search"),
     ).toBeInTheDocument();
   });
 

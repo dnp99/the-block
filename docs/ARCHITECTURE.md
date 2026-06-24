@@ -103,11 +103,10 @@ once — and it's SSR/hydration-safe (the server snapshot is empty). All three e
 
 ## Key choices & rationale
 
-Full ADRs in [`DECISIONS.md`](DECISIONS.md). The architecturally significant ones:
+Full rationale in [`DECISIONS.md`](DECISIONS.md). The architecturally significant ones:
 
 - **Single Next.js app, not Vite + a separate backend.** The AI features need a server
   boundary to keep the key secret. One app = one deploy, no CORS, simplest clone-and-run.
-  *(ADR 0001)*
 - **Server-side AI proxy + structured output.** Search forces a Claude *tool call*
   (`apply_filters`), so the model returns JSON, not prose. Every response is then run through a
   runtime validator (`parseSearchFilters`) — **we never trust raw LLM output.**
@@ -118,12 +117,12 @@ Full ADRs in [`DECISIONS.md`](DECISIONS.md). The architecturally significant one
   No runtime "data failed to load" path, so `error.tsx` is just a generic safety net.
 - **`localStorage` + `useSyncExternalStore`** for bids — reactive across components without a
   state library, and hydration-safe.
-- **Client-anchored auction clock** — auction phases are normalized to "now" (ADR 0002) using a
+- **Client-anchored auction clock** — auction phases are normalized to "now" using a
   client-side anchor (`useAuctionClock`): SSR seeds from a server timestamp, then the viewer's own
   clock takes over. Freshness comes from the browser, so Live/Upcoming/Ended stay populated even if
   Vercel serves a stale/cached render.
 - **Design tokens only in `app/globals.css` `@theme`** (Tailwind v4, CSS-first) — one source of
-  truth; see [`design-system.md`](design-system.md).
+  truth; see [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md).
 
 ---
 
@@ -134,4 +133,4 @@ Full ADRs in [`DECISIONS.md`](DECISIONS.md). The architecturally significant one
 - **In-memory rate limit & caches** — fine for a single-instance prototype; a multi-instance
   deploy would move these to a shared store (e.g. Redis).
 - **Synthetic auction times & bid history** — reconstructed from the dataset (count + current
-  bid), clearly labeled in the UI. *(ADR 0002, 0003)*
+  bid), clearly labeled in the UI.
