@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Pill } from "@/components/ui/Pill";
 import { VehicleImage } from "@/components/vehicle/VehicleImage";
+import { VinCopy } from "@/components/vehicle/VinCopy";
 import { conditionPill, titlePill } from "@/components/vehicle/vehiclePills";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import {
@@ -17,27 +18,16 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
   const title = titlePill(v.title_status);
   const hasBids = v.current_bid !== null;
 
-  const bidBlock = (
-    <div className="text-right">
-      <p className="text-xs text-ink-subtle">
-        {hasBids ? "Current bid" : "Starting bid"}
-      </p>
-      <p className="text-lg font-semibold text-ink">
-        {formatCurrency(effectivePrice(v))}
-      </p>
-      <p className="text-xs text-ink-subtle">
-        {hasBids
-          ? `${v.bid_count} ${v.bid_count === 1 ? "bid" : "bids"}`
-          : "No bids yet"}
-      </p>
-    </div>
-  );
-
   return (
-    <Link
-      href={`/vehicle/${v.id}`}
-      className="group flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:gap-4 sm:p-4"
-    >
+    // Stretched-link pattern: the row is a div; an absolute Link overlay makes the
+    // whole row navigable, while the VIN copy button sits above it (z-[2]).
+    <div className="group relative flex gap-3 rounded-2xl border border-line bg-surface p-3 shadow-sm transition hover:border-line-strong hover:shadow-md sm:gap-4 sm:p-4">
+      <Link
+        href={`/vehicle/${v.id}`}
+        aria-label={`View ${vehicleTitle(v)}`}
+        className="absolute inset-0 z-[1] rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+      />
+
       <div className="relative aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800 sm:w-44">
         <VehicleImage
           src={v.images[0]}
@@ -50,12 +40,30 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h3 className="truncate font-semibold text-ink">{vehicleTitle(v)}</h3>
-            <p className="truncate text-xs text-ink-muted sm:text-sm">
-              {v.trim} · {v.body_style}
-            </p>
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-ink-muted sm:text-sm">
+              <span>
+                {v.trim} · {v.body_style}
+              </span>
+              <span aria-hidden className="text-ink-subtle">
+                ·
+              </span>
+              <VinCopy vin={v.vin} className="text-xs" />
+            </div>
           </div>
           {/* Bid on the right for tablet/desktop */}
-          <div className="hidden shrink-0 sm:block">{bidBlock}</div>
+          <div className="hidden shrink-0 text-right sm:block">
+            <p className="text-xs text-ink-subtle">
+              {hasBids ? "Current bid" : "Starting bid"}
+            </p>
+            <p className="text-lg font-semibold text-ink">
+              {formatCurrency(effectivePrice(v))}
+            </p>
+            <p className="text-xs text-ink-subtle">
+              {hasBids
+                ? `${v.bid_count} ${v.bid_count === 1 ? "bid" : "bids"}`
+                : "No bids yet"}
+            </p>
+          </div>
         </div>
 
         <p className="truncate text-xs text-ink-muted sm:text-sm">
@@ -70,7 +78,6 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
           {v.title_status !== "clean" && (
             <Pill tone={title.tone}>{title.label}</Pill>
           )}
-          <span className="font-mono text-[11px] text-ink-subtle">{v.vin}</span>
         </div>
 
         {/* Bid below the details on mobile */}
@@ -88,6 +95,6 @@ export function VehicleRow({ vehicle: v }: { vehicle: Vehicle }) {
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
