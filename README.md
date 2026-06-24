@@ -102,8 +102,9 @@ the API routes and never reaches the browser.
 
 ## Notable decisions
 
-Full rationale (with alternatives rejected) lives in **[`docs/DECISIONS.md`](docs/DECISIONS.md)**.
-Highlights:
+System diagrams and the layer breakdown are in **[`docs/architecture.md`](docs/architecture.md)**;
+full decision rationale (with alternatives rejected) lives in
+**[`docs/DECISIONS.md`](docs/DECISIONS.md)**. Highlights:
 
 - **Next.js single app over Vite + a separate backend** — the AI features need a server
   boundary to keep the API key secret; one app means one deploy and the simplest
@@ -203,6 +204,6 @@ app/                     # routes — pages + api (Claude proxy)
 components/               # ui primitives, search, vehicle, layout
 lib/                      # contracts, data, filters, bids, auction, claude, prompts (+ tests)
 data/vehicles.json        # the 200-vehicle dataset
-docs/                     # PLAN.md, DECISIONS.md, design-system.md
+docs/                     # architecture.md, DECISIONS.md, design-system.md, PLAN.md
 CLAUDE.md / AGENTS.md      # agent guardrails (design rules, AI conventions)
 ```
