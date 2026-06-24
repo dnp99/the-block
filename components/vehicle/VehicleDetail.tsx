@@ -6,6 +6,12 @@ import { DealerBlock } from "@/components/vehicle/DealerBlock";
 import { SpecGrid } from "@/components/vehicle/SpecGrid";
 import { VehicleGallery } from "@/components/vehicle/VehicleGallery";
 import { VinCopy } from "@/components/vehicle/VinCopy";
+import { Pill } from "@/components/ui/Pill";
+import {
+  conditionPill,
+  damagePill,
+  titlePill,
+} from "@/components/vehicle/vehiclePills";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import { vehicleLocation, vehicleTitle } from "@/lib/format";
 
@@ -16,6 +22,10 @@ export function VehicleDetail({
   vehicle: Vehicle;
   anchorMs: number;
 }) {
+  const condition = conditionPill(v.condition_grade);
+  const title = titlePill(v.title_status);
+  const damage = damagePill(v);
+
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-6 pb-40 sm:px-6 lg:pb-6">
       <Link
@@ -32,12 +42,20 @@ export function VehicleDetail({
         <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
           {vehicleTitle(v)} <span className="text-ink-muted">{v.trim}</span>
         </h1>
-        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-ink-muted">
           <VinCopy vin={v.vin} />
           <span aria-hidden className="text-ink-subtle">
             ·
           </span>
           <span>{vehicleLocation(v)}</span>
+          <span aria-hidden className="text-ink-subtle">
+            ·
+          </span>
+          <Pill tone={condition.tone}>{condition.label}</Pill>
+          {v.title_status !== "clean" && (
+            <Pill tone={title.tone}>{title.label}</Pill>
+          )}
+          <Pill tone={damage.tone}>{damage.label}</Pill>
         </div>
       </header>
 

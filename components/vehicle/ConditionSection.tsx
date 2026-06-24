@@ -32,10 +32,7 @@ export function ConditionSection({ vehicle: v }: { vehicle: Vehicle }) {
 
   return (
     <Card className="flex flex-col gap-4 p-4 sm:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold text-ink">Condition &amp; disclosures</h2>
-        <Pill tone={title.tone}>{title.label}</Pill>
-      </div>
+      <h2 className="text-sm font-semibold text-ink">Condition &amp; disclosures</h2>
 
       <ConditionSummary id={v.id} />
 
