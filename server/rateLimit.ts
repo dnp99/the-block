@@ -1,6 +1,6 @@
 const hits = new Map<string, { count: number; resetAt: number }>();
 
-export function rateLimit(key: string, limit = 20, windowMs = 60_000): boolean {
+export function isWithinRateLimit(key: string, limit = 20, windowMs = 60_000): boolean {
   const now = Date.now();
   const entry = hits.get(key);
   if (!entry || now > entry.resetAt) {

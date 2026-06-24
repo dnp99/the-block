@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { getAnthropic, hasAnthropicKey, SEARCH_MODEL } from "@/server/claude";
 import { parseSearchFilters } from "@/lib/contracts/search";
 import { SEARCH_SYSTEM, SEARCH_TOOL } from "@/server/prompts";
-import { rateLimit } from "@/server/rateLimit";
+import { isWithinRateLimit } from "@/server/rateLimit";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (!rateLimit(ip)) {
+  if (!isWithinRateLimit(ip)) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 

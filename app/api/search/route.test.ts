@@ -1,7 +1,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/server/rateLimit", () => ({ rateLimit: vi.fn(() => true) }));
+vi.mock("@/server/rateLimit", () => ({ isWithinRateLimit: vi.fn(() => true) }));
 vi.mock("@/server/claude", () => ({
   hasAnthropicKey: vi.fn(() => true),
   getAnthropic: vi.fn(),
@@ -10,7 +10,7 @@ vi.mock("@/server/claude", () => ({
 
 import { POST } from "@/app/api/search/route";
 import { getAnthropic, hasAnthropicKey } from "@/server/claude";
-import { rateLimit } from "@/server/rateLimit";
+import { isWithinRateLimit } from "@/server/rateLimit";
 
 const post = (body: unknown) =>
   POST(
@@ -29,7 +29,7 @@ const mockClaude = (input: unknown) =>
   } as never);
 
 beforeEach(() => {
-  vi.mocked(rateLimit).mockReturnValue(true);
+  vi.mocked(isWithinRateLimit).mockReturnValue(true);
   vi.mocked(hasAnthropicKey).mockReturnValue(true);
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -37,7 +37,7 @@ afterEach(() => vi.restoreAllMocks());
 
 describe("POST /api/search", () => {
   it("429 when rate-limited", async () => {
-    vi.mocked(rateLimit).mockReturnValue(false);
+    vi.mocked(isWithinRateLimit).mockReturnValue(false);
     expect((await post({ query: "awd suv" })).status).toBe(429);
   });
 
