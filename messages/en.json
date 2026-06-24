@@ -1,0 +1,30 @@
+{
+  "languageToggle": {
+    "label": "Language",
+    "switchTo": "Switch to {language}"
+  },
+  "tabs": {
+    "all": "All",
+    "live": "Live",
+    "upcoming": "Upcoming",
+    "ended": "Ended"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Try “AWD SUV under $20k”…",
+    "searchLabel": "Search inventory",
+    "clearSearch": "Clear search",
+    "searching": "Searching",
+    "filters": "Filters",
+    "sortBy": "Sort by",
+    "resultCount": "<strong>{count}</strong> of {total} vehicles"
+  },
+  "sort": {
+    "ending": "Ending soonest",
+    "bids": "Most bids",
+    "price-asc": "Price: low to high",
+    "price-desc": "Price: high to low",
+    "odometer": "Lowest km",
+    "year": "Newest year",
+    "condition": "Best condition"
+  }
+}

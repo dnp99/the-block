@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 /** App header — sticky, borderless-blur. */
@@ -18,8 +19,8 @@ export function Header() {
           </span>
           Openlane
         </Link>
-        <div className="flex items-center gap-3">
-          <span className="text-ink-subtle hidden text-xs font-medium sm:inline"></span>
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
         </div>
       </div>

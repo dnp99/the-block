@@ -1,0 +1,30 @@
+{
+  "languageToggle": {
+    "label": "Langue",
+    "switchTo": "Passer au {language}"
+  },
+  "tabs": {
+    "all": "Tous",
+    "live": "En direct",
+    "upcoming": "À venir",
+    "ended": "Terminées"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Essayez « VUS AWD à moins de 20 000 $ »…",
+    "searchLabel": "Rechercher dans l’inventaire",
+    "clearSearch": "Effacer la recherche",
+    "searching": "Recherche en cours",
+    "filters": "Filtres",
+    "sortBy": "Trier par",
+    "resultCount": "<strong>{count}</strong> sur {total} véhicules"
+  },
+  "sort": {
+    "ending": "Fin imminente",
+    "bids": "Plus d’enchères",
+    "price-asc": "Prix : croissant",
+    "price-desc": "Prix : décroissant",
+    "odometer": "Kilométrage le plus bas",
+    "year": "Année la plus récente",
+    "condition": "Meilleur état"
+  }
+}

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale } from "next-intl/server";
 import { Header } from "@/components/layout/Header";
 import { ToastProvider } from "@/components/ui/Toaster";
 import "./globals.css";
@@ -31,19 +33,22 @@ const themeScript = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
   return (
-    <html lang="en" className={`${inter.variable} h-full`} suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} h-full`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col overflow-x-clip font-sans">
         <Script id="tb-theme-init" strategy="beforeInteractive">
           {themeScript}
         </Script>
-        <ToastProvider>
-          <Header />
-          <main className="flex flex-1 flex-col">{children}</main>
-        </ToastProvider>
+        <NextIntlClientProvider>
+          <ToastProvider>
+            <Header />
+            <main className="flex flex-1 flex-col">{children}</main>
+          </ToastProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

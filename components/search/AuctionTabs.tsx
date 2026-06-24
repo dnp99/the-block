@@ -1,16 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import type { AuctionPhase } from "@/lib/auction";
 
 export type AuctionTab = "all" | AuctionPhase;
 
-const TABS: { key: AuctionTab; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "live", label: "Live" },
-  { key: "upcoming", label: "Upcoming" },
-  { key: "ended", label: "Ended" },
-];
+const TAB_KEYS: AuctionTab[] = ["all", "live", "upcoming", "ended"];
 
 export function AuctionTabs({
   value,
@@ -21,22 +17,23 @@ export function AuctionTabs({
   onChange: (t: AuctionTab) => void;
   counts: Record<AuctionTab, number>;
 }) {
+  const t = useTranslations("tabs");
   return (
     <div role="tablist" aria-label="Auction status" className="flex gap-1 border-b border-line">
-      {TABS.map((t) => {
-        const active = value === t.key;
+      {TAB_KEYS.map((key) => {
+        const active = value === key;
         return (
           <button
-            key={t.key}
+            key={key}
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(t.key)}
+            onClick={() => onChange(key)}
             className={cn(
               "relative flex cursor-pointer items-center gap-2 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:px-4",
               active ? "text-primary-700" : "text-ink-muted hover:text-ink",
             )}
           >
-            {t.key === "live" && (
+            {key === "live" && (
               <span
                 aria-hidden
                 className={cn(
@@ -45,7 +42,7 @@ export function AuctionTabs({
                 )}
               />
             )}
-            {t.label}
+            {t(key)}
             <span
               className={cn(
                 "rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums",
@@ -54,7 +51,7 @@ export function AuctionTabs({
                   : "bg-neutral-100 text-ink-muted dark:bg-neutral-800",
               )}
             >
-              {counts[t.key]}
+              {counts[key]}
             </span>
             {active && (
               <span
