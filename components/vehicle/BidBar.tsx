@@ -61,7 +61,7 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
           <>
             {isHighBidder && (
               <p className="text-xs font-medium text-success">
-                You’re the high bidder{reserveMet && " — this vehicle will sell"}
+                You’re the high bidder{reserveMet && " · Reserve met"}
               </p>
             )}
             <BidForm vehicle={v} />
