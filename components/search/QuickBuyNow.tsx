@@ -33,7 +33,7 @@ export function QuickBuyNow({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, price, vehicle.bid_count);
-      toast(`Bought now — ${formatCurrency(price)}`);
+      toast(`Bought now — ${formatCurrency(price)}`, "success");
     } catch {
       toast("Couldn’t complete buy now, please try again", "error");
     }

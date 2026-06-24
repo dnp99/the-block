@@ -29,7 +29,7 @@ export function QuickBid({ vehicle }: { vehicle: Vehicle }) {
     }
     try {
       placeBid(vehicle.id, min, vehicle.bid_count);
-      toast(`Bid placed — ${formatCurrency(min)}`);
+      toast(`Bid placed — ${formatCurrency(min)}`, "success");
     } catch {
       toast("Couldn’t place your bid, please try again", "error");
     }

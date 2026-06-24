@@ -9,7 +9,7 @@ import {
 } from "react";
 import { cn } from "@/lib/cn";
 
-type Tone = "info" | "error";
+type Tone = "info" | "success" | "error";
 interface Toast {
   id: number;
   message: string;
@@ -40,17 +40,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4"
+        className="pointer-events-none fixed inset-x-0 top-16 z-50 flex flex-col items-center gap-2 px-4"
       >
         {toasts.map((t) => (
           <div
             key={t.id}
             role="status"
             className={cn(
-              "pointer-events-auto flex max-w-sm items-center gap-2 rounded-xl border px-3 py-2 text-sm shadow-lg",
+              "pointer-events-auto flex max-w-sm items-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium shadow-lg",
               t.tone === "error"
                 ? "border-error/30 bg-error-soft text-error"
-                : "border-line bg-surface text-ink",
+                : t.tone === "success"
+                  ? "border-success/30 bg-success-soft text-success"
+                  : "border-line bg-surface text-ink",
             )}
           >
             {t.message}
