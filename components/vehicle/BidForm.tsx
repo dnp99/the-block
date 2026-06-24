@@ -127,7 +127,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
           </div>
         ) : (
           <Button
-            variant="secondary"
+            variant="outline"
             onClick={() => setConfirmBuyNow(true)}
             className="mt-1 w-full"
           >
