@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Pill } from "@/components/ui/Pill";
+import { VehicleImage } from "@/components/vehicle/VehicleImage";
 import { conditionPill, titlePill } from "@/components/vehicle/vehiclePills";
 import type { Vehicle } from "@/lib/contracts/vehicle";
 import {
@@ -22,12 +22,10 @@ export function VehicleCard({ vehicle: v }: { vehicle: Vehicle }) {
       className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-sm transition hover:border-line-strong hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-        <Image
+        <VehicleImage
           src={v.images[0]}
           alt={vehicleTitle(v)}
-          fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover transition duration-300 group-hover:scale-[1.03]"
         />
         <div className="absolute left-2 top-2 flex gap-1.5">
           <Pill tone={condition.tone}>{condition.label}</Pill>
