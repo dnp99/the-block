@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SelectChevron } from "@/components/ui/SelectChevron";
 import { SORT_OPTIONS, type SortKey } from "@/lib/filters";
 
 export function Toolbar({
@@ -86,13 +87,13 @@ export function Toolbar({
             )}
           </button>
 
-          <label className="flex flex-1 items-center gap-1 lg:w-auto lg:flex-none">
+          <label className="relative flex flex-1 items-center lg:w-auto lg:flex-none">
             <span className="sr-only">{t("sortBy")}</span>
             <select
               aria-label={t("sortBy")}
               value={sort}
               onChange={(e) => onSort(e.target.value as SortKey)}
-              className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 lg:w-auto"
+              className="w-full appearance-none rounded-xl border border-line bg-surface px-3 py-2 pr-9 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 lg:w-auto"
             >
               {SORT_OPTIONS.map((s) => (
                 <option key={s.key} value={s.key}>
@@ -100,6 +101,7 @@ export function Toolbar({
                 </option>
               ))}
             </select>
+            <SelectChevron />
           </label>
         </div>
       </div>

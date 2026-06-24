@@ -2,11 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { RangeSlider } from "@/components/ui/RangeSlider";
+import { SelectChevron } from "@/components/ui/SelectChevron";
 import { cn } from "@/lib/cn";
 import { useFormat } from "@/lib/useFormat";
 
 const selectClass =
-  "w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30";
+  "w-full appearance-none rounded-xl border border-line bg-surface px-3 py-2 pr-9 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -32,19 +33,22 @@ function Select({
 }) {
   return (
     <Field label={label}>
-      <select
-        aria-label={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={cn(selectClass, "capitalize")}
-      >
-        <option value="">{allLabel}</option>
-        {options.map((o) => (
-          <option key={o} value={o} className="capitalize">
-            {o}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          aria-label={label}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn(selectClass, "capitalize")}
+        >
+          <option value="">{allLabel}</option>
+          {options.map((o) => (
+            <option key={o} value={o} className="capitalize">
+              {o}
+            </option>
+          ))}
+        </select>
+        <SelectChevron />
+      </div>
     </Field>
   );
 }
@@ -114,17 +118,20 @@ export function FilterPanel(props: FilterPanelProps) {
         allLabel={t("allProvinces")}
       />
       <Field label={t("minCondition")}>
-        <select
-          aria-label={t("minCondition")}
-          value={props.conditionMin}
-          onChange={(e) => props.onConditionMin(e.target.value)}
-          className={selectClass}
-        >
-          <option value="">{t("anyCondition")}</option>
-          <option value="4">{t("conditionPlus", { n: 4 })}</option>
-          <option value="3">{t("conditionPlus", { n: 3 })}</option>
-          <option value="2">{t("conditionPlus", { n: 2 })}</option>
-        </select>
+        <div className="relative">
+          <select
+            aria-label={t("minCondition")}
+            value={props.conditionMin}
+            onChange={(e) => props.onConditionMin(e.target.value)}
+            className={selectClass}
+          >
+            <option value="">{t("anyCondition")}</option>
+            <option value="4">{t("conditionPlus", { n: 4 })}</option>
+            <option value="3">{t("conditionPlus", { n: 3 })}</option>
+            <option value="2">{t("conditionPlus", { n: 2 })}</option>
+          </select>
+          <SelectChevron />
+        </div>
       </Field>
 
       <RangeSlider
