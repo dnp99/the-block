@@ -25,7 +25,7 @@ const PHASE_BADGE: Record<AuctionPhase, { label: string; dot: string }> = {
   ended: { label: "Ended", dot: "bg-ink-subtle" },
 };
 
-/** Compact inventory row: small thumbnail (left) · details · bid summary (right). */
+/** Compact inventory row: thumbnail + auction status (left) · details · bid (right). */
 export function VehicleRow({
   vehicle: v,
   state,
@@ -51,18 +51,34 @@ export function VehicleRow({
         className="absolute inset-0 z-[1] rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
       />
 
-      <div className="relative aspect-[4/3] w-24 shrink-0 self-start overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800 sm:w-40">
-        <VehicleImage
-          src={v.images[0]}
-          alt={vehicleTitle(v)}
-          sizes="(max-width: 640px) 6rem, 10rem"
-        />
-        <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-surface/95 px-1.5 py-0.5 text-[11px] font-semibold text-ink shadow-sm backdrop-blur">
-          <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", badge.dot)} />
-          {badge.label}
+      {/* Left column: thumbnail + auction countdown */}
+      <div className="flex w-24 shrink-0 flex-col gap-1.5 self-start sm:w-40">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-800">
+          <VehicleImage
+            src={v.images[0]}
+            alt={vehicleTitle(v)}
+            sizes="(max-width: 640px) 6rem, 10rem"
+          />
+          <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-surface/95 px-1.5 py-0.5 text-[11px] font-semibold text-ink shadow-sm backdrop-blur">
+            <span aria-hidden className={cn("h-1.5 w-1.5 rounded-full", badge.dot)} />
+            {badge.label}
+          </span>
+        </div>
+        <span
+          className={cn(
+            "px-0.5 text-xs leading-snug tabular-nums",
+            urgent
+              ? "font-semibold text-error"
+              : state.phase === "live"
+                ? "font-medium text-success"
+                : "text-ink-subtle",
+          )}
+        >
+          {auctionCountdownLabel(state, nowMs)}
         </span>
       </div>
 
+      {/* Right column: vehicle details + bid summary */}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -107,18 +123,6 @@ export function VehicleRow({
           {v.title_status !== "clean" && <Pill tone={title.tone}>{title.label}</Pill>}
           <Pill tone={damage.tone}>{damage.label}</Pill>
           <Pill tone={reserve.tone}>{reserve.label}</Pill>
-          <span
-            className={cn(
-              "text-xs tabular-nums",
-              urgent
-                ? "font-semibold text-error"
-                : state.phase === "live"
-                  ? "font-medium text-success"
-                  : "text-ink-subtle",
-            )}
-          >
-            {auctionCountdownLabel(state, nowMs)}
-          </span>
         </div>
       </div>
     </div>
