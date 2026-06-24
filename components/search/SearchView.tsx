@@ -1,16 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AuctionTabs, type AuctionTab } from "@/components/search/AuctionTabs";
 import { FilterChips, type Chip } from "@/components/search/FilterChips";
 import { FilterPanel } from "@/components/search/FilterPanel";
 import { Toolbar } from "@/components/search/Toolbar";
 import { VehicleList } from "@/components/search/VehicleList";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toaster";
+import { postJson } from "@/lib/api-client";
 import { auctionState, type AuctionState } from "@/lib/auction";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
-import type { SearchFilters } from "@/lib/contracts/search";
+import { parseSearchFilters, type SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
 import { applyFilters, sortVehicles, type SortKey } from "@/lib/filters";
 import { effectivePrice } from "@/lib/format";
@@ -115,10 +117,58 @@ export function SearchView({
   const [sort, setSort] = useState<SortKey>("ending");
   const [showFilters, setShowFilters] = useState(false);
 
+  // AI natural-language search: the query is parsed (server-side via Claude) into
+  // structured filters, applied on top of the manual rail. Falls back to keyword
+  // matching if the AI call fails.
+  const aiCache = useRef(new Map<string, SearchFilters>());
+  const [aiResult, setAiResult] = useState<{
+    query: string;
+    filters: SearchFilters;
+  } | null>(null);
+  const { toast } = useToast();
+
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 3) return;
+    let cancelled = false;
+    const cached = aiCache.current.get(q);
+    const handle = window.setTimeout(async () => {
+      try {
+        const filters =
+          cached ??
+          parseSearchFilters(
+            (await postJson<{ filters: unknown }>("/api/search", { query: q })).filters,
+          );
+        if (cancelled) return;
+        aiCache.current.set(q, filters);
+        setAiResult({ query: q, filters });
+      } catch {
+        if (cancelled) return;
+        setAiResult({ query: q, filters: { keywords: q.split(/\s+/) } }); // fallback
+        toast("AI search unavailable — using basic search", "error");
+      }
+    }, cached ? 0 : 600);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(handle);
+    };
+  }, [query, toast]);
+
+  // Effective AI filters: the parsed result for the current query, or provisional
+  // keyword matching while the AI call is in flight. Derived (not stored) to keep
+  // state changes out of the effect body.
+  const trimmedQuery = query.trim();
+  const aiFilters = useMemo<SearchFilters>(() => {
+    if (trimmedQuery.length < 3) return {};
+    if (aiResult?.query === trimmedQuery) return aiResult.filters;
+    return { keywords: trimmedQuery.split(/\s+/) };
+  }, [trimmedQuery, aiResult]);
+  const aiLoading = trimmedQuery.length >= 3 && aiResult?.query !== trimmedQuery;
 
   const stateById = useMemo(() => {
     const m = new Map<string, AuctionState>();
@@ -127,9 +177,8 @@ export function SearchView({
   }, [vehicles, anchorMs, now]);
 
   const searchSorted = useMemo(() => {
-    const keywords = query.trim() ? query.trim().split(/\s+/) : undefined;
-    const filters: SearchFilters = {
-      keywords,
+    // Manual filters from the rail; the search query drives aiFilters separately.
+    const manual: SearchFilters = {
       make: make || undefined,
       body_style: (bodyStyle || undefined) as BodyStyle | undefined,
       province: province || undefined,
@@ -141,8 +190,9 @@ export function SearchView({
       price_min: priceRange[0] > bounds.price[0] ? priceRange[0] : undefined,
       price_max: priceRange[1] < bounds.price[1] ? priceRange[1] : undefined,
     };
-    return sortVehicles(applyFilters(effectiveVehicles, filters), sort);
-  }, [effectiveVehicles, query, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, sort, bounds]);
+    const filtered = applyFilters(applyFilters(effectiveVehicles, manual), aiFilters);
+    return sortVehicles(filtered, sort);
+  }, [effectiveVehicles, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, aiFilters, sort, bounds]);
 
   const counts = useMemo(() => {
     const c: Record<AuctionTab, number> = { all: 0, live: 0, upcoming: 0, ended: 0 };
@@ -170,11 +220,11 @@ export function SearchView({
     setYearRange(bounds.year);
     setOdoRange(bounds.odo);
     setPriceRange(bounds.price);
+    setAiResult(null);
   };
 
   const num = (n: number) => n.toLocaleString("en-CA");
   const chips: Chip[] = [];
-  if (query) chips.push({ key: "q", label: `“${query}”`, onRemove: () => setQuery("") });
   if (make) chips.push({ key: "make", label: make, onRemove: () => setMake("") });
   if (bodyStyle) chips.push({ key: "body", label: bodyStyle, onRemove: () => setBodyStyle("") });
   if (province) chips.push({ key: "prov", label: province, onRemove: () => setProvince("") });
@@ -187,9 +237,35 @@ export function SearchView({
   if (isNarrowed(priceRange, bounds.price))
     chips.push({ key: "price", label: `$${num(priceRange[0])}–$${num(priceRange[1])}`, onRemove: () => setPriceRange(bounds.price) });
 
+  // AI-extracted constraints (✨), individually removable.
+  const removeAi = (k: keyof SearchFilters) =>
+    setAiResult((p) => {
+      if (!p) return p;
+      const filters = { ...p.filters };
+      delete filters[k];
+      return { query: p.query, filters };
+    });
+  const ai = aiFilters;
+  if (ai.keywords?.length)
+    chips.push({ key: "ai-kw", label: `✨ “${ai.keywords.join(" ")}”`, onRemove: () => removeAi("keywords") });
+  if (ai.make) chips.push({ key: "ai-make", label: `✨ ${ai.make}`, onRemove: () => removeAi("make") });
+  if (ai.body_style) chips.push({ key: "ai-body", label: `✨ ${ai.body_style}`, onRemove: () => removeAi("body_style") });
+  if (ai.drivetrain) chips.push({ key: "ai-dt", label: `✨ ${ai.drivetrain}`, onRemove: () => removeAi("drivetrain") });
+  if (ai.fuel_type) chips.push({ key: "ai-fuel", label: `✨ ${ai.fuel_type}`, onRemove: () => removeAi("fuel_type") });
+  if (ai.title_status) chips.push({ key: "ai-title", label: `✨ ${ai.title_status} title`, onRemove: () => removeAi("title_status") });
+  if (ai.province) chips.push({ key: "ai-prov", label: `✨ ${ai.province}`, onRemove: () => removeAi("province") });
+  if (ai.odometer_min) chips.push({ key: "ai-odomin", label: `✨ ≥ ${num(ai.odometer_min)} km`, onRemove: () => removeAi("odometer_min") });
+  if (ai.odometer_max) chips.push({ key: "ai-odomax", label: `✨ ≤ ${num(ai.odometer_max)} km`, onRemove: () => removeAi("odometer_max") });
+  if (ai.price_min) chips.push({ key: "ai-pmin", label: `✨ ≥ $${num(ai.price_min)}`, onRemove: () => removeAi("price_min") });
+  if (ai.price_max) chips.push({ key: "ai-pmax", label: `✨ ≤ $${num(ai.price_max)}`, onRemove: () => removeAi("price_max") });
+  if (ai.year_min) chips.push({ key: "ai-ymin", label: `✨ ${ai.year_min}+`, onRemove: () => removeAi("year_min") });
+  if (ai.year_max) chips.push({ key: "ai-ymax", label: `✨ ≤ ${ai.year_max}`, onRemove: () => removeAi("year_max") });
+  if (ai.condition_min) chips.push({ key: "ai-cond", label: `✨ Condition ${ai.condition_min}+`, onRemove: () => removeAi("condition_min") });
+
   const filterKey = [
-    tab, sort, query, make, bodyStyle, province, conditionMin,
+    tab, sort, make, bodyStyle, province, conditionMin,
     ...yearRange, ...odoRange, ...priceRange,
+    JSON.stringify(aiFilters),
   ].join("|");
 
   return (
@@ -246,6 +322,7 @@ export function SearchView({
             totalCount={vehicles.length}
             activeFilterCount={chips.length}
             onToggleFilters={() => setShowFilters((s) => !s)}
+            loading={aiLoading}
           />
           <FilterChips chips={chips} onClearAll={reset} />
           <PaginatedResults key={filterKey} items={results} nowMs={now} />
