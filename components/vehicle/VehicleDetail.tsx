@@ -27,30 +27,31 @@ export function VehicleDetail({
   const damage = damagePill(v);
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 pb-40 sm:px-6 lg:pb-6">
-      <Link
-        href="/"
-        className="inline-flex items-center gap-1.5 rounded text-sm font-medium text-primary-600 transition hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-      >
-        <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m15 18-6-6 6-6" />
-        </svg>
-        Back to browse
-      </Link>
+    <div className="mx-auto w-full max-w-7xl px-4 pb-40 sm:px-6 lg:pb-6">
+      <div className="sticky top-14 z-20 -mx-4 border-b border-line/0 bg-canvas/90 px-4 py-3 backdrop-blur transition-colors sm:-mx-6 sm:px-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 rounded text-sm font-medium text-primary-600 transition hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+          Back to browse
+        </Link>
+      </div>
 
       <header className="mt-4">
         <h1 className="text-2xl font-semibold tracking-tight text-ink sm:text-3xl">
           {vehicleTitle(v)} <span className="text-ink-muted">{v.trim}</span>
         </h1>
-        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-sm text-ink-muted">
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
           <VinCopy vin={v.vin} />
           <span aria-hidden className="text-ink-subtle">
             ·
           </span>
           <span>{vehicleLocation(v)}</span>
-          <span aria-hidden className="text-ink-subtle">
-            ·
-          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           <Pill tone={condition.tone}>{condition.label}</Pill>
           {v.title_status !== "clean" && (
             <Pill tone={title.tone}>{title.label}</Pill>

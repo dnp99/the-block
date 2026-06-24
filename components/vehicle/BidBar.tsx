@@ -29,7 +29,7 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur lg:hidden">
-      <div className="mx-auto flex max-w-7xl flex-col gap-2">
+      <div className="mx-auto flex w-full max-w-xl flex-col gap-2">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1.5 text-sm text-ink-muted">
             Current bid{" "}
