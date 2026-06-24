@@ -12,12 +12,15 @@ Built with **Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v
 **Claude (Haiku 4.5)** behind server-side API routes. Bids persist client-side; there is no
 database or auth.
 
+**▶ Live demo: https://the-block-virid.vercel.app** — AI features are enabled, so you can try
+natural-language search and the condition summary with no setup.
+
 ---
 
 ## How to run
 
 ```sh
-git clone <your-fork-url> the-block
+git clone https://github.com/dnp99/the-block.git
 cd the-block
 npm install
 npm run dev          # http://localhost:3000
