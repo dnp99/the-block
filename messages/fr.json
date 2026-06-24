@@ -83,7 +83,20 @@
     "buyNow": "Achat immédiat {amount}",
     "confirmBuyNow": "Confirmer l’achat {amount}",
     "quickBidAria": "Enchère rapide de {amount} sur {vehicle}",
-    "buyNowAria": "Achat immédiat pour {amount}"
+    "buyNowAria": "Achat immédiat pour {amount}",
+    "placeBid": "Placer l’enchère",
+    "minimum": "Enchère minimale {amount}",
+    "enterAtLeast": "Saisissez au moins {amount}",
+    "buyItNow": "Achat immédiat · {amount}",
+    "confirmBuyAt": "Confirmer — acheter à {amount}",
+    "cancel": "Annuler",
+    "yourBidAmount": "Votre montant d’enchère",
+    "increaseBy": "Augmenter l’enchère de {amount}",
+    "decreaseBy": "Diminuer l’enchère de {amount}",
+    "highBidder": "Vous êtes le plus offrant",
+    "reserveMetSuffix": " · Réserve atteinte",
+    "endedMessage": "Cette enchère est terminée.",
+    "opensWhenLive": "Les enchères ouvrent au lancement."
   },
   "auction": {
     "endsIn": "Se termine dans {value}",

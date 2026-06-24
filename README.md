@@ -62,6 +62,7 @@ the API routes and never reaches the browser.
 
 - **Frontend:** Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS v4
   (CSS-first `@theme` tokens), Radix Slider (range filters)
+- **i18n:** next-intl (EN/FR, cookie locale, FR-CA formatting)
 - **Backend:** Next.js Route Handlers — only to proxy Claude (`/api/search`,
   `/api/condition-summary`). No standalone server.
 - **AI:** Anthropic SDK, `claude-haiku-4-5`, server-side only
@@ -93,6 +94,16 @@ the API routes and never reaches the browser.
 - Place bid, quick bid, and buy now — all reuse one validated bid path
 - **Persists across refresh** (localStorage) and stays in sync across the card, the detail
   page, and the bid history (reactive via `useSyncExternalStore`)
+
+**Bilingual (EN / FR)**
+- Full **English / French** UI via next-intl — on-brand for a Canadian (bilingual) marketplace
+- **EN/FR toggle** in the header; locale persists in a cookie and resolves **server-side**, so
+  the right language is in the initial HTML (no flash) and `<html lang>` is correct
+- **FR-CA formatting** — currency/numbers localize (**`$25,000` ↔ `25 000 $`**), as do
+  countdowns and plurals ("1 bid" / "1 enchère")
+- Covered: browse, filters, cards, the **full bidding flow**, toasts, and error/not-found pages.
+  *Deferred (phase 2):* the vehicle-detail descriptive body and the AI summary text stay English
+  — see [ADR 0004](docs/DECISIONS.md)
 
 **AI (the differentiators)**
 - **Natural-language search** — e.g. *"AWD SUV under $20k, clean title in Ontario"* →
@@ -168,10 +179,11 @@ to a shared store for multi-instance deploys.
 
 ## Testing
 
-`npm run test` — **28 Vitest tests** over the pure logic that matters:
+`npm run test` — **35 Vitest tests** over the pure logic that matters:
 
 - `lib/filters` — filter + sort, price/odometer/year ranges, no-bid handling
 - `lib/bids` — minimum-bid rules, place-bid persistence, store parsing
+- `lib/bidDisplay` — phase-aware bid label/amount/actions (upcoming / live / sold / no-sale)
 - `lib/contracts/search` — `parseSearchFilters` validator (drops bad/unknown LLM output)
 - `lib/auction` — phase derivation + countdown formatting
 - `lib/bidHistory` — deterministic history reconstruction
@@ -191,12 +203,13 @@ everything after is layered on top.
 
 ## What I'd do with more time
 
+- **Finish i18n** — translate the vehicle-detail descriptive body, add **locale-aware Claude
+  prompts** (a French condition summary), and `/en` `/fr` URL routing for SEO
 - **Watchlist** (save vehicles) and a saved-searches view
 - **Vehicle compare** (AI side-by-side verdict on two vehicles)
 - A live **bid feed** on the detail page, and outbid notifications
 - Real photos / a richer gallery (lightbox, zoom)
 - Search-prompt evals + condition-summary streaming
-- Deploy to Vercel (zero-config) with the key in project env vars
 
 ---
 
@@ -205,7 +218,9 @@ everything after is layered on top.
 ```
 app/                     # routes — pages + api (Claude proxy)
 components/               # ui primitives, search, vehicle, layout
-lib/                      # contracts, data, filters, bids, auction, claude, prompts (+ tests)
+lib/                      # contracts, data, filters, bids, auction, claude, prompts, i18n (+ tests)
+messages/                 # en.json / fr.json translation catalogs
+i18n/request.ts           # next-intl server config (cookie locale)
 data/vehicles.json        # the 200-vehicle dataset
 docs/                     # architecture.md, DECISIONS.md, design-system.md, PLAN.md
 CLAUDE.md / AGENTS.md      # agent guardrails (design rules, AI conventions)

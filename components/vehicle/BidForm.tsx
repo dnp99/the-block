@@ -1,17 +1,20 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toaster";
 import { BID_INCREMENT, minimumBid, placeBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { formatCurrency } from "@/lib/format";
+import { useFormat } from "@/lib/useFormat";
 import { useToastMessages } from "@/lib/useToastMessages";
 
 export function BidForm({ vehicle }: { vehicle: Vehicle }) {
   const { toast } = useToast();
   const tm = useToastMessages();
+  const t = useTranslations("bidding");
+  const fmt = useFormat();
   const overrides = useBidOverrides();
   const override = overrides[vehicle.id];
   const min = minimumBid(vehicle, override);
@@ -48,7 +51,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
 
   function place(amount: number) {
     if (!Number.isFinite(amount) || amount < min) {
-      setError(`Enter at least ${formatCurrency(min)}`);
+      setError(t("enterAtLeast", { amount: fmt.currency(min) }));
       return;
     }
     try {
@@ -83,7 +86,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
               setValue(e.target.value);
               if (error) setError(null);
             }}
-            aria-label="Your bid amount"
+            aria-label={t("yourBidAmount")}
             aria-invalid={Boolean(error)}
             className="w-full min-w-0 bg-transparent py-2 pl-1.5 pr-1 text-sm font-medium text-ink outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
           />
@@ -91,7 +94,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
             <button
               type="button"
               onClick={() => step(BID_INCREMENT)}
-              aria-label={`Increase bid by $${BID_INCREMENT}`}
+              aria-label={t("increaseBy", { amount: fmt.currency(BID_INCREMENT) })}
               className="flex flex-1 cursor-pointer items-center justify-center px-2 text-ink-subtle transition hover:bg-neutral-100 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:bg-neutral-800"
             >
               <svg aria-hidden viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -102,7 +105,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
               type="button"
               onClick={() => step(-BID_INCREMENT)}
               disabled={atMin}
-              aria-label={`Decrease bid by $${BID_INCREMENT}`}
+              aria-label={t("decreaseBy", { amount: fmt.currency(BID_INCREMENT) })}
               className="flex flex-1 cursor-pointer items-center justify-center border-t border-line px-2 text-ink-subtle transition hover:bg-neutral-100 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:hover:bg-neutral-800"
             >
               <svg aria-hidden viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -112,7 +115,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
           </div>
         </div>
         <Button onClick={() => place(current)} className="shrink-0">
-          Place bid
+          {t("placeBid")}
         </Button>
       </div>
       {error ? (
@@ -120,17 +123,17 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
           {error}
         </p>
       ) : (
-        <p className="text-xs text-ink-subtle">Minimum bid {formatCurrency(min)}</p>
+        <p className="text-xs text-ink-subtle">{t("minimum", { amount: fmt.currency(min) })}</p>
       )}
 
       {canBuyNow &&
         (confirmBuyNow ? (
           <div className="mt-1 flex items-center gap-2">
             <Button onClick={buyNowNow} className="flex-1">
-              Confirm — buy at {formatCurrency(buyNow)}
+              {t("confirmBuyAt", { amount: fmt.currency(buyNow) })}
             </Button>
             <Button variant="secondary" onClick={() => setConfirmBuyNow(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         ) : (
@@ -139,7 +142,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
             onClick={() => setConfirmBuyNow(true)}
             className="mt-1 w-full"
           >
-            Buy it now · {formatCurrency(buyNow)}
+            {t("buyItNow", { amount: fmt.currency(buyNow) })}
           </Button>
         ))}
     </div>

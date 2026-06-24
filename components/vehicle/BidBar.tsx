@@ -1,14 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { BidForm } from "@/components/vehicle/BidForm";
 import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
-import { auctionCountdownLabel, auctionState } from "@/lib/auction";
+import { auctionState } from "@/lib/auction";
 import { bidDisplay } from "@/lib/bidDisplay";
 import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { Vehicle } from "@/lib/contracts/vehicle";
-import { formatCurrency } from "@/lib/format";
+import { useCountdownLabel } from "@/lib/useCountdown";
+import { useFormat } from "@/lib/useFormat";
 
 /** Sticky bottom bid bar for small screens (the desktop bid UI is AuctionPanel). */
 export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: number }) {
@@ -17,6 +19,10 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
+
+  const tBid = useTranslations("bidding");
+  const fmt = useFormat();
+  const countdownLabel = useCountdownLabel();
 
   const overrides = useBidOverrides();
   const override = overrides[v.id];
@@ -31,8 +37,8 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
       <div className="mx-auto flex w-full min-w-0 max-w-xl flex-col gap-1.5">
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
           <span className="text-sm text-ink-muted">
-            {d.label}{" "}
-            <span className="font-semibold text-ink">{formatCurrency(d.amount)}</span>
+            {tBid(d.labelKey)}{" "}
+            <span className="font-semibold text-ink">{fmt.currency(d.amount)}</span>
           </span>
           <span
             className={cn(
@@ -44,7 +50,7 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
                   : "text-ink-subtle",
             )}
           >
-            {auctionCountdownLabel(state, now)}
+            {countdownLabel(state, now)}
           </span>
         </div>
 
@@ -57,15 +63,16 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
           />
           {d.isHighBidder && state.phase === "live" && (
             <span className="font-medium text-success">
-              · You’re the high bidder{d.reserveMet && " · Reserve met"}
+              · {tBid("highBidder")}
+              {d.reserveMet && tBid("reserveMetSuffix")}
             </span>
           )}
         </div>
 
         {ended ? (
-          <p className="text-sm text-ink-muted">This auction has ended.</p>
+          <p className="text-sm text-ink-muted">{tBid("endedMessage")}</p>
         ) : upcoming ? (
-          <p className="text-sm text-ink-muted">Bidding opens when the auction goes live.</p>
+          <p className="text-sm text-ink-muted">{tBid("opensWhenLive")}</p>
         ) : (
           <BidForm vehicle={v} />
         )}

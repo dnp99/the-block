@@ -91,6 +91,46 @@ and identities masked.
 **Alternatives rejected.** Show only the user's local bids (usually empty); random history
 (non-deterministic, unstable across renders).
 
+## ADR 0004 — Bilingual EN/FR with next-intl, cookie locale (no URL routing)
+
+- **Status:** Accepted · **Date:** 2026-06-24
+
+**Context.** OPENLANE is a Canadian marketplace and Canada is officially bilingual, so EN/FR
+is both on-brand and a relevant signal for an AI-first SWE role. The data is already Canadian
+(`en-CA` formatting, Ontario/BC). We want a credible, *demonstrably working* bilingual UI
+without half-translated screens.
+
+**Decision.** Use **next-intl** with a **cookie-based locale and no URL routing** (for v1):
+- The active locale comes from a `tb-locale` cookie, resolved **server-side** in
+  `i18n/request.ts`, so the correct language is in the initial SSR HTML (**no flash**) and
+  `<html lang>` is set correctly. A header **EN/FR toggle** writes the cookie + `router.refresh()`.
+- EN/FR **JSON catalogs** live in `messages/`, namespaced (`browse`, `bidding`, `pills`,
+  `auction`, `toasts`, …).
+- **FR-CA vs en-CA Intl formatting** for currency/numbers (**`$25,000` ↔ `25 000 $`**) via a
+  `useFormat` hook.
+- **Pure logic stays framework-free and testable**: shared helpers expose translation *keys*
+  (`bidDisplay.labelKey`, `countdownParts` + `useCountdownLabel`) so the wording lives in the
+  catalogs while the logic stays unit-tested.
+
+**Scope (v1).** Bilingual: the browse experience, global states (error/not-found), toasts, and
+the **full bidding UI** (cards + VDP panel/bar/form), with FR-CA formatting throughout.
+
+**Deferred (phase 2).** The VDP *descriptive* content (spec field labels, condition &
+disclosures section, gallery, dealer block), the **AI-generated condition summary text** (stays
+English — locale-aware Claude prompts noted as future), `formatAgo` in the history modal, and
+dataset **enum values** (make / body / drivetrain / fuel — these are data, not UI copy).
+
+**Consequences.**
+- ✅ No-flash, SSR-resolved locale; `<html lang>` correct for a11y/SEO.
+- ✅ i18n is a thin presentation layer — pure logic (`countdownParts`, `bidDisplay`) stays testable.
+- ⚠️ No `/en` `/fr` URL routing in v1 (cookie only); switching needs a server refresh. Documented
+  as future work.
+- ⚠️ AI outputs and the VDP descriptive labels remain English (phase 2).
+
+**Alternatives rejected.** A hand-rolled `t()` (reinvents plurals / ICU / locale formatting);
+URL-routed locales (SEO-correct but more work across every route — deferred); translating dataset
+enums (they're data values, not UI copy).
+
 ## Design & UX decisions (high level)
 
 Captured concisely; see `git log` for the change-by-change detail.
