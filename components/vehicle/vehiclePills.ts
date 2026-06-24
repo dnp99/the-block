@@ -4,7 +4,7 @@
 */
 import type { PillTone } from "@/components/ui/Pill";
 import type { TitleStatus, Vehicle } from "@/lib/contracts/vehicle";
-import { effectivePrice, formatGrade } from "@/lib/format";
+import { capitalize, effectivePrice, formatGrade } from "@/lib/format";
 
 export function conditionPill(grade: Vehicle["condition_grade"]): {
   tone: PillTone;
@@ -42,7 +42,7 @@ const TITLE_TONE: Record<TitleStatus, PillTone> = {
 };
 
 export function titlePill(status: TitleStatus): { tone: PillTone; label: string } {
-  return { tone: TITLE_TONE[status], label: `${status} title` };
+  return { tone: TITLE_TONE[status], label: `${capitalize(status)} title` };
 }
 
 /** Reserve status for an explicit price (so it reflects a live bid). */

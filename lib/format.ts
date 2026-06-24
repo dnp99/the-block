@@ -32,6 +32,11 @@ export function vehicleLocation(v: Pick<Vehicle, "city" | "province">): string {
   return `${v.city}, ${v.province}`;
 }
 
+/** Sentence-case the first letter ("rebuilt" → "Rebuilt"). */
+export function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 /** The price a buyer competes against: current bid, or starting bid if none yet. */
 export function effectivePrice(
   v: Pick<Vehicle, "current_bid" | "starting_bid">,
