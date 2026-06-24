@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { BidForm } from "@/components/vehicle/BidForm";
 import { BidHistoryButton } from "@/components/vehicle/BidHistoryButton";
+import { reserveStatusFor } from "@/components/vehicle/vehiclePills";
 import { auctionCountdownLabel, auctionState } from "@/lib/auction";
 import { effectiveBid, useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
@@ -21,6 +22,7 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
   const override = overrides[v.id];
   const { amount, count, isHighBidder } = effectiveBid(v, override);
   const hasBids = (override?.amount ?? v.current_bid) !== null;
+  const reserveMet = reserveStatusFor(amount, v.reserve_price).met;
   const state = auctionState(v.id, anchorMs, now);
   const ended = state.phase === "ended";
   const urgent = state.phase === "live" && state.endMs - now <= 120_000;
@@ -58,7 +60,9 @@ export function BidBar({ vehicle: v, anchorMs }: { vehicle: Vehicle; anchorMs: n
         ) : (
           <>
             {isHighBidder && (
-              <p className="text-xs font-medium text-success">You’re the high bidder</p>
+              <p className="text-xs font-medium text-success">
+                You’re the high bidder{reserveMet && " — this vehicle will sell"}
+              </p>
             )}
             <BidForm vehicle={v} />
           </>
