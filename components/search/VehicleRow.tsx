@@ -114,7 +114,7 @@ export function VehicleRow({
         <p className="truncate text-xs text-ink-muted">
           {formatKm(v.odometer_km)} · {v.drivetrain} · {v.transmission} · {v.fuel_type}
         </p>
-        <p className="truncate text-xs text-ink-subtle">
+        <p className="hidden truncate text-xs text-ink-subtle sm:block">
           {vehicleLocation(v)} · {v.selling_dealership}
         </p>
 
