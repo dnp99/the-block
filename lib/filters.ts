@@ -45,10 +45,12 @@ export function applyFilters(vehicles: Vehicle[], f: SearchFilters): Vehicle[] {
     if (f.drivetrain && v.drivetrain !== f.drivetrain) return false;
     if (f.fuel_type && v.fuel_type !== f.fuel_type) return false;
     if (f.title_status && v.title_status !== f.title_status) return false;
+    if (f.odometer_min != null && v.odometer_km < f.odometer_min) return false;
     if (f.odometer_max != null && v.odometer_km > f.odometer_max) return false;
     if (f.price_min != null && effectivePrice(v) < f.price_min) return false;
     if (f.price_max != null && effectivePrice(v) > f.price_max) return false;
     if (f.year_min != null && v.year < f.year_min) return false;
+    if (f.year_max != null && v.year > f.year_max) return false;
     if (f.condition_min != null && v.condition_grade < f.condition_min) return false;
     return true;
   });

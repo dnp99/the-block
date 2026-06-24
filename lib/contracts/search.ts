@@ -20,10 +20,12 @@ export interface SearchFilters {
   drivetrain?: Drivetrain;
   fuel_type?: FuelType;
   title_status?: TitleStatus;
+  odometer_min?: number;
   odometer_max?: number;
   price_min?: number;
   price_max?: number;
   year_min?: number;
+  year_max?: number;
   condition_min?: number;
 }
 

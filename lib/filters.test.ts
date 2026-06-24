@@ -63,6 +63,16 @@ describe("applyFilters", () => {
     expect(applyFilters(fleet, { price_min: 16000, price_max: 25000 }).map((v) => v.id)).toEqual(["a"]);
   });
 
+  it("applies year and odometer ranges", () => {
+    const fleetYears = [
+      makeVehicle({ id: "y1", year: 2018, odometer_km: 30000 }),
+      makeVehicle({ id: "y2", year: 2022, odometer_km: 60000 }),
+      makeVehicle({ id: "y3", year: 2025, odometer_km: 90000 }),
+    ];
+    expect(applyFilters(fleetYears, { year_min: 2020, year_max: 2024 }).map((v) => v.id)).toEqual(["y2"]);
+    expect(applyFilters(fleetYears, { odometer_min: 40000, odometer_max: 80000 }).map((v) => v.id)).toEqual(["y2"]);
+  });
+
   it("matches all keywords (AND across fields)", () => {
     expect(applyFilters(fleet, { keywords: ["ford", "truck"] }).map((v) => v.id)).toEqual(["c"]);
     expect(applyFilters(fleet, { keywords: ["tesla", "truck"] })).toHaveLength(0);
