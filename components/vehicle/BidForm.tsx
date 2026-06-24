@@ -64,7 +64,7 @@ export function BidForm({ vehicle }: { vehicle: Vehicle }) {
       <div className="flex items-stretch gap-2">
         <div
           className={cn(
-            "relative flex flex-1 items-center rounded-xl border bg-surface transition focus-within:ring-2 focus-within:ring-primary-500/30",
+            "relative flex min-w-0 flex-1 items-center rounded-xl border bg-surface transition focus-within:ring-2 focus-within:ring-primary-500/30",
             error
               ? "border-error"
               : "border-line hover:border-line-strong focus-within:border-primary-500",
