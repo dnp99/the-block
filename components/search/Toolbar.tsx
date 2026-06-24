@@ -25,11 +25,11 @@ export function Toolbar({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
         <button
           type="button"
           onClick={onToggleFilters}
-          className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-medium text-ink transition hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 lg:hidden"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-medium text-ink transition hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 lg:hidden"
         >
           <svg
             aria-hidden
@@ -50,7 +50,7 @@ export function Toolbar({
           )}
         </button>
 
-        <div className="relative min-w-[12rem] flex-1">
+        <div className="relative w-full lg:flex-1">
           <svg
             aria-hidden
             viewBox="0 0 24 24"
@@ -96,13 +96,13 @@ export function Toolbar({
           )}
         </div>
 
-        <label className="flex items-center gap-1">
+        <label className="flex w-full items-center gap-1 lg:w-auto">
           <span className="sr-only">Sort by</span>
           <select
             aria-label="Sort by"
             value={sort}
             onChange={(e) => onSort(e.target.value as SortKey)}
-            className="rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30"
+            className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 lg:w-auto"
           >
             {SORT_OPTIONS.map((s) => (
               <option key={s.key} value={s.key}>
