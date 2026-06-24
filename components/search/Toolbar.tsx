@@ -26,30 +26,7 @@ export function Toolbar({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
-        <button
-          type="button"
-          onClick={onToggleFilters}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-medium text-ink transition hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 lg:hidden"
-        >
-          <svg
-            aria-hidden
-            viewBox="0 0 24 24"
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <path d="M4 6h16M7 12h10M10 18h4" />
-          </svg>
-          Filters
-          {activeFilterCount > 0 && (
-            <span className="rounded-full bg-primary-100 px-1.5 text-xs font-semibold text-primary-700">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-
+        {/* Search — full width on mobile, grows on desktop */}
         <div className="relative w-full lg:flex-1">
           <svg
             aria-hidden
@@ -80,15 +57,7 @@ export function Toolbar({
                 aria-label="Clear search"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-ink-subtle transition hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
               >
-                <svg
-                  aria-hidden
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                >
+                <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M18 6 6 18M6 6l12 12" />
                 </svg>
               </button>
@@ -96,21 +65,40 @@ export function Toolbar({
           )}
         </div>
 
-        <label className="flex w-full items-center gap-1 lg:w-auto">
-          <span className="sr-only">Sort by</span>
-          <select
-            aria-label="Sort by"
-            value={sort}
-            onChange={(e) => onSort(e.target.value as SortKey)}
-            className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 lg:w-auto"
+        {/* Filters + Sort: one row on mobile/tablet; individual controls at lg */}
+        <div className="flex gap-2 lg:contents">
+          <button
+            type="button"
+            onClick={onToggleFilters}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-3 py-2 text-sm font-medium text-ink transition hover:border-line-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 lg:hidden"
           >
-            {SORT_OPTIONS.map((s) => (
-              <option key={s.key} value={s.key}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 6h16M7 12h10M10 18h4" />
+            </svg>
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="rounded-full bg-primary-100 px-1.5 text-xs font-semibold text-primary-700">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          <label className="flex flex-1 items-center gap-1 lg:w-auto lg:flex-none">
+            <span className="sr-only">Sort by</span>
+            <select
+              aria-label="Sort by"
+              value={sort}
+              onChange={(e) => onSort(e.target.value as SortKey)}
+              className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none transition hover:border-line-strong focus-visible:border-primary-500 focus-visible:ring-2 focus-visible:ring-primary-500/30 lg:w-auto"
+            >
+              {SORT_OPTIONS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       <p className="text-sm text-ink-muted">
