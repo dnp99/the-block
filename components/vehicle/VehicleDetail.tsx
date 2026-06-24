@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AuctionPanel } from "@/components/vehicle/AuctionPanel";
+import { BidBar } from "@/components/vehicle/BidBar";
 import { ConditionSection } from "@/components/vehicle/ConditionSection";
 import { DealerBlock } from "@/components/vehicle/DealerBlock";
 import { SpecGrid } from "@/components/vehicle/SpecGrid";
@@ -16,7 +17,7 @@ export function VehicleDetail({
   anchorMs: number;
 }) {
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 pb-40 sm:px-6 lg:pb-6">
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 rounded text-sm font-medium text-primary-600 transition hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
@@ -45,7 +46,7 @@ export function VehicleDetail({
           <VehicleGallery images={v.images} alt={vehicleTitle(v)} />
         </div>
 
-        <aside className="lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-20">
+        <aside className="hidden lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:sticky lg:top-20 lg:block">
           <AuctionPanel vehicle={v} anchorMs={anchorMs} />
         </aside>
 
@@ -55,6 +56,8 @@ export function VehicleDetail({
           <DealerBlock vehicle={v} />
         </div>
       </div>
+
+      <BidBar vehicle={v} anchorMs={anchorMs} />
     </div>
   );
 }

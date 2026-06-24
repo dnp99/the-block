@@ -8,6 +8,7 @@ import { Toolbar } from "@/components/search/Toolbar";
 import { VehicleList } from "@/components/search/VehicleList";
 import { Button } from "@/components/ui/Button";
 import { auctionState, type AuctionState } from "@/lib/auction";
+import { useBidOverrides } from "@/lib/bids";
 import { cn } from "@/lib/cn";
 import type { SearchFilters } from "@/lib/contracts/search";
 import type { BodyStyle, Vehicle } from "@/lib/contracts/vehicle";
@@ -90,6 +91,17 @@ export function SearchView({
     };
   }, [vehicles]);
 
+  // Merge any locally-placed bids so rows reflect updated price/count + reserve.
+  const overrides = useBidOverrides();
+  const effectiveVehicles = useMemo(
+    () =>
+      vehicles.map((v) => {
+        const o = overrides[v.id];
+        return o ? { ...v, current_bid: o.amount, bid_count: o.count } : v;
+      }),
+    [vehicles, overrides],
+  );
+
   const [now, setNow] = useState(anchorMs);
   const [tab, setTab] = useState<AuctionTab>("all");
   const [query, setQuery] = useState("");
@@ -129,8 +141,8 @@ export function SearchView({
       price_min: priceRange[0] > bounds.price[0] ? priceRange[0] : undefined,
       price_max: priceRange[1] < bounds.price[1] ? priceRange[1] : undefined,
     };
-    return sortVehicles(applyFilters(vehicles, filters), sort);
-  }, [vehicles, query, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, sort, bounds]);
+    return sortVehicles(applyFilters(effectiveVehicles, filters), sort);
+  }, [effectiveVehicles, query, make, bodyStyle, province, conditionMin, yearRange, odoRange, priceRange, sort, bounds]);
 
   const counts = useMemo(() => {
     const c: Record<AuctionTab, number> = { all: 0, live: 0, upcoming: 0, ended: 0 };

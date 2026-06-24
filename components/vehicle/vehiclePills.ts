@@ -33,12 +33,20 @@ export function titlePill(status: TitleStatus): { tone: PillTone; label: string 
   return { tone: TITLE_TONE[status], label: `${status} title` };
 }
 
-/** Whether the current/starting price has cleared the (hidden) reserve. */
-export function reservePill(v: Vehicle): { met: boolean; tone: PillTone; label: string } {
-  const met = effectivePrice(v) >= v.reserve_price;
+/** Reserve status for an explicit price (so it reflects a live bid). */
+export function reserveStatusFor(
+  price: number,
+  reservePrice: number,
+): { met: boolean; tone: PillTone; label: string } {
+  const met = price >= reservePrice;
   return met
     ? { met, tone: "green", label: "Reserve met" }
     : { met, tone: "amber", label: "Reserve not met" };
+}
+
+/** Whether the current/starting price has cleared the (hidden) reserve. */
+export function reservePill(v: Vehicle): { met: boolean; tone: PillTone; label: string } {
+  return reserveStatusFor(effectivePrice(v), v.reserve_price);
 }
 
 /** Damage disclosures summary — green when clean, amber with a count otherwise. */
