@@ -3,31 +3,31 @@
 import { useTranslations } from "next-intl";
 import { countdownParts, type AuctionState } from "@/lib/auction";
 export function useCountdownLabel() {
-  const t = useTranslations("auction");
+  const tAuction = useTranslations("auction");
   return (state: AuctionState, nowMs: number): string => {
-    const p = countdownParts(state, nowMs);
-    if (p.phase === "ended") return t("ended");
+    const parts = countdownParts(state, nowMs);
+    if (parts.phase === "ended") return tAuction("ended");
     let value: string;
-    if (p.d > 0) value = `${t("d", { n: p.d })} ${t("h", { n: p.h })}`;
-    else if (p.h > 0) value = `${t("h", { n: p.h })} ${t("m", { n: p.m })}`;
-    else if (p.m > 0) value = `${t("m", { n: p.m })} ${t("s", { n: p.s })}`;
-    else value = t("s", { n: p.s });
-    return p.phase === "live" ? t("endsIn", { value }) : t("startsIn", { value });
+    if (parts.d > 0) value = `${tAuction("d", { n: parts.d })} ${tAuction("h", { n: parts.h })}`;
+    else if (parts.h > 0) value = `${tAuction("h", { n: parts.h })} ${tAuction("m", { n: parts.m })}`;
+    else if (parts.m > 0) value = `${tAuction("m", { n: parts.m })} ${tAuction("s", { n: parts.s })}`;
+    else value = tAuction("s", { n: parts.s });
+    return parts.phase === "live" ? tAuction("endsIn", { value }) : tAuction("startsIn", { value });
   };
 }
 export function useCountdownBadge() {
-  const t = useTranslations("auction");
+  const tAuction = useTranslations("auction");
   return (state: AuctionState, nowMs: number): string => {
-    const p = countdownParts(state, nowMs);
-    if (p.phase === "ended") return t("auctionOver");
+    const parts = countdownParts(state, nowMs);
+    if (parts.phase === "ended") return tAuction("auctionOver");
     const value =
-      p.d > 0
-        ? t("d", { n: p.d })
-        : p.h > 0
-          ? t("h", { n: p.h })
-          : p.m > 0
-            ? t("m", { n: p.m })
-            : t("s", { n: p.s });
-    return p.phase === "live" ? t("leftCompact", { value }) : t("startsIn", { value });
+      parts.d > 0
+        ? tAuction("d", { n: parts.d })
+        : parts.h > 0
+          ? tAuction("h", { n: parts.h })
+          : parts.m > 0
+            ? tAuction("m", { n: parts.m })
+            : tAuction("s", { n: parts.s });
+    return parts.phase === "live" ? tAuction("leftCompact", { value }) : tAuction("startsIn", { value });
   };
 }

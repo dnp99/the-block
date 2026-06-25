@@ -58,7 +58,6 @@ describe("auctionState", () => {
       if (s.phase === "upcoming") maxUpcoming = Math.max(maxUpcoming, s.startMs - ANCHOR);
       if (s.phase === "ended") maxEndedAgo = Math.max(maxEndedAgo, ANCHOR - s.endMs);
     }
-    // ~5 days each side (beyond the old 3-day upcoming / 2-day ended bounds).
     expect(maxUpcoming).toBeGreaterThan(3 * DAY);
     expect(maxUpcoming).toBeLessThanOrEqual(5 * DAY);
     expect(maxEndedAgo).toBeGreaterThan(2 * DAY);

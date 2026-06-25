@@ -5,7 +5,6 @@ import { VehicleDetail } from "@/components/views/vehicle/VehicleDetail";
 import { getAllVehicles } from "@/lib/data/vehicles";
 import { renderWithIntl } from "@/test/intl";
 
-// The VDP fires the condition-summary request on mount — keep it pending so no real network call.
 vi.mock("@/lib/api-client", () => ({ postJson: vi.fn(() => new Promise(() => {})) }));
 
 const NOW = 1_700_000_000_000;
@@ -25,7 +24,6 @@ describe("smoke: pages render end-to-end against the real dataset", () => {
       screen.getByText(`${slice.length} vehicles up for auction across Canada.`),
     ).toBeInTheDocument();
     expect(screen.getByRole("tablist", { name: "Auction status" })).toBeInTheDocument();
-    // VehicleRow renders as an <article>; real rows actually mounted.
     expect(screen.getAllByRole("article").length).toBeGreaterThan(0);
   });
 

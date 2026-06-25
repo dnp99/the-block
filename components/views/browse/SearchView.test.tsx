@@ -9,13 +9,11 @@ import { renderWithIntl } from "@/test/intl";
 
 vi.mock("@/lib/api-client", () => ({ postJson: vi.fn() }));
 
-// Deterministic auction phases per id; auctionStartMs gives a stable sort order.
 vi.mock("@/lib/auction", () => ({
   auctionState: vi.fn(),
   auctionStartMs: (id: string) => id.charCodeAt(id.length - 1),
 }));
 
-// Stub the results list to expose which vehicle ids render (jsdom can't lay out the real rows).
 vi.mock("@/components/views/browse/VehicleList", () => ({
   VehicleList: ({ items }: { items: { vehicle: { id: string } }[] }) => (
     <ul data-testid="results">
@@ -26,7 +24,6 @@ vi.mock("@/components/views/browse/VehicleList", () => ({
   ),
 }));
 
-// Stub the filter rail (Radix slider trips jsdom CSS) but expose its callbacks as buttons.
 vi.mock("@/components/views/browse/FilterPanel", () => ({
   FilterPanel: (props: {
     onMake: (v: string) => void;
@@ -245,12 +242,10 @@ describe("SearchView", () => {
       screen.getByRole("button", { name: "Remove filter ✨ ≤ $50,000" }),
     ).toBeInTheDocument();
 
-    // Removing one of two chips refines but leaves the search text intact.
     fireEvent.click(suvChip);
     expect(searchBox().value).toBe("SUV under 50k");
     const priceChip = screen.getByRole("button", { name: "Remove filter ✨ ≤ $50,000" });
 
-    // Removing the last AI chip clears the search text too (symmetry with Clear all).
     fireEvent.click(priceChip);
     expect(searchBox().value).toBe("");
     expect(screen.queryByRole("button", { name: /Remove filter ✨/ })).toBeNull();

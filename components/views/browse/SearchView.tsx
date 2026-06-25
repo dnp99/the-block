@@ -127,15 +127,11 @@ export function SearchView({
 
   const { aiFilters, aiLoading, removeAiFilter, resetAi, restoreAi } = useAiSearchFilters(query);
 
-  // Restore the browse state saved before navigating to a VDP (or a reload). The Header logo
-  // clears the store, so only the back button / reload re-applies filters.
   const hydrated = useRef(false);
   useEffect(() => {
-    if (hydrated.current) return; // already restored (StrictMode re-invoke / re-run) — skip
+    if (hydrated.current) return;
     const s = loadBrowseState();
     if (s) {
-      // One-time hydration from sessionStorage (unavailable during SSR, so a lazy initializer
-      // would cause a hydration mismatch — the mount effect is the correct place).
       /* eslint-disable react-hooks/set-state-in-effect */
       setTab(s.tab);
       setQuery(s.query);
@@ -215,8 +211,6 @@ export function SearchView({
     resetAi();
   }, [bounds, resetAi]);
 
-  // The header logo broadcasts a reset (same-route nav doesn't remount this view). Unlike the
-  // "Clear all" chips button (filters only), the logo also returns to the All tab.
   useEffect(() => {
     const onReset = () => {
       reset();
