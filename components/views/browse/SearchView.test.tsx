@@ -26,12 +26,16 @@ vi.mock("@/components/views/browse/VehicleList", () => ({
 
 vi.mock("@/components/views/browse/FilterPanel", () => ({
   FilterPanel: (props: {
+    bodyStyle: string;
     onMake: (v: string) => void;
+    onBodyStyle: (v: string) => void;
     onYearRange: (r: [number, number]) => void;
     onClearAll: () => void;
   }) => (
     <div data-testid="filter-panel">
+      <span data-testid="panel-bodystyle">{props.bodyStyle}</span>
       <button onClick={() => props.onMake("Toyota")}>set-make</button>
+      <button onClick={() => props.onBodyStyle("coupe")}>set-body-coupe</button>
       <button onClick={() => props.onYearRange([2020, 2024])}>narrow-year</button>
       <button onClick={() => props.onClearAll()}>panel-clear</button>
     </div>
@@ -119,6 +123,23 @@ describe("SearchView", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Remove filter Toyota" }));
     expect(shownIds()).toEqual(["v1", "v2", "v3"]);
+  });
+
+  it("reflects AI filters in the panel and takes ownership when a control is edited", async () => {
+    vi.mocked(postJson).mockResolvedValue({ filters: { body_style: "SUV", price_max: 20000 } });
+    render();
+    fireEvent.change(searchBox(), { target: { value: "suv under 20k" } });
+    await runTimer(600);
+
+    expect(screen.getByTestId("panel-bodystyle").textContent).toBe("SUV");
+    expect(screen.getByRole("button", { name: "Remove filter ✨ SUV" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("set-body-coupe"));
+
+    expect(screen.getByTestId("panel-bodystyle").textContent).toBe("coupe");
+    expect(screen.queryByRole("button", { name: "Remove filter ✨ SUV" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Remove filter coupe" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove filter ✨ ≤ $20,000" })).toBeInTheDocument();
   });
 
   it("shows a removable range chip when a slider range is narrowed", () => {

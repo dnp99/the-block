@@ -48,7 +48,7 @@ the API routes and never reaches the browser.
 | --- | --- |
 | `npm run dev` | Dev server (:3000) |
 | `npm run build` | Production build |
-| `npm run test` | Vitest (157 tests) |
+| `npm run test` | Vitest (161 tests) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 
@@ -203,7 +203,7 @@ to a shared store for multi-instance deploys.
 
 ## Testing
 
-`npm run test` — **157 Vitest tests** across pure logic, hooks, components, and route handlers:
+`npm run test` — **161 Vitest tests** across pure logic, hooks, components, and route handlers:
 
 - `lib/filters` — filter + sort (year/make/mileage/seller/ending/starting), price/odometer/year ranges
 - `lib/bids` / `lib/bidDisplay` — minimum-bid rules, persistence, phase-aware bid label/amount/actions

@@ -30,7 +30,7 @@ Anthropic SDK (`claude-haiku-4-5`, server-only) · Vitest. Data: `data/vehicles.
 | `feat: live auction state` | **Live auction state** | Normalize `auction_start` → upcoming/live/ended pill + countdown (shipped with tabs) | ✅ done |
 | `feat: polish & accessibility` | **Polish & a11y** | error.tsx, not-found, ThemeToggle, focus/keyboard/safe-area, mobile, empty/loading states | ✅ done |
 | `feat: i18n` | **Bilingual EN/FR** | next-intl, cookie locale, EN/FR catalogs, FR-CA formatting | ✅ done |
-| `docs: …` | **Tests + docs** | Vitest (157 tests) ✅; README (submission + AI-usage) ✅; DESIGN-SYSTEM.md ✅ | ✅ done |
+| `docs: …` | **Tests + docs** | Vitest (161 tests) ✅; README (submission + AI-usage) ✅; DESIGN-SYSTEM.md ✅ | ✅ done |
 | `fix: hardening` | **Hardening** | Filter persistence (sessionStorage), client-anchored auction clock (Live always populated), expanded sort options, render smoke test | ✅ done |
 | `chore: release` | **Submission** | Final pass, deployed to Vercel (live demo) + repo pushed | ✅ done |
 

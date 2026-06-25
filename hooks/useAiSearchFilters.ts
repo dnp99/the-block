@@ -57,14 +57,14 @@ export function useAiSearchFilters(query: string) {
     setAiResult(result);
   }, []);
 
-  function removeAiFilter(key: keyof SearchFilters) {
+  const removeAiFilter = useCallback((key: keyof SearchFilters) => {
     setAiResult((prev) => {
-      if (!prev) return prev;
+      if (!prev || !(key in prev.filters)) return prev;
       const filters = { ...prev.filters };
       delete filters[key];
       return { query: prev.query, filters };
     });
-  }
+  }, []);
 
   const resetAi = useCallback(() => {
     setAiResult(null);
