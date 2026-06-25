@@ -1,4 +1,4 @@
-# Openlane — The Block
+# Openlane - The Block
 
 Buyer side of a vehicle auction platform. Browse 200 vehicles, inspect details, and place
 bids — with two **AI-first** features layered on top: natural-language search and an
@@ -37,8 +37,8 @@ npm run dev          # restart so the env loads
 ```
 
 Get a key at [console.anthropic.com](https://console.anthropic.com). Cost is a fraction of a
-cent per call (Haiku, tiny token caps). **Without a key, the app degrades gracefully** —
-natural-language search falls back to keyword search (with a toast), and the condition
+cent per call (Haiku, tiny token caps). **Without a key, the app degrades gracefully.**
+Natural-language search falls back to keyword search (with a toast), and the condition
 summary is simply skipped (raw details still show). The key is read **only** server-side in
 the API routes and never reaches the browser.
 
@@ -170,10 +170,6 @@ full decision rationale (with alternatives rejected) lives in
 ---
 
 ## How I used AI
-
-AI was used both **to build this** and **inside the product**, as expected for an AI-first
-role.
-
 ### In the product
 - Two Claude features behind server-side route handlers (key never client-side).
 - **Structured output via forced tool-use** for search — Claude must call an `apply_filters`
@@ -224,7 +220,7 @@ Plus `npm run typecheck` and `npm run lint` are clean, and `npm run build` passe
 
 ## Time spent
 
-Roughly a focused build over a few sessions. I deliberately went past the 3–4h suggestion to
+Roughly a focused build over a few sessions totally around 7-8 hours. I deliberately went past the 3–4h suggestion to
 take the two AI features and the UX/polish further, since this is an AI-first role — but the
 **minimum bar (browse → detail → bid, desktop + mobile) was the first thing standing**, and
 everything after is layered on top.

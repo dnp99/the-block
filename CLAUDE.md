@@ -66,12 +66,12 @@ semantic `success` / `warning` / `error`.
   `NEXT_PUBLIC_`. Local: `.env.local` (gitignored). Prod: Vercel env vars.
 - **All Claude calls go through API routes** (`/api/search`, `/api/condition-summary`). The client
   never calls Anthropic directly.
-- **Prompts live in `lib/prompts.ts`** — versioned, commented, with an explicit output schema.
+- **Prompts live in `server/prompts.ts`** — versioned, with an explicit output schema.
 - **Never trust raw model output.** Parse every Claude response through a `lib/contracts` runtime
   validator. On invalid or failed output, fall back gracefully (keyword search / hide summary) —
   never crash, never block the UI.
 - **Every AI call:** debounce (search 600ms, min 3 chars), cache by key, and a fallback path.
-  Token caps: search 150, condition 200.
+  Token caps: search 256, condition 200.
 
 ## Error handling
 

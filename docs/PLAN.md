@@ -1,4 +1,4 @@
-# The Block — Build Plan
+# Build Plan
 
 Buyer-side vehicle auction prototype (OPENLANE "The Block" challenge).
 Single Next.js app, Vercel-only. AI-first. Full architecture/decisions live in
@@ -22,19 +22,21 @@ Anthropic SDK (`claude-haiku-4-5`, server-only) · Vitest. Data: `data/vehicles.
 | Commit | Slice | Delivers | Status |
 |--------|-------|----------|--------|
 | `chore: scaffold …` | **Scaffold** | Next + Tailwind v4 tokens, theming, tooling, build green | ✅ done |
-| `feat: browse inventory` | **Browse inventory** | Search page: header + card grid + filter/sort over static data | ✅ done |
+| `feat: browse inventory` | **Browse inventory** | Search page: header + list rows + filter/sort over static data | ✅ done |
 | `feat: vehicle detail page` | **Vehicle detail (VDP)** | `/vehicle/[id]`: gallery, specs, condition, damage, dealer, read-only auction panel; `not-found` | ✅ done |
 | `feat: bidding` | **Bidding** | Sticky bid footer, localStorage (versioned), inline validation, reserve met/not-met. **Minimum bar complete.** | ✅ done |
-| `feat: ai natural-language search` | **AI NL search** | `/api/search` + Claude + `lib/prompts.ts`; debounce/cache/keyword-fallback/toast + empty state | ✅ done |
+| `feat: ai natural-language search` | **AI NL search** | `/api/search` + Claude + `server/prompts.ts`; debounce/cache/keyword-fallback/toast + empty state | ✅ done |
 | `feat: ai condition summary` | **AI condition summary** | `/api/condition-summary` on VDP; skeleton + cache + toast fallback | ✅ done |
 | `feat: live auction state` | **Live auction state** | Normalize `auction_start` → upcoming/live/ended pill + countdown (shipped with tabs) | ✅ done |
-| `feat: polish | `feat: polish & accessibility` | **Polish & a11y** | `error.tsx`, ThemeToggle, focus/keyboard/safe-area, mobile, empty/loading states | ⬜ | accessibility` | **Polish & a11y** | error.tsx, not-found, ThemeToggle, gallery keyboard nav | ✅ done |
+| `feat: polish & accessibility` | **Polish & a11y** | error.tsx, not-found, ThemeToggle, focus/keyboard/safe-area, mobile, empty/loading states | ✅ done |
+| `feat: i18n` | **Bilingual EN/FR** | next-intl, cookie locale, EN/FR catalogs, FR-CA formatting | ✅ done |
 | `docs: …` | **Tests + docs** | Vitest (157 tests) ✅; README (submission + AI-usage) ✅; DESIGN-SYSTEM.md ✅ | ✅ done |
-| `chore: release` | **Submission** | Final pass, deploy, share link | ⬜ |
+| `fix: hardening` | **Hardening** | Filter persistence (sessionStorage), client-anchored auction clock (Live always populated), expanded sort options, render smoke test | ✅ done |
+| `chore: release` | **Submission** | Final pass, deployed to Vercel (live demo) + repo pushed | ✅ done |
 
 ## Acceptance per slice
 
-- **Browse:** grid renders 200 vehicles; search box + filters narrow results; sort works; responsive; empty state.
+- **Browse:** list renders 200 vehicles; search box + filters narrow results; sort works; responsive; empty state.
 - **VDP:** every card opens a detail page; all spec/condition/dealer fields shown; bad id → not-found.
 - **Bidding:** place a bid above current → persists across refresh; too-low → inline error; reserve met/not-met shown, reserve price never revealed.
 - **AI search:** natural-language query → structured filters applied; AI failure → keyword fallback + toast; no match → empty state.

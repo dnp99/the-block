@@ -1,4 +1,4 @@
-# The Block — Design System
+# Design System
 
 The full design-system spec. `CLAUDE.md` carries the enforced subset (always in an agent's
 context); this file is the complete reference.
